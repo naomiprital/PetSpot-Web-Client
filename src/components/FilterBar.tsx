@@ -67,6 +67,7 @@ const FilterBar = ({
         onChange={(event) => setType(event.target.value as StatusFilter)}
         displayEmpty
         sx={(theme) => ({
+          width: { xs: '100%', md: '10rem' },
           backgroundColor:
             type !== 'all' ? alpha(theme.palette.primary.main, 0.1) : 'background.default',
           borderRadius: '0.75rem',
@@ -84,6 +85,7 @@ const FilterBar = ({
         onChange={(event) => setAnimal(event.target.value as AnimalFilter)}
         displayEmpty
         sx={(theme) => ({
+          width: { xs: '100%', md: '10rem' },
           backgroundColor:
             animal !== 'all' ? alpha(theme.palette.primary.main, 0.1) : 'background.default',
           borderRadius: '0.75rem',
@@ -93,17 +95,18 @@ const FilterBar = ({
         })}
       >
         <MenuItem value="all">All Animals</MenuItem>
-        <MenuItem value={AnimalsEnum.DOG}>Dog</MenuItem>
-        <MenuItem value={AnimalsEnum.CAT}>Cat</MenuItem>
-        <MenuItem value={AnimalsEnum.BIRD}>Bird</MenuItem>
-        <MenuItem value={AnimalsEnum.RABBIT}>Rabbit</MenuItem>
-        <MenuItem value={AnimalsEnum.OTHER}>Other</MenuItem>
+        <MenuItem value={AnimalsEnum.DOG}>{AnimalsEnum.DOG}</MenuItem>
+        <MenuItem value={AnimalsEnum.CAT}>{AnimalsEnum.CAT}</MenuItem>
+        <MenuItem value={AnimalsEnum.BIRD}>{AnimalsEnum.BIRD}</MenuItem>
+        <MenuItem value={AnimalsEnum.RABBIT}>{AnimalsEnum.RABBIT}</MenuItem>
+        <MenuItem value={AnimalsEnum.OTHER}>{AnimalsEnum.OTHER}</MenuItem>
       </Select>
       <Select
         value={sortOrder}
         onChange={(e) => setSortOrder(e.target.value as SortOrderFilter)}
         displayEmpty
         sx={{
+          width: { xs: '100%', md: '10rem' },
           backgroundColor: 'background.default',
           borderRadius: '0.75rem',
           '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
