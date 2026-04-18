@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles';
+import '@fontsource/heebo/500.css';
 import '@fontsource/heebo/600.css';
 import '@fontsource/heebo/700.css';
 import '@fontsource/heebo/800.css';
@@ -11,6 +12,12 @@ const theme = createTheme({
     secondary: {
       main: '#2E3B55',
     },
+    error: {
+      main: '#ef4444',
+    },
+    success: {
+      main: '#22c55e',
+    },
     background: {
       default: '#F8FAFC',
       paper: '#FFFFFF',
@@ -22,6 +29,7 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: '"Heebo", "Helvetica", "Arial", sans-serif',
+    fontWeightRegular: 500,
   },
 });
 
