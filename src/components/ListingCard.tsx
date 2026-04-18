@@ -14,7 +14,7 @@ import moment from 'moment';
 import { StatusEnum } from '../../utils/consts';
 
 export interface Listing {
-  id: number;
+  id: string;
   status: string;
   animal: string;
   imageUrl: string;

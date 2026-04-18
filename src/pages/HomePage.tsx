@@ -10,7 +10,7 @@ import { AnimalsEnum, StatusEnum } from '../../utils/consts';
 
 const mockListings: Listing[] = [
   {
-    id: 1,
+    id: '1',
     status: StatusEnum.LOST,
     animal: AnimalsEnum.DOG,
     imageUrl:
@@ -27,7 +27,7 @@ const mockListings: Listing[] = [
     },
   },
   {
-    id: 2,
+    id: '2',
     status: StatusEnum.FOUND,
     animal: AnimalsEnum.CAT,
     imageUrl:
@@ -43,7 +43,7 @@ const mockListings: Listing[] = [
     },
   },
   {
-    id: 3,
+    id: '3',
     status: StatusEnum.LOST,
     animal: AnimalsEnum.BIRD,
     imageUrl:
@@ -59,7 +59,7 @@ const mockListings: Listing[] = [
     },
   },
   {
-    id: 4,
+    id: '4',
     status: StatusEnum.FOUND,
     animal: AnimalsEnum.DOG,
     imageUrl:
