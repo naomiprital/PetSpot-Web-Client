@@ -17,6 +17,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PhoneIcon from '@mui/icons-material/Phone';
 import SendIcon from '@mui/icons-material/Send';
+import CloseIcon from '@mui/icons-material/Close';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -78,8 +79,11 @@ const ListingDetailsDialog = ({ open, onClose, listing }: ListingDetailsDialogPr
         maxWidth={false}
         sx={{
           '& .MuiDialog-paper': {
-            width: '55rem',
-            height: '35rem',
+            width: { xs: '100%', md: '55rem' },
+            height: { xs: '90vh', md: '35rem' },
+            maxWidth: '55rem',
+            maxHeight: { xs: '90vh', md: 'none' },
+            margin: { xs: '1rem', md: '2rem' },
             borderRadius: '1rem',
           },
         }}
@@ -87,10 +91,28 @@ const ListingDetailsDialog = ({ open, onClose, listing }: ListingDetailsDialogPr
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: '50% 50%',
+            gridTemplateColumns: { xs: '1fr', md: '50% 50%' },
+            gridTemplateRows: { xs: '35% 65%', md: '100%' },
             height: '100%',
           }}
         >
+          <IconButton
+            onClick={onClose}
+            sx={(theme) => ({
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              backgroundColor: alpha(theme.palette.background.default, 0.9),
+              color: 'text.primary',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              '&:hover': {
+                backgroundColor: 'grey.100',
+              },
+              zIndex: 100,
+            })}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
           <CardMedia
             component="img"
             image={listing.imageUrl}
@@ -105,12 +127,12 @@ const ListingDetailsDialog = ({ open, onClose, listing }: ListingDetailsDialogPr
           />
           <Box
             sx={{
-              padding: '1.5rem',
-              marginRight: '0.5em',
-              marginBottom: '0.5em',
+              padding: { xs: '1rem', md: '1.5rem' },
+              marginRight: { xs: '0', md: '0.5em' },
+              marginBottom: { xs: '0', md: '0.5em' },
               display: 'flex',
               flexDirection: 'column',
-              gap: '1rem',
+              gap: { xs: '0.75rem', md: '1rem' },
               overflow: 'auto',
             }}
           >
