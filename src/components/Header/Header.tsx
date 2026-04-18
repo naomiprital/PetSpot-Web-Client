@@ -99,7 +99,11 @@ const Header = () => {
 
   return (
     <>
-      <AppBar position="static" color="transparent" sx={{ bgcolor: 'background.paper' }}>
+      <AppBar
+        position="sticky"
+        color="transparent"
+        sx={{ bgcolor: 'background.paper', top: 0, zIndex: 100 }}
+      >
         <Toolbar
           sx={{
             display: 'flex',
