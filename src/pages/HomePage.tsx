@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import ListingCard, { type Listing } from '../components/ListingCard';
 import FilterBar, {
   type StatusFilter,
@@ -19,11 +19,23 @@ const mockListings: Listing[] = [
     date: Date.now() - 100000000,
     description:
       'Buster is a friendly golden retriever. Wearing a blue collar. Last seen near the park',
-    comments: 1,
+    comments: [
+      {
+        id: 'c1',
+        text: 'I think I saw a dog like this near the boat house!',
+        createdAt: Date.now() - 5000000,
+        user: {
+          name: 'Alice',
+          avatar:
+            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+        },
+      },
+    ],
     user: {
       name: 'John',
       avatar:
         'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
+      phone: '1234567890',
     },
   },
   {
@@ -35,11 +47,53 @@ const mockListings: Listing[] = [
     location: 'Brooklyn, NY',
     date: Date.now() - 200000000,
     description: 'Found a small black cat near the subway station. Very vocal and friendly.',
-    comments: 3,
+    comments: [
+      {
+        id: 'c2',
+        text: 'Is this the cat that usually hangs around 5th Ave?',
+        createdAt: Date.now() - 15000000,
+        user: {
+          name: 'Mike',
+          avatar:
+            'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
+        },
+      },
+      {
+        id: 'c3',
+        text: 'Yes! I think it belongs to the corner shop owner.',
+        createdAt: Date.now() - 10000000,
+        user: {
+          name: 'Sarah',
+          avatar:
+            'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
+        },
+      },
+      {
+        id: 'c4',
+        text: 'I will go check with him today.',
+        createdAt: Date.now() - 5000000,
+        user: {
+          name: 'Mike',
+          avatar:
+            'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
+        },
+      },
+      {
+        id: 'c5',
+        text: 'I will go check with him today.',
+        createdAt: Date.now() - 5000000,
+        user: {
+          name: 'Mike',
+          avatar:
+            'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
+        },
+      },
+    ],
     user: {
       name: 'Sarah',
       avatar:
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+      phone: '1234567890',
     },
   },
   {
@@ -51,11 +105,12 @@ const mockListings: Listing[] = [
     location: 'Queens, NY',
     date: Date.now() - 50000000,
     description: 'Green parakeet flew out the window. Answers to "Kiwi".',
-    comments: 0,
+    comments: [],
     user: {
       name: 'Mike',
       avatar:
         'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
+      phone: '1234567890',
     },
   },
   {
@@ -67,11 +122,73 @@ const mockListings: Listing[] = [
     location: 'Manhattan, NY',
     date: Date.now() - 300000000,
     description: 'Found a stray husky wandering around. No collar, very energetic.',
-    comments: 5,
+    comments: [
+      {
+        id: 'c5',
+        text: 'I saw posters for a husky nearby, let me check the number.',
+        createdAt: Date.now() - 20000000,
+        user: {
+          name: 'John',
+          avatar:
+            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
+        },
+      },
+      {
+        id: 'c6',
+        text: 'Did he have a blue harness?',
+        createdAt: Date.now() - 15000000,
+        user: {
+          name: 'Alice',
+          avatar:
+            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+        },
+      },
+      {
+        id: 'c7',
+        text: 'No harness, just empty.',
+        createdAt: Date.now() - 10000000,
+        user: {
+          name: 'Emma',
+          avatar:
+            'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
+        },
+      },
+      {
+        id: 'c8',
+        text: 'Ok, I will keep an eye out for posters.',
+        createdAt: Date.now() - 5000000,
+        user: {
+          name: 'Alice',
+          avatar:
+            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+        },
+      },
+      {
+        id: 'c9',
+        text: 'Thanks! Hopefully we find the owner.',
+        createdAt: Date.now() - 1000000,
+        user: {
+          name: 'Emma',
+          avatar:
+            'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
+        },
+      },
+      {
+        id: 'c10',
+        text: 'I will go check with him today.',
+        createdAt: Date.now() - 1000000,
+        user: {
+          name: 'Mike',
+          avatar:
+            'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
+        },
+      },
+    ],
     user: {
       name: 'Emma',
       avatar:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
+      phone: '1234567890',
     },
   },
 ];
@@ -122,9 +239,9 @@ const HomePage = () => {
           <ListingCard key={listing.id} listing={listing} />
         ))}
         {filteredListings.length === 0 && (
-          <div style={{ color: '#64748b', marginTop: '2rem' }}>
+          <Typography sx={{ color: 'text.secondary', marginTop: '2rem' }}>
             No listings found matching your criteria.
-          </div>
+          </Typography>
         )}
       </Box>
     </Box>

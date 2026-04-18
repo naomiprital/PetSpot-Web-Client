@@ -36,7 +36,8 @@ const FilterBar = ({
         padding: '0.75rem',
         borderRadius: '1rem',
         boxShadow: 'none',
-        border: '1px solid #e2e8f0',
+        border: 1,
+        borderColor: 'grey.300',
         marginBottom: '2rem',
         width: '100%',
         flexWrap: { xs: 'wrap', md: 'nowrap' },
@@ -47,16 +48,16 @@ const FilterBar = ({
           display: 'flex',
           alignItems: 'center',
           flex: 1,
-          backgroundColor: '#f8fafc',
+          backgroundColor: 'background.default',
           borderRadius: '0.75rem',
           padding: '0.5rem 1rem',
           minWidth: { xs: '100%', md: 'auto' },
         }}
       >
-        <SearchIcon sx={{ color: '#94a3b8', marginRight: '1rem' }} />
+        <SearchIcon sx={{ color: 'text.secondary', marginRight: '1rem' }} />
         <InputBase
           placeholder="Search location or description..."
-          sx={{ flex: 1, color: '#475569', fontSize: '0.95rem' }}
+          sx={{ flex: 1, color: 'text.primary', fontSize: '0.95rem' }}
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
         />
@@ -66,7 +67,8 @@ const FilterBar = ({
         onChange={(event) => setType(event.target.value as StatusFilter)}
         displayEmpty
         sx={(theme) => ({
-          backgroundColor: type !== 'all' ? alpha(theme.palette.primary.main, 0.1) : '#f8fafc',
+          backgroundColor:
+            type !== 'all' ? alpha(theme.palette.primary.main, 0.1) : 'background.default',
           borderRadius: '0.75rem',
           '& .MuiOutlinedInput-notchedOutline': {
             border: type !== 'all' ? `1px solid ${theme.palette.primary.main}` : 'none',
@@ -82,7 +84,8 @@ const FilterBar = ({
         onChange={(event) => setAnimal(event.target.value as AnimalFilter)}
         displayEmpty
         sx={(theme) => ({
-          backgroundColor: animal !== 'all' ? alpha(theme.palette.primary.main, 0.1) : '#f8fafc',
+          backgroundColor:
+            animal !== 'all' ? alpha(theme.palette.primary.main, 0.1) : 'background.default',
           borderRadius: '0.75rem',
           '& .MuiOutlinedInput-notchedOutline': {
             border: animal !== 'all' ? `1px solid ${theme.palette.primary.main}` : 'none',
@@ -101,7 +104,7 @@ const FilterBar = ({
         onChange={(e) => setSortOrder(e.target.value as SortOrderFilter)}
         displayEmpty
         sx={{
-          backgroundColor: '#f8fafc',
+          backgroundColor: 'background.default',
           borderRadius: '0.75rem',
           '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
         }}
