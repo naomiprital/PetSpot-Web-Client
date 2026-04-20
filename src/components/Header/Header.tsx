@@ -19,6 +19,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
 
 interface MenuCardProps {
   anchorEl: HTMLElement | null;
@@ -29,6 +30,7 @@ const MenuCard = ({ anchorEl, handleClose }: MenuCardProps) => {
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popper' : undefined;
   const navigate = useNavigate();
+  const user = useUser();
 
   return (
     <Popper id={id} open={open} anchorEl={anchorEl} placement="bottom-end" sx={{ zIndex: 10 }}>
@@ -42,10 +44,8 @@ const MenuCard = ({ anchorEl, handleClose }: MenuCardProps) => {
         }}
       >
         <Box sx={{ margin: '1rem' }}>
-          {/*TODO: change to real user name*/}
-          <Typography sx={{ fontSize: '1.05rem' }}>John Doe</Typography>
-          {/*TODO: change to real user email*/}
-          <Typography sx={{ fontSize: '0.85rem', color: '#64748B' }}>john@example.com</Typography>
+          <Typography sx={{ fontSize: '1.1rem' }}>{user.name}</Typography>
+          <Typography sx={{ fontSize: '0.9rem', color: 'text.secondary' }}>{user.email}</Typography>
         </Box>
         <Divider />
         <MenuList>
@@ -87,6 +87,7 @@ const MenuCard = ({ anchorEl, handleClose }: MenuCardProps) => {
 
 const Header = () => {
   const navigate = useNavigate();
+  const user = useUser();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -134,8 +135,8 @@ const Header = () => {
             }}
           >
             <img
-              src={'/basicProfilePicture.png'}
-              style={{ width: '2.2rem', height: '2.2rem', borderRadius: '50%' }}
+              src={user.avatarUrl}
+              style={{ width: '2.2rem', height: '2.2rem', borderRadius: '50%', objectFit: 'cover' }}
               alt="Profile"
             />
             <IconButton
