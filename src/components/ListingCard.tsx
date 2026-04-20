@@ -21,7 +21,7 @@ export interface Comment {
   createdAt: number;
   user: {
     name: string;
-    avatar: string;
+    avatar: string; // TODO: Switch to real user interface
   };
 }
 
@@ -37,7 +37,7 @@ export interface Listing {
   user: {
     name: string;
     avatar: string;
-    phone: string;
+    phone: string; // TODO: Switch to real user interface
   };
 }
 
