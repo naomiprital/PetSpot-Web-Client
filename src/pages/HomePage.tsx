@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Fab, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import ListingCard, { type Listing } from '../components/ListingCard';
 import FilterBar, {
   type StatusFilter,
@@ -7,6 +8,7 @@ import FilterBar, {
   type SortOrderFilter,
 } from '../components/FilterBar';
 import { AnimalsEnum, StatusEnum } from '../../utils/consts';
+import PublishReportDialog from '../components/PublishReportDialog';
 
 const mockListings: Listing[] = [
   {
@@ -198,6 +200,7 @@ const HomePage = () => {
   const [type, setType] = useState<StatusFilter>('all');
   const [animal, setAnimal] = useState<AnimalFilter>('all');
   const [sortOrder, setSortOrder] = useState<SortOrderFilter>('newest');
+  const [isPublishDialogOpen, setIsPublishDialogOpen] = useState<boolean>(false);
 
   const filteredListings = useMemo(() => {
     return mockListings
@@ -244,6 +247,22 @@ const HomePage = () => {
           </Typography>
         )}
       </Box>
+      <Fab
+        color="primary"
+        onClick={() => setIsPublishDialogOpen(true)}
+        sx={{
+          position: 'absolute',
+          bottom: '2rem',
+          right: '2rem',
+        }}
+      >
+        <AddIcon />
+      </Fab>
+
+      <PublishReportDialog
+        open={isPublishDialogOpen}
+        onClose={() => setIsPublishDialogOpen(false)}
+      />
     </Box>
   );
 };

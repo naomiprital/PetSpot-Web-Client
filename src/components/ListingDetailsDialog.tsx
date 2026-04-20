@@ -97,6 +97,7 @@ const ListingDetailsDialog = ({ open, onClose, listing }: ListingDetailsDialogPr
           }}
         >
           <IconButton
+            size="small"
             onClick={onClose}
             sx={(theme) => ({
               position: 'absolute',
