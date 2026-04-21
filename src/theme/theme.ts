@@ -26,6 +26,12 @@ const theme = createTheme({
       primary: '#1A1A1A',
       secondary: '#666666',
     },
+    grey: {
+      100: '#f3f3f5',
+      200: '#f1f5f9',
+      300: '#e2e8f0',
+      400: '#dadee2ff',
+    },
   },
   typography: {
     fontFamily: '"Heebo", "Helvetica", "Arial", sans-serif',

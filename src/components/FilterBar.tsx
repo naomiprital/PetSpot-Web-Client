@@ -18,7 +18,7 @@ import { StatusEnum, AnimalsEnum } from '../../utils/consts';
 
 export type StatusFilter = (typeof StatusEnum)[keyof typeof StatusEnum] | 'all';
 export type AnimalFilter = (typeof AnimalsEnum)[keyof typeof AnimalsEnum] | 'all';
-export type SortOrderFilter = 'newest' | 'oldest';
+export type SortOrderFilter = 'newest' | 'oldest' | 'highest-boosted' | 'lowest-boosted';
 
 export interface FilterBarProps {
   searchQuery: string;
@@ -72,7 +72,8 @@ const FilterBar = ({
         padding: '0.75rem',
         borderRadius: '1rem',
         boxShadow: 'none',
-        border: '1px solid #e2e8f0',
+        border: 1,
+        borderColor: 'grey.300',
         marginBottom: '2rem',
         width: '100%',
       }}
