@@ -39,11 +39,14 @@ export interface Listing {
   description: string;
   comments: Comment[];
   boosts: string[];
+  userId: string;
   user: {
     name: string;
     avatar: string;
     phone: string; // TODO: Switch to real user interface
   };
+  isResolved: boolean;
+  isDeleted: boolean;
 }
 
 interface ListingCardProps {
@@ -216,10 +219,9 @@ const ListingCard = ({ listing }: ListingCardProps) => {
         </CardContent>
       </Card>
       <ListingDetailsDialog
-        open={open}
+        isOpen={open}
         onClose={() => setOpen(false)}
         listing={listing}
-        onBoost={onBoost}
         isUserBoostedListing={isUserBoostedListing}
       />
     </>

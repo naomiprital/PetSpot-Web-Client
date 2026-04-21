@@ -3,11 +3,11 @@ import { useState } from 'react';
 import './App.css';
 import Header from './components/Header/Header';
 import HomePage from './pages/HomePage';
-import AuthPage from './pages/AuthPage';
-import { ToastContainer } from 'react-toastify';
+import { UserProvider } from './context/UserContext';
 import { ListingsProvider } from './context/ListingsContext';
-
-const Profile = () => <div>Profile Page</div>;
+import { ToastContainer } from 'react-toastify';
+import AuthPage from './pages/AuthPage';
+import ProfilePage from './pages/ProfilePage';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -26,7 +26,7 @@ const App = () => {
   };
 
   return (
-    <>
+    <UserProvider>
       <ListingsProvider>
         {!isAuthPage && <Header onLogout={handleLogout} />}
         <Routes>
@@ -37,12 +37,12 @@ const App = () => {
           />
           <Route
             path="/profile"
-            element={isAuthenticated ? <Profile /> : <Navigate to="/auth" />}
+            element={isAuthenticated ? <ProfilePage /> : <Navigate to="/auth" />}
           />
         </Routes>
         <ToastContainer position="bottom-left" />
       </ListingsProvider>
-    </>
+    </UserProvider>
   );
 };
 

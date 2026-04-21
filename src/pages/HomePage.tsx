@@ -25,12 +25,13 @@ const HomePage = () => {
     setPage(1);
     return listings
       .filter((listing) => {
+        const isResolved = listing.isResolved;
         const matchesSearch =
           listing.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
           listing.location.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesType = type === 'all' || listing.status === type;
         const matchesAnimal = animal === 'all' || listing.animal === animal;
-        return matchesSearch && matchesType && matchesAnimal;
+        return matchesSearch && matchesType && matchesAnimal && !isResolved;
       })
       .sort((a, b) => {
         if (sortOrder === 'newest') return b.date - a.date;
@@ -38,7 +39,7 @@ const HomePage = () => {
         if (sortOrder === 'highest-boosted') return b.boosts.length - a.boosts.length;
         return a.boosts.length - b.boosts.length;
       });
-  }, [searchQuery, type, animal, sortOrder]);
+  }, [listings, searchQuery, type, animal, sortOrder]);
 
   const visibleListings = filteredListings.slice(0, page * PAGE_SIZE);
   const hasMore = visibleListings.length < filteredListings.length;
@@ -110,7 +111,7 @@ const HomePage = () => {
       </Fab>
 
       <PublishReportDialog
-        open={isPublishDialogOpen}
+        isOpen={isPublishDialogOpen}
         onClose={() => setIsPublishDialogOpen(false)}
       />
     </Box>

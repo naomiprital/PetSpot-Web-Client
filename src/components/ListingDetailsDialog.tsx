@@ -56,7 +56,7 @@ const DetailRow = ({ icon, title, value }: DetailRowProps) => {
 };
 
 interface ListingDetailsDialogProps {
-  open: boolean;
+  isOpen: boolean;
   onClose: () => void;
   listing: Listing;
   onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -64,7 +64,7 @@ interface ListingDetailsDialogProps {
 }
 
 const ListingDetailsDialog = ({
-  open,
+  isOpen: open,
   onClose,
   listing,
   onBoost,

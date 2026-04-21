@@ -8,7 +8,7 @@ interface ListingsContextType {
 
 const ListingsContext = createContext<ListingsContextType | null>(null);
 
-export const MOCK_LISTINGS: Listing[] = [
+const mockListings: Listing[] = [
   {
     id: '1',
     status: StatusEnum.LOST,
@@ -32,12 +32,15 @@ export const MOCK_LISTINGS: Listing[] = [
         },
       },
     ],
+    userId: 'user-1',
     user: {
       name: 'John',
       avatar:
         'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
       phone: '1234567890',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '2',
@@ -91,12 +94,15 @@ export const MOCK_LISTINGS: Listing[] = [
         },
       },
     ],
+    userId: 'user-2',
     user: {
       name: 'Sarah',
       avatar:
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
       phone: '1234567890',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '3',
@@ -109,12 +115,15 @@ export const MOCK_LISTINGS: Listing[] = [
     description: 'Green parakeet flew out the window. Answers to "Kiwi".',
     boosts: ['id1', 'id2', 'id3', 'id4', 'id5', 'id6'],
     comments: [],
+    userId: 'user-3',
     user: {
       name: 'Mike',
       avatar:
         'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
       phone: '1234567890',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '4',
@@ -188,12 +197,15 @@ export const MOCK_LISTINGS: Listing[] = [
         },
       },
     ],
+    userId: 'user-4',
     user: {
       name: 'Emma',
       avatar:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
       phone: '1234567890',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '5',
@@ -206,12 +218,15 @@ export const MOCK_LISTINGS: Listing[] = [
     description: 'Orange tabby cat named Mango, very friendly. Missing since Tuesday morning.',
     boosts: ['id1', 'id2', 'id3', 'id4', 'id5', 'id6'],
     comments: [],
+    userId: 'user-6',
     user: {
       name: 'Yael',
       avatar:
         'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=100&q=80',
       phone: '+972501234567',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '6',
@@ -235,12 +250,15 @@ export const MOCK_LISTINGS: Listing[] = [
         },
       },
     ],
+    userId: 'user-7',
     user: {
       name: 'Noa',
       avatar:
         'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80',
       phone: '+972509876543',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '7',
@@ -253,12 +271,15 @@ export const MOCK_LISTINGS: Listing[] = [
     description: 'Black Labrador named Shadow. Escaped through an open gate. Very gentle.',
     boosts: ['id1', 'id2', 'id3', 'id4', 'id5', 'id6', 'id7'],
     comments: [],
+    userId: 'user-8',
     user: {
       name: 'Avi',
       avatar:
         'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
       phone: '+972521112222',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '8',
@@ -282,12 +303,15 @@ export const MOCK_LISTINGS: Listing[] = [
         },
       },
     ],
+    userId: 'user-9',
     user: {
       name: 'Roni',
       avatar:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
       phone: '+972531231234',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '9',
@@ -300,12 +324,15 @@ export const MOCK_LISTINGS: Listing[] = [
     description: 'Blue and yellow budgie named Sunny. Flew out of an open window on Thursday.',
     boosts: ['id1', 'id2', 'id3', 'id4', 'id5', 'id6', 'id7'],
     comments: [],
+    userId: 'user-10',
     user: {
       name: 'Maya',
       avatar:
         'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=100&q=80',
       phone: '+972541234567',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '10',
@@ -329,18 +356,21 @@ export const MOCK_LISTINGS: Listing[] = [
         },
       },
     ],
+    userId: 'user-11',
     user: {
       name: 'Shira',
       avatar:
         'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80',
       phone: '+972551112233',
     },
+    isResolved: false,
+    isDeleted: false,
   },
 ];
 
 export const ListingsProvider = ({ children }: { children: ReactNode }) => {
   return (
-    <ListingsContext.Provider value={{ listings: MOCK_LISTINGS }}>
+    <ListingsContext.Provider value={{ listings: mockListings }}>
       {children}
     </ListingsContext.Provider>
   );
