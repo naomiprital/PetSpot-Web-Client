@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Box, Typography, CircularProgress } from '@mui/material';
+import { Box, Typography, CircularProgress, Fab } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import ListingCard from '../components/ListingCard';
 import FilterBar, {
   type StatusFilter,
@@ -7,6 +8,7 @@ import FilterBar, {
   type SortOrderFilter,
 } from '../components/FilterBar';
 import { useListings } from '../context/ListingsContext';
+import PublishReportDialog from '../components/PublishReportDialog';
 
 const PAGE_SIZE = 3;
 
@@ -17,6 +19,7 @@ const HomePage = () => {
   const [animal, setAnimal] = useState<AnimalFilter>('all');
   const [sortOrder, setSortOrder] = useState<SortOrderFilter>('newest');
   const [page, setPage] = useState(1);
+  const [isPublishDialogOpen, setIsPublishDialogOpen] = useState<boolean>(false);
 
   const filteredListings = useMemo(() => {
     setPage(1);
@@ -94,6 +97,22 @@ const HomePage = () => {
       >
         {hasMore && <CircularProgress size={'3rem'} sx={{ color: 'primary.main' }} />}
       </Box>
+      <Fab
+        color="primary"
+        onClick={() => setIsPublishDialogOpen(true)}
+        sx={{
+          position: 'absolute',
+          bottom: '2rem',
+          right: '2rem',
+        }}
+      >
+        <AddIcon />
+      </Fab>
+
+      <PublishReportDialog
+        open={isPublishDialogOpen}
+        onClose={() => setIsPublishDialogOpen(false)}
+      />
     </Box>
   );
 };

@@ -30,6 +30,7 @@ const theme = createTheme({
       100: '#f3f3f5',
       200: '#f1f5f9',
       300: '#e2e8f0',
+      400: '#dadee2ff',
     },
   },
   typography: {
