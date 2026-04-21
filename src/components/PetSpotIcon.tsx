@@ -2,14 +2,21 @@ import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
+import type { SizeProp } from '@fortawesome/fontawesome-svg-core';
 
-const PetSpotIcon = ({ onClick }: { onClick?: () => void }) => {
+interface PetSpotIconProps {
+  onClick?: () => void;
+  size?: string;
+  iconSize?: SizeProp;
+}
+
+const PetSpotIcon = ({ onClick, size = '3rem', iconSize = 'xl' }: PetSpotIconProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const theme = useTheme();
 
   const iconStyle = {
-    width: '3rem',
-    height: '3rem',
+    width: size,
+    height: size,
     backgroundColor: theme.palette.primary.main,
     borderRadius: '1rem',
     display: 'flex',
@@ -31,7 +38,7 @@ const PetSpotIcon = ({ onClick }: { onClick?: () => void }) => {
       aria-label="PetSpot Home"
       onClick={onClick}
     >
-      <FontAwesomeIcon icon={faPaw} size="xl" />
+      <FontAwesomeIcon icon={faPaw} size={iconSize} />
     </button>
   );
 };
