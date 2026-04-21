@@ -80,7 +80,6 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
           border: '0.0625rem solid rgba(0,0,0,0.02)',
         }}
       >
-        {/* Toggle Container */}
         {authMode !== 'forgotPassword' && (
           <Box
             sx={{
@@ -135,8 +134,6 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
             </Button>
           </Box>
         )}
-
-        {/* Dynamic Form Component */}
         {authMode === 'login' && <Login onLogin={onLogin} onForgotPassword={(email) => { setResetEmail(email); setAuthMode('forgotPassword'); }} />}
         {authMode === 'signup' && <SignUp onLogin={onLogin} />}
         {authMode === 'forgotPassword' && <ForgotPassword initialEmail={resetEmail} onBackToLogin={() => setAuthMode('login')} />}
