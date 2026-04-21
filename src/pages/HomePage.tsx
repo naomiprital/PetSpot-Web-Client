@@ -1,206 +1,26 @@
-import { useState, useMemo } from 'react';
-import { Box, Typography } from '@mui/material';
-import ListingCard, { type Listing } from '../components/ListingCard';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { Box, Typography, CircularProgress } from '@mui/material';
+import ListingCard from '../components/ListingCard';
 import FilterBar, {
   type StatusFilter,
   type AnimalFilter,
   type SortOrderFilter,
 } from '../components/FilterBar';
-import { AnimalsEnum, StatusEnum } from '../../utils/consts';
+import { useListings } from '../context/ListingsContext';
 
-const mockListings: Listing[] = [
-  {
-    id: '1',
-    status: StatusEnum.LOST,
-    animal: AnimalsEnum.DOG,
-    imageUrl:
-      'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80',
-    location: 'Central Park, NY',
-    date: Date.now() - 100000000,
-    description:
-      'Buster is a friendly golden retriever. Wearing a blue collar. Last seen near the park',
-    comments: [
-      {
-        id: 'c1',
-        text: 'I think I saw a dog like this near the boat house!',
-        createdAt: Date.now() - 5000000,
-        user: {
-          name: 'Alice',
-          avatar:
-            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
-        },
-      },
-    ],
-    user: {
-      name: 'John',
-      avatar:
-        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
-      phone: '1234567890',
-    },
-  },
-  {
-    id: '2',
-    status: StatusEnum.FOUND,
-    animal: AnimalsEnum.CAT,
-    imageUrl:
-      'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80',
-    location: 'Brooklyn, NY',
-    date: Date.now() - 200000000,
-    description: 'Found a small black cat near the subway station. Very vocal and friendly.',
-    comments: [
-      {
-        id: 'c2',
-        text: 'Is this the cat that usually hangs around 5th Ave?',
-        createdAt: Date.now() - 15000000,
-        user: {
-          name: 'Mike',
-          avatar:
-            'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
-        },
-      },
-      {
-        id: 'c3',
-        text: 'Yes! I think it belongs to the corner shop owner.',
-        createdAt: Date.now() - 10000000,
-        user: {
-          name: 'Sarah',
-          avatar:
-            'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
-        },
-      },
-      {
-        id: 'c4',
-        text: 'I will go check with him today.',
-        createdAt: Date.now() - 5000000,
-        user: {
-          name: 'Mike',
-          avatar:
-            'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
-        },
-      },
-      {
-        id: 'c5',
-        text: 'I will go check with him today.',
-        createdAt: Date.now() - 5000000,
-        user: {
-          name: 'Mike',
-          avatar:
-            'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
-        },
-      },
-    ],
-    user: {
-      name: 'Sarah',
-      avatar:
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
-      phone: '1234567890',
-    },
-  },
-  {
-    id: '3',
-    status: StatusEnum.LOST,
-    animal: AnimalsEnum.BIRD,
-    imageUrl:
-      'https://us1.discourse-cdn.com/flex016/uploads/inaturalist/optimized/3X/e/a/eaa730a3a558b159061c738eb3ab961739294c66_2_387x500.jpeg',
-    location: 'Queens, NY',
-    date: Date.now() - 50000000,
-    description: 'Green parakeet flew out the window. Answers to "Kiwi".',
-    comments: [],
-    user: {
-      name: 'Mike',
-      avatar:
-        'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
-      phone: '1234567890',
-    },
-  },
-  {
-    id: '4',
-    status: StatusEnum.FOUND,
-    animal: AnimalsEnum.DOG,
-    imageUrl:
-      'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=600&q=80',
-    location: 'Manhattan, NY',
-    date: Date.now() - 300000000,
-    description: 'Found a stray husky wandering around. No collar, very energetic.',
-    comments: [
-      {
-        id: 'c5',
-        text: 'I saw posters for a husky nearby, let me check the number.',
-        createdAt: Date.now() - 20000000,
-        user: {
-          name: 'John',
-          avatar:
-            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
-        },
-      },
-      {
-        id: 'c6',
-        text: 'Did he have a blue harness?',
-        createdAt: Date.now() - 15000000,
-        user: {
-          name: 'Alice',
-          avatar:
-            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
-        },
-      },
-      {
-        id: 'c7',
-        text: 'No harness, just empty.',
-        createdAt: Date.now() - 10000000,
-        user: {
-          name: 'Emma',
-          avatar:
-            'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
-        },
-      },
-      {
-        id: 'c8',
-        text: 'Ok, I will keep an eye out for posters.',
-        createdAt: Date.now() - 5000000,
-        user: {
-          name: 'Alice',
-          avatar:
-            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
-        },
-      },
-      {
-        id: 'c9',
-        text: 'Thanks! Hopefully we find the owner.',
-        createdAt: Date.now() - 1000000,
-        user: {
-          name: 'Emma',
-          avatar:
-            'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
-        },
-      },
-      {
-        id: 'c10',
-        text: 'I will go check with him today.',
-        createdAt: Date.now() - 1000000,
-        user: {
-          name: 'Mike',
-          avatar:
-            'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
-        },
-      },
-    ],
-    user: {
-      name: 'Emma',
-      avatar:
-        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
-      phone: '1234567890',
-    },
-  },
-];
+const PAGE_SIZE = 3;
 
 const HomePage = () => {
+  const listings = useListings();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [type, setType] = useState<StatusFilter>('all');
   const [animal, setAnimal] = useState<AnimalFilter>('all');
   const [sortOrder, setSortOrder] = useState<SortOrderFilter>('newest');
+  const [page, setPage] = useState(1);
 
   const filteredListings = useMemo(() => {
-    return mockListings
+    setPage(1);
+    return listings
       .filter((listing) => {
         const matchesSearch =
           listing.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -211,9 +31,33 @@ const HomePage = () => {
       })
       .sort((a, b) => {
         if (sortOrder === 'newest') return b.date - a.date;
-        return a.date - b.date;
+        if (sortOrder === 'oldest') return a.date - b.date;
+        if (sortOrder === 'highest-boosted') return b.boosts.length - a.boosts.length;
+        return a.boosts.length - b.boosts.length;
       });
   }, [searchQuery, type, animal, sortOrder]);
+
+  const visibleListings = filteredListings.slice(0, page * PAGE_SIZE);
+  const hasMore = visibleListings.length < filteredListings.length;
+
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore]);
 
   return (
     <Box sx={{ padding: '2rem' }}>
@@ -235,7 +79,7 @@ const HomePage = () => {
           justifyContent: 'center',
         }}
       >
-        {filteredListings.map((listing) => (
+        {visibleListings.map((listing) => (
           <ListingCard key={listing.id} listing={listing} />
         ))}
         {filteredListings.length === 0 && (
@@ -243,6 +87,12 @@ const HomePage = () => {
             No listings found matching your criteria.
           </Typography>
         )}
+      </Box>
+      <Box
+        ref={sentinelRef}
+        sx={{ display: 'flex', justifyContent: 'center', mt: '2rem', minHeight: '2rem' }}
+      >
+        {hasMore && <CircularProgress size={'3rem'} sx={{ color: 'primary.main' }} />}
       </Box>
     </Box>
   );
