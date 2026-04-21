@@ -19,9 +19,14 @@ const App = () => {
     navigate('/');
   };
 
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    navigate('/auth');
+  };
+
   return (
     <>
-      {!isAuthPage && <Header />}
+      {!isAuthPage && <Header onLogout={handleLogout} />}
       <Routes>
         <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to="/auth" />} />
         <Route path="/auth" element={!isAuthenticated ? <AuthPage onLogin={handleLogin} /> : <Navigate to="/" />} />
