@@ -99,7 +99,6 @@ const UserListing = ({ listing }: UserListingProps) => {
                     /* TODO: Edit listing */
                   }}
                   sx={(theme) => ({
-                    // minWidth: '3.5rem',
                     color: 'error.main',
                     padding: '1rem 0',
                     borderRadius: 0,
@@ -145,7 +144,7 @@ const UserListing = ({ listing }: UserListingProps) => {
                 </Button>
               </Tooltip>
               <AreYouSureDialog
-                open={deleteDialogOpen}
+                isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={() => {
                   // TODO: handle delete listing
@@ -154,7 +153,7 @@ const UserListing = ({ listing }: UserListingProps) => {
                 action="delete"
               />
               <AreYouSureDialog
-                open={resolveDialogOpen}
+                isOpen={resolveDialogOpen}
                 onClose={() => setResolveDialogOpen(false)}
                 onConfirm={() => {
                   // TODO: handle resolve listing

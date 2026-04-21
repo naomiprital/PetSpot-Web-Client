@@ -24,9 +24,10 @@ import { useUser } from '../../context/UserContext';
 interface MenuCardProps {
   anchorEl: HTMLElement | null;
   handleClose: () => void;
+  onLogout?: () => void;
 }
 
-const MenuCard = ({ anchorEl, handleClose }: MenuCardProps) => {
+const MenuCard = ({ anchorEl, handleClose, onLogout }: MenuCardProps) => {
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popper' : undefined;
   const navigate = useNavigate();
@@ -73,7 +74,12 @@ const MenuCard = ({ anchorEl, handleClose }: MenuCardProps) => {
             <ListItemText primary="My Profile" />
           </MenuItem>
           <Divider />
-          <MenuItem>
+          <MenuItem
+            onClick={() => {
+              if (onLogout) onLogout();
+              handleClose();
+            }}
+          >
             <ListItemIcon>
               <LogoutIcon sx={{ color: 'red', fontSize: '1.25rem' }} />
             </ListItemIcon>
@@ -85,7 +91,11 @@ const MenuCard = ({ anchorEl, handleClose }: MenuCardProps) => {
   );
 };
 
-const Header = () => {
+interface HeaderProps {
+  onLogout?: () => void;
+}
+
+const Header = ({ onLogout }: HeaderProps) => {
   const navigate = useNavigate();
   const user = useUser();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -148,7 +158,7 @@ const Header = () => {
           </div>
         </Toolbar>
       </AppBar>
-      <MenuCard anchorEl={anchorEl} handleClose={handleClose} />
+      <MenuCard anchorEl={anchorEl} handleClose={handleClose} onLogout={onLogout} />
     </>
   );
 };

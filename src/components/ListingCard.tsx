@@ -163,7 +163,7 @@ const ListingCard = ({ listing }: ListingCardProps) => {
           </Box>
         </CardContent>
       </Card>
-      <ListingDetailsDialog open={open} onClose={() => setOpen(false)} listing={listing} />
+      <ListingDetailsDialog isOpen={open} onClose={() => setOpen(false)} listing={listing} />
     </>
   );
 };
