@@ -22,10 +22,14 @@ export interface Listing {
   date: number;
   description: string;
   comments: number;
+  userId: string;
   user: {
     name: string;
     avatar: string;
+    phone: string;
   };
+  isDeleted: boolean;
+  isResolved: boolean;
 }
 
 interface ListingCardProps {

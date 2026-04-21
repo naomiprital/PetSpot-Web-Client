@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import ListingCard, { type Listing } from '../components/ListingCard';
 import FilterBar, {
   type StatusFilter,
@@ -7,6 +7,7 @@ import FilterBar, {
   type SortOrderFilter,
 } from '../components/FilterBar';
 import { AnimalsEnum, StatusEnum } from '../../utils/consts';
+import { rankListingsByDescription } from '../services/aiSearch';
 
 const mockListings: Listing[] = [
   {
@@ -20,11 +21,15 @@ const mockListings: Listing[] = [
     description:
       'Buster is a friendly golden retriever. Wearing a blue collar. Last seen near the park',
     comments: 1,
+    userId: 'user-2',
     user: {
       name: 'John',
       avatar:
         'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
+      phone: '+1-555-0100',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '2',
@@ -36,11 +41,15 @@ const mockListings: Listing[] = [
     date: Date.now() - 200000000,
     description: 'Found a small black cat near the subway station. Very vocal and friendly.',
     comments: 3,
+    userId: 'user-3',
     user: {
       name: 'Sarah',
       avatar:
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+      phone: '+1-555-0101',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '3',
@@ -52,11 +61,15 @@ const mockListings: Listing[] = [
     date: Date.now() - 50000000,
     description: 'Green parakeet flew out the window. Answers to "Kiwi".',
     comments: 0,
+    userId: 'user-4',
     user: {
       name: 'Mike',
       avatar:
         'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
+      phone: '+1-555-0102',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '4',
@@ -68,11 +81,15 @@ const mockListings: Listing[] = [
     date: Date.now() - 300000000,
     description: 'Found a stray husky wandering around. No collar, very energetic.',
     comments: 5,
+    userId: 'user-5',
     user: {
       name: 'Emma',
       avatar:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
+      phone: '+1-555-0103',
     },
+    isResolved: false,
+    isDeleted: false,
   },
 ];
 
@@ -82,21 +99,55 @@ const HomePage = () => {
   const [animal, setAnimal] = useState<AnimalFilter>('all');
   const [sortOrder, setSortOrder] = useState<SortOrderFilter>('newest');
 
+  const [aiQuery, setAiQuery] = useState('');
+  const [aiRankedIds, setAiRankedIds] = useState<string[] | null>(null);
+  const [isAiSearching, setIsAiSearching] = useState(false);
+
+  const handleAiSearch = async () => {
+    if (!aiQuery.trim()) return;
+    setIsAiSearching(true);
+    try {
+      const ranked = await rankListingsByDescription(aiQuery.trim(), mockListings);
+      if (ranked !== null) setAiRankedIds(ranked);
+    } catch (err) {
+      console.error('AI search failed:', err);
+    } finally {
+      setIsAiSearching(false);
+    }
+  };
+
+  const handleAiClear = () => {
+    setAiQuery('');
+    setAiRankedIds(null);
+    setSearchQuery('');
+  };
+
   const filteredListings = useMemo(() => {
-    return mockListings
-      .filter((listing) => {
-        const matchesSearch =
-          listing.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          listing.location.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesType = type === 'all' || listing.status === type;
-        const matchesAnimal = animal === 'all' || listing.animal === animal;
-        return matchesSearch && matchesType && matchesAnimal;
-      })
-      .sort((a, b) => {
+    let listings = mockListings.filter((listing) => {
+      const matchesSearch = aiRankedIds !== null
+        ? true
+        : listing.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        listing.location.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesType = type === 'all' || listing.status === type;
+      const matchesAnimal = animal === 'all' || listing.animal === animal;
+      return matchesSearch && matchesType && matchesAnimal;
+    });
+
+    if (aiRankedIds) {
+      const idIndex = Object.fromEntries(aiRankedIds.map((id, index) => [id, index]));
+      listings = listings
+        .filter((listing) => idIndex[listing.id] !== undefined)
+        .sort((a, b) => idIndex[a.id] - idIndex[b.id]);
+    } else {
+      listings = listings.sort((a, b) => {
         if (sortOrder === 'newest') return b.date - a.date;
         return a.date - b.date;
       });
-  }, [searchQuery, type, animal, sortOrder]);
+    }
+
+    return listings;
+  }, [searchQuery, type, animal, sortOrder, aiRankedIds]);
 
   return (
     <Box sx={{ padding: '2rem' }}>
@@ -109,6 +160,11 @@ const HomePage = () => {
         setAnimal={setAnimal}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
+        setAiQuery={setAiQuery}
+        isAiSearching={isAiSearching}
+        aiRankedIds={aiRankedIds}
+        onAiSearch={handleAiSearch}
+        onAiClear={handleAiClear}
       />
       <Box
         sx={{
@@ -122,9 +178,9 @@ const HomePage = () => {
           <ListingCard key={listing.id} listing={listing} />
         ))}
         {filteredListings.length === 0 && (
-          <div style={{ color: '#64748b', marginTop: '2rem' }}>
+          <Typography sx={{ color: 'text.secondary', marginTop: '2rem' }}>
             No listings found matching your criteria.
-          </div>
+          </Typography>
         )}
       </Box>
     </Box>
