@@ -77,7 +77,7 @@ const HomePage = () => {
       </Fab>
 
       <PublishReportDialog
-        isOpen={isPublishDialogOpen}
+        open={isPublishDialogOpen}
         onClose={() => setIsPublishDialogOpen(false)}
       />
     </Box>

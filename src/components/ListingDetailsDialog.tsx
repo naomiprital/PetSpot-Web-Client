@@ -53,12 +53,12 @@ const DetailRow = ({ icon, title, value }: DetailRowProps) => {
 };
 
 interface ListingDetailsDialogProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
   listing: Listing;
 }
 
-const ListingDetailsDialog = ({ isOpen: open, onClose, listing }: ListingDetailsDialogProps) => {
+const ListingDetailsDialog = ({ open, onClose, listing }: ListingDetailsDialogProps) => {
   const [copied, setCopied] = useState(false);
 
   const handlePhoneClick = async () => {

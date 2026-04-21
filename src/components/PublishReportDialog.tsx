@@ -34,7 +34,7 @@ interface FormValues {
 }
 
 interface PublishReportDialogProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
 }
 
@@ -80,7 +80,7 @@ const FormFieldBox = ({
   </Box>
 );
 
-const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps) => {
+const PublishReportDialog = ({ open, onClose }: PublishReportDialogProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);

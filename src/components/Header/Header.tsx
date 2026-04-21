@@ -28,13 +28,19 @@ interface MenuCardProps {
 }
 
 const MenuCard = ({ anchorEl, handleClose, onLogout }: MenuCardProps) => {
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popper' : undefined;
+  const menuCardOpen = Boolean(anchorEl);
+  const id = menuCardOpen ? 'simple-popper' : undefined;
   const navigate = useNavigate();
   const user = useUser();
 
   return (
-    <Popper id={id} open={open} anchorEl={anchorEl} placement="bottom-end" sx={{ zIndex: 10 }}>
+    <Popper
+      id={id}
+      open={menuCardOpen}
+      anchorEl={anchorEl}
+      placement="bottom-end"
+      sx={{ zIndex: 10 }}
+    >
       <Card
         sx={{
           minWidth: '13rem',

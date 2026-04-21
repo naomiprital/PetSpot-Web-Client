@@ -8,13 +8,13 @@ import {
 } from '@mui/material';
 
 interface DeleteDialogProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
   onConfirm: () => void;
   action: string;
 }
 
-const AreYouSureDialog = ({ isOpen: open, onClose, onConfirm, action }: DeleteDialogProps) => {
+const AreYouSureDialog = ({ open, onClose, onConfirm, action }: DeleteDialogProps) => {
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="delete-dialog-title">
       <DialogTitle

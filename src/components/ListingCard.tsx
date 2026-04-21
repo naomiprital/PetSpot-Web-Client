@@ -49,12 +49,12 @@ interface ListingCardProps {
 }
 
 const ListingCard = ({ listing }: ListingCardProps) => {
-  const [open, setOpen] = useState(false);
+  const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);
 
   return (
     <>
       <Card
-        onClick={() => setOpen(true)}
+        onClick={() => setListingDetailsDialogOpen(true)}
         sx={{
           width: '100%',
           maxWidth: '24rem',
@@ -163,7 +163,11 @@ const ListingCard = ({ listing }: ListingCardProps) => {
           </Box>
         </CardContent>
       </Card>
-      <ListingDetailsDialog isOpen={open} onClose={() => setOpen(false)} listing={listing} />
+      <ListingDetailsDialog
+        open={listingDetailsDialogOpen}
+        onClose={() => setListingDetailsDialogOpen(false)}
+        listing={listing}
+      />
     </>
   );
 };
