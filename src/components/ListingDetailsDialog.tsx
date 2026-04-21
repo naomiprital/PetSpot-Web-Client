@@ -8,6 +8,7 @@ import {
   Divider,
   IconButton,
   InputBase,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import type { Listing } from './ListingCard';
@@ -20,6 +21,8 @@ import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaw } from '@fortawesome/free-solid-svg-icons';
 
 interface DetailRowProps {
   icon: React.ReactNode;
@@ -56,9 +59,17 @@ interface ListingDetailsDialogProps {
   isOpen: boolean;
   onClose: () => void;
   listing: Listing;
+  onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  isUserBoostedListing: () => boolean;
 }
 
-const ListingDetailsDialog = ({ isOpen: open, onClose, listing }: ListingDetailsDialogProps) => {
+const ListingDetailsDialog = ({
+  isOpen: open,
+  onClose,
+  listing,
+  onBoost,
+  isUserBoostedListing,
+}: ListingDetailsDialogProps) => {
   const [copied, setCopied] = useState(false);
 
   const handlePhoneClick = async () => {
@@ -226,10 +237,33 @@ const ListingDetailsDialog = ({ isOpen: open, onClose, listing }: ListingDetails
             </Box>
 
             <Divider />
-
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Typography sx={{ fontWeight: 'bold' }}>Comments</Typography>
-              <Chip label={`${listing.comments.length}`} sx={{ backgroundColor: 'grey.100' }} />
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Typography sx={{ fontWeight: 'bold' }}>Comments</Typography>
+                <Chip label={`${listing.comments.length}`} sx={{ backgroundColor: 'grey.100' }} />
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <Tooltip
+                  title={isUserBoostedListing() ? 'You boosted this listing' : 'Click to boost!'}
+                  placement="left"
+                  arrow
+                >
+                  <IconButton
+                    sx={{
+                      color: isUserBoostedListing() ? 'primary.main' : 'text.secondary',
+                      '&:hover': {
+                        backgroundColor: 'transparent',
+                      },
+                      padding: 0,
+                    }}
+                    onClick={onBoost}
+                  >
+                    <FontAwesomeIcon size="xs" icon={faPaw} />
+                  </IconButton>
+                </Tooltip>
+                <Typography sx={{ fontWeight: 'bold' }}>{listing.boosts.length}</Typography>
+                <Typography sx={{ fontWeight: 'bold' }}>Boosts</Typography>
+              </Box>
             </Box>
 
             {listing.comments.map((comment) => (

@@ -19,6 +19,7 @@ const mockListings: Listing[] = [
     date: Date.now() - 100000000,
     description:
       'Buster is a friendly golden retriever. Wearing a blue collar. Last seen near the park',
+    boosts: ['id1', 'id2', 'id3'],
     comments: [
       {
         id: 'c1',
@@ -50,6 +51,7 @@ const mockListings: Listing[] = [
     location: 'Brooklyn, NY',
     date: Date.now() - 200000000,
     description: 'Found a small black cat near the subway station. Very vocal and friendly.',
+    boosts: ['id1', 'id2'],
     comments: [
       {
         id: 'c2',
@@ -111,6 +113,7 @@ const mockListings: Listing[] = [
     location: 'Queens, NY',
     date: Date.now() - 50000000,
     description: 'Green parakeet flew out the window. Answers to "Kiwi".',
+    boosts: ['id1', 'id2', 'id3', 'id4', 'id5', 'id6'],
     comments: [],
     userId: 'user-3',
     user: {
@@ -131,6 +134,7 @@ const mockListings: Listing[] = [
     location: 'Manhattan, NY',
     date: Date.now() - 300000000,
     description: 'Found a stray husky wandering around. No collar, very energetic.',
+    boosts: ['id1', 'id2', 'id3', 'id4', 'id5'],
     comments: [
       {
         id: 'c5',
@@ -212,6 +216,7 @@ const mockListings: Listing[] = [
     location: 'Haifa, Israel',
     date: Date.now() - 80000000,
     description: 'Orange tabby cat named Mango, very friendly. Missing since Tuesday morning.',
+    boosts: ['id1', 'id2', 'id3', 'id4', 'id5', 'id6'],
     comments: [],
     userId: 'user-6',
     user: {
@@ -232,6 +237,7 @@ const mockListings: Listing[] = [
     location: 'Tel Aviv, Israel',
     date: Date.now() - 150000000,
     description: 'Found a white rabbit near Rothschild Blvd. Has a red tag on its ear.',
+    boosts: ['id1', 'id2'],
     comments: [
       {
         id: 'c11',
@@ -263,6 +269,7 @@ const mockListings: Listing[] = [
     location: 'Jerusalem, Israel',
     date: Date.now() - 30000000,
     description: 'Black Labrador named Shadow. Escaped through an open gate. Very gentle.',
+    boosts: ['id1', 'id2', 'id3', 'id4', 'id5', 'id6', 'id7'],
     comments: [],
     userId: 'user-8',
     user: {
@@ -283,6 +290,7 @@ const mockListings: Listing[] = [
     location: 'Beer Sheva, Israel',
     date: Date.now() - 420000000,
     description: 'Small white dog, possibly a Bichon Frise. No collar. Found near the park.',
+    boosts: ['id1'],
     comments: [
       {
         id: 'c12',
@@ -314,6 +322,7 @@ const mockListings: Listing[] = [
     location: 'Netanya, Israel',
     date: Date.now() - 60000000,
     description: 'Blue and yellow budgie named Sunny. Flew out of an open window on Thursday.',
+    boosts: ['id1', 'id2', 'id3', 'id4', 'id5', 'id6', 'id7'],
     comments: [],
     userId: 'user-10',
     user: {
@@ -334,6 +343,7 @@ const mockListings: Listing[] = [
     location: 'Rishon LeZion, Israel',
     date: Date.now() - 520000000,
     description: 'Grey cat with green eyes found sheltering under a car. Seems well-groomed.',
+    boosts: ['id1', 'id2', 'id3'],
     comments: [
       {
         id: 'c13',
