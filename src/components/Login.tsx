@@ -44,9 +44,10 @@ const InputLabel = styled(Typography)(({ theme }) => ({
 
 interface LoginProps {
   onLogin?: () => void;
+  onForgotPassword?: (email: string) => void;
 }
 
-const Login = ({ onLogin }: LoginProps) => {
+const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
   const theme = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -121,7 +122,11 @@ const Login = ({ onLogin }: LoginProps) => {
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: -1 }}>
         <Link
-          href="#"
+          component="button"
+          onClick={(e) => {
+            e.preventDefault();
+            if (onForgotPassword) onForgotPassword(email);
+          }}
           underline="none"
           sx={{
             color: theme.palette.primary.main,

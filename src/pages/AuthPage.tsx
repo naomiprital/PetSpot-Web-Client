@@ -4,6 +4,7 @@ import PetSpotIcon from '../components/PetSpotIcon';
 import { useTheme } from '@mui/material/styles';
 import Login from '../components/Login';
 import SignUp from '../components/SignUp';
+import ForgotPassword from '../components/ForgotPassword';
 
 interface AuthPageProps {
   onLogin?: () => void;
@@ -11,7 +12,8 @@ interface AuthPageProps {
 
 const AuthPage = ({ onLogin }: AuthPageProps) => {
   const theme = useTheme();
-  const [isLogin, setIsLogin] = useState(true);
+  const [authMode, setAuthMode] = useState<'login' | 'signup' | 'forgotPassword'>('login');
+  const [resetEmail, setResetEmail] = useState('');
 
   return (
     <Box
@@ -79,61 +81,65 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
         }}
       >
         {/* Toggle Container */}
-        <Box
-          sx={{
-            display: 'flex',
-            backgroundColor: '#F1F5F9',
-            borderRadius: '12px',
-            p: 0.5,
-            mb: 4,
-          }}
-        >
-          <Button
-            fullWidth
-            onClick={() => setIsLogin(true)}
-            disableElevation
-            variant={isLogin ? 'contained' : 'text'}
+        {authMode !== 'forgotPassword' && (
+          <Box
             sx={{
-              borderRadius: '10px',
-              py: 1.2,
-              textTransform: 'none',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-              color: isLogin ? theme.palette.primary.main : theme.palette.text.secondary,
-              backgroundColor: isLogin ? '#FFFFFF' : 'transparent',
-              boxShadow: isLogin ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
-              '&:hover': {
-                backgroundColor: isLogin ? '#FFFFFF' : 'transparent',
-              },
+              display: 'flex',
+              backgroundColor: '#F1F5F9',
+              borderRadius: '12px',
+              p: 0.5,
+              mb: 4,
             }}
           >
-            Login
-          </Button>
-          <Button
-            fullWidth
-            onClick={() => setIsLogin(false)}
-            disableElevation
-            variant={!isLogin ? 'contained' : 'text'}
-            sx={{
-              borderRadius: '10px',
-              py: 1.2,
-              textTransform: 'none',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-              color: !isLogin ? theme.palette.primary.main : theme.palette.text.secondary,
-              backgroundColor: !isLogin ? '#FFFFFF' : 'transparent',
-              boxShadow: !isLogin ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
-              '&:hover': {
-                backgroundColor: !isLogin ? '#FFFFFF' : 'transparent',
-              },
-            }}
-          >
-            Sign Up
-          </Button>
-        </Box>
+            <Button
+              fullWidth
+              onClick={() => setAuthMode('login')}
+              disableElevation
+              variant={authMode === 'login' ? 'contained' : 'text'}
+              sx={{
+                borderRadius: '10px',
+                py: 1.2,
+                textTransform: 'none',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                color: authMode === 'login' ? theme.palette.primary.main : theme.palette.text.secondary,
+                backgroundColor: authMode === 'login' ? '#FFFFFF' : 'transparent',
+                boxShadow: authMode === 'login' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
+                '&:hover': {
+                  backgroundColor: authMode === 'login' ? '#FFFFFF' : 'transparent',
+                },
+              }}
+            >
+              Login
+            </Button>
+            <Button
+              fullWidth
+              onClick={() => setAuthMode('signup')}
+              disableElevation
+              variant={authMode === 'signup' ? 'contained' : 'text'}
+              sx={{
+                borderRadius: '10px',
+                py: 1.2,
+                textTransform: 'none',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                color: authMode === 'signup' ? theme.palette.primary.main : theme.palette.text.secondary,
+                backgroundColor: authMode === 'signup' ? '#FFFFFF' : 'transparent',
+                boxShadow: authMode === 'signup' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
+                '&:hover': {
+                  backgroundColor: authMode === 'signup' ? '#FFFFFF' : 'transparent',
+                },
+              }}
+            >
+              Sign Up
+            </Button>
+          </Box>
+        )}
 
         {/* Dynamic Form Component */}
-        {isLogin ? <Login onLogin={onLogin} /> : <SignUp onLogin={onLogin} />}
+        {authMode === 'login' && <Login onLogin={onLogin} onForgotPassword={(email) => { setResetEmail(email); setAuthMode('forgotPassword'); }} />}
+        {authMode === 'signup' && <SignUp onLogin={onLogin} />}
+        {authMode === 'forgotPassword' && <ForgotPassword initialEmail={resetEmail} onBackToLogin={() => setAuthMode('login')} />}
       </Card>
     </Box>
   );
