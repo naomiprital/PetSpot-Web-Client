@@ -27,7 +27,7 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
         padding: '1rem',
       }}
     >
-      <Box sx={{ mb: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Box sx={{ mb: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Box sx={{ position: 'relative', mb: 1.5 }}>
           <Box
             sx={{
@@ -39,7 +39,7 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
               height: '4.5rem',
               backgroundColor: `${theme.palette.primary.main}20`,
               borderRadius: '50%',
-              filter: 'blur(15px)',
+              filter: 'blur(0.9375rem)',
               zIndex: 0,
             }}
           />
@@ -52,7 +52,7 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
           sx={{
             fontWeight: 800,
             color: theme.palette.secondary.main,
-            letterSpacing: '-0.5px',
+            letterSpacing: '-0.03125rem',
             mb: 0.5,
           }}
         >
@@ -73,11 +73,11 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
       <Card
         sx={{
           width: '100%',
-          maxWidth: 480,
-          p: 5,
-          borderRadius: '24px',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.04)',
-          border: '1px solid rgba(0,0,0,0.02)',
+          maxWidth: 400,
+          p: { xs: 3, sm: 4 },
+          borderRadius: '1.5rem',
+          boxShadow: '0 1.25rem 2.5rem rgba(0, 0, 0, 0.04)',
+          border: '0.0625rem solid rgba(0,0,0,0.02)',
         }}
       >
         {/* Toggle Container */}
@@ -85,10 +85,10 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
           <Box
             sx={{
               display: 'flex',
-              backgroundColor: '#F1F5F9',
-              borderRadius: '12px',
+              backgroundColor: theme.palette.grey[200],
+              borderRadius: '0.75rem',
               p: 0.5,
-              mb: 4,
+              mb: 3,
             }}
           >
             <Button
@@ -97,16 +97,16 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
               disableElevation
               variant={authMode === 'login' ? 'contained' : 'text'}
               sx={{
-                borderRadius: '10px',
+                borderRadius: '0.625rem',
                 py: 1.2,
                 textTransform: 'none',
                 fontWeight: 700,
                 fontSize: '0.95rem',
                 color: authMode === 'login' ? theme.palette.primary.main : theme.palette.text.secondary,
-                backgroundColor: authMode === 'login' ? '#FFFFFF' : 'transparent',
-                boxShadow: authMode === 'login' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
+                backgroundColor: authMode === 'login' ? theme.palette.background.paper : 'transparent',
+                boxShadow: authMode === 'login' ? '0 0.125rem 0.5rem rgba(0,0,0,0.05)' : 'none',
                 '&:hover': {
-                  backgroundColor: authMode === 'login' ? '#FFFFFF' : 'transparent',
+                  backgroundColor: authMode === 'login' ? theme.palette.background.paper : 'transparent',
                 },
               }}
             >
@@ -118,16 +118,16 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
               disableElevation
               variant={authMode === 'signup' ? 'contained' : 'text'}
               sx={{
-                borderRadius: '10px',
+                borderRadius: '0.625rem',
                 py: 1.2,
                 textTransform: 'none',
                 fontWeight: 700,
                 fontSize: '0.95rem',
                 color: authMode === 'signup' ? theme.palette.primary.main : theme.palette.text.secondary,
-                backgroundColor: authMode === 'signup' ? '#FFFFFF' : 'transparent',
-                boxShadow: authMode === 'signup' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
+                backgroundColor: authMode === 'signup' ? theme.palette.background.paper : 'transparent',
+                boxShadow: authMode === 'signup' ? '0 0.125rem 0.5rem rgba(0,0,0,0.05)' : 'none',
                 '&:hover': {
-                  backgroundColor: authMode === 'signup' ? '#FFFFFF' : 'transparent',
+                  backgroundColor: authMode === 'signup' ? theme.palette.background.paper : 'transparent',
                 },
               }}
             >

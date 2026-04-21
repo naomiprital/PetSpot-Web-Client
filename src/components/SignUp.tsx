@@ -1,47 +1,34 @@
 import React, { useState, useRef } from 'react';
-import { Box, Button, Typography, TextField, styled, IconButton } from '@mui/material';
+import { Box, Button, Typography, InputBase, styled, IconButton } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
-import CloseIcon from '@mui/icons-material/Close';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import { useForm } from 'react-hook-form';
 
-const StyledInput = styled(TextField)(({ theme }) => ({
-  position: 'relative',
-  '& .MuiFormHelperText-root': {
-    position: 'absolute',
-    bottom: '-18px',
-    marginLeft: '4px',
-    fontSize: '0.7rem',
-    whiteSpace: 'nowrap',
+const inputSx = {
+  backgroundColor: 'background.default',
+  borderRadius: '0.6rem',
+  padding: '0.6rem 0.9rem',
+  fontSize: '0.95rem',
+  color: 'text.primary',
+  border: '0.09375rem solid transparent',
+  '&:focus-within': {
+    borderColor: 'primary.main',
   },
-  '& .MuiOutlinedInput-root': {
-    backgroundColor: '#F8FAFC',
-    borderRadius: '12px',
-    '& fieldset': {
-      border: '1px solid transparent',
-    },
-    '&:hover fieldset': {
-      border: '1px solid transparent',
-    },
-    '&.Mui-focused fieldset': {
-      border: `2px solid ${theme.palette.primary.main}20`,
-    },
-    '&.Mui-error fieldset': {
-      border: `1px solid ${theme.palette.error.main}`,
-    },
-  },
-  '& .MuiInputBase-input': {
-    padding: '14px 16px',
-    fontSize: '0.95rem',
-  },
-}));
+};
+
+const errorInputSx = {
+  ...inputSx,
+  borderColor: 'error.main',
+};
 
 const InputLabel = styled(Typography)(({ theme }) => ({
   fontSize: '0.75rem',
   fontWeight: 700,
   color: theme.palette.text.secondary,
   textTransform: 'uppercase',
-  marginBottom: '8px',
-  letterSpacing: '0.5px',
+  marginBottom: '0.25rem',
+  letterSpacing: '0.03125rem',
 }));
 
 interface SignUpProps {
@@ -51,162 +38,168 @@ interface SignUpProps {
 const SignUp = ({ onLogin }: SignUpProps) => {
   const theme = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    password: '',
-    profileImage: null as File | null,
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({
+    mode: 'onChange',
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      password: '',
+      profileImage: null as FileList | null,
+    },
   });
+
   const [previewUrl, setPreviewUrl] = useState<string>('');
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const profileImageFiles = watch('profileImage');
 
-  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [field]: e.target.value });
-    if (errors[field]) {
-      setErrors({ ...errors, [field]: '' });
-    }
-  };
-
-  const handleFile = (file: File) => {
+  const handleFile = (file: File, fileList?: FileList) => {
     if (!file.type.startsWith('image/')) return;
-    setFormData({ ...formData, profileImage: file });
+    
+    if (fileList) {
+      setValue('profileImage', fileList);
+    } else {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      setValue('profileImage', dt.files);
+    }
     setPreviewUrl(URL.createObjectURL(file));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      handleFile(e.target.files[0]);
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      handleFile(event.target.files[0], event.target.files);
     }
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0]);
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    if (event.dataTransfer.files && event.dataTransfer.files[0]) {
+      handleFile(event.dataTransfer.files[0], event.dataTransfer.files);
     }
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
   };
 
-  const handleRemoveImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setFormData({ ...formData, profileImage: null });
+  const handleRemoveImage = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setValue('profileImage', null);
     setPreviewUrl('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
-  const validate = () => {
-    let valid = true;
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.firstName.trim()) { newErrors.firstName = 'First Name is required'; valid = false; }
-    if (!formData.lastName.trim()) { newErrors.lastName = 'Last Name is required'; valid = false; }
-
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Invalid email';
-      valid = false;
-    }
-
-    if (!formData.phone.trim()) { newErrors.phone = 'Phone Number is required'; valid = false; }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-      valid = false;
-    } else if (formData.password.length < 5) {
-      newErrors.password = 'Password must be at least 5 characters';
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validate() && onLogin) {
+  const onSubmit = () => {
+    if (onLogin) {
       onLogin(); // We call onLogin for now to let them enter the app
     }
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-      <Box sx={{ display: 'flex', gap: 2.5 }}>
-        <Box sx={{ flex: 1 }}>
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <Box sx={{ flex: 1, position: 'relative' }}>
           <InputLabel>First Name</InputLabel>
-          <StyledInput 
-            fullWidth 
-            placeholder="John" 
-            variant="outlined" 
-            value={formData.firstName}
-            onChange={handleChange('firstName')}
-            error={!!errors.firstName}
-            helperText={errors.firstName}
-          />
+          <Box sx={errors.firstName ? errorInputSx : inputSx}>
+            <InputBase
+              fullWidth
+              placeholder="John"
+              {...register('firstName', { required: 'First Name is required' })}
+              sx={{ fontSize: '0.95rem', color: 'text.primary' }}
+            />
+          </Box>
+          {errors.firstName && (
+            <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+              {errors.firstName.message as string}
+            </Typography>
+          )}
         </Box>
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ flex: 1, position: 'relative' }}>
           <InputLabel>Last Name</InputLabel>
-          <StyledInput 
-            fullWidth 
-            placeholder="Doe" 
-            variant="outlined" 
-            value={formData.lastName}
-            onChange={handleChange('lastName')}
-            error={!!errors.lastName}
-            helperText={errors.lastName}
-          />
+          <Box sx={errors.lastName ? errorInputSx : inputSx}>
+            <InputBase
+              fullWidth
+              placeholder="Doe"
+              {...register('lastName', { required: 'Last Name is required' })}
+              sx={{ fontSize: '0.95rem', color: 'text.primary' }}
+            />
+          </Box>
+          {errors.lastName && (
+            <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+              {errors.lastName.message as string}
+            </Typography>
+          )}
         </Box>
       </Box>
 
-      <Box>
+      <Box sx={{ position: 'relative' }}>
         <InputLabel>Email Address</InputLabel>
-        <StyledInput 
-          fullWidth 
-          placeholder="name@example.com" 
-          type="email" 
-          variant="outlined" 
-          value={formData.email}
-          onChange={handleChange('email')}
-          error={!!errors.email}
-          helperText={errors.email}
-        />
+        <Box sx={errors.email ? errorInputSx : inputSx}>
+            <InputBase
+              fullWidth
+              placeholder="name@example.com"
+              type="email"
+              {...register('email', { 
+                required: 'Email is required',
+                pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email' }
+              })}
+              sx={{ fontSize: '0.95rem', color: 'text.primary' }}
+            />
+          </Box>
+          {errors.email && (
+            <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+              {errors.email.message as string}
+            </Typography>
+          )}
       </Box>
 
-      <Box>
+      <Box sx={{ position: 'relative' }}>
         <InputLabel>Phone Number</InputLabel>
-        <StyledInput 
-          fullWidth 
-          placeholder="+1 (555) 000-0000" 
-          type="tel" 
-          variant="outlined" 
-          value={formData.phone}
-          onChange={handleChange('phone')}
-          error={!!errors.phone}
-          helperText={errors.phone}
-        />
+        <Box sx={errors.phone ? errorInputSx : inputSx}>
+            <InputBase
+              fullWidth
+              placeholder="+1 (555) 000-0000"
+              type="tel"
+              {...register('phone', { required: 'Phone Number is required' })}
+              sx={{ fontSize: '0.95rem', color: 'text.primary' }}
+            />
+          </Box>
+          {errors.phone && (
+            <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+              {errors.phone.message as string}
+            </Typography>
+          )}
       </Box>
 
-      <Box>
+      <Box sx={{ position: 'relative' }}>
         <InputLabel>Password</InputLabel>
-        <StyledInput 
-          fullWidth 
-          placeholder="••••••••" 
-          type="password" 
-          variant="outlined" 
-          value={formData.password}
-          onChange={handleChange('password')}
-          error={!!errors.password}
-          helperText={errors.password}
-        />
+        <Box sx={errors.password ? errorInputSx : inputSx}>
+            <InputBase
+              fullWidth
+              placeholder="••••••••"
+              type="password"
+              {...register('password', {
+                required: 'Password is required',
+                minLength: { value: 5, message: 'Password must be at least 5 characters' }
+              })}
+              sx={{ fontSize: '0.95rem', color: 'text.primary' }}
+            />
+          </Box>
+          {errors.password && (
+            <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+              {errors.password.message as string}
+            </Typography>
+          )}
       </Box>
 
       <Box>
@@ -227,10 +220,10 @@ const SignUp = ({ onLogin }: SignUpProps) => {
             alignItems: 'center',
             justifyContent: previewUrl ? 'space-between' : 'center',
             gap: 1,
-            backgroundColor: '#F8FAFC',
-            border: previewUrl ? `2px solid ${theme.palette.primary.main}40` : '2px dashed #CBD5E1',
-            borderRadius: '12px',
-            padding: previewUrl ? '8px 12px' : '14px 16px',
+            backgroundColor: theme.palette.background.default,
+            border: previewUrl ? `0.125rem solid ${theme.palette.primary.main}40` : `0.125rem dashed ${theme.palette.grey[400]}`,
+            borderRadius: '0.75rem',
+            padding: previewUrl ? '0.375rem 0.625rem' : '0.625rem 0.875rem',
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             '&:hover': {
@@ -253,9 +246,9 @@ const SignUp = ({ onLogin }: SignUpProps) => {
                   src={previewUrl}
                   alt="Preview"
                   style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '8px',
+                    width: '2.25rem',
+                    height: '2.25rem',
+                    borderRadius: '0.5rem',
                     objectFit: 'cover',
                   }}
                 />
@@ -267,18 +260,18 @@ const SignUp = ({ onLogin }: SignUpProps) => {
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    maxWidth: '200px',
+                    maxWidth: '12.5rem',
                   }}
                 >
-                  {formData.profileImage?.name}
+                  {profileImageFiles?.[0]?.name}
                 </Typography>
               </Box>
               <IconButton
-                onClick={handleRemoveImage}
                 size="small"
-                sx={{ color: theme.palette.text.secondary, '&:hover': { color: theme.palette.error.main } }}
+                onClick={handleRemoveImage}
+                sx={{ color: 'error.main', flexShrink: 0, padding: '0.1rem' }}
               >
-                <CloseIcon fontSize="small" />
+                <RemoveCircleIcon fontSize="small" />
               </IconButton>
             </>
           )}
@@ -287,18 +280,18 @@ const SignUp = ({ onLogin }: SignUpProps) => {
 
       <Button
         fullWidth
+        type="submit"
         variant="contained"
-        onClick={handleSubmit}
         sx={{
-          mt: 1,
-          py: 1.6,
-          borderRadius: '12px',
+          mt: 0.5,
+          py: 1.2,
+          borderRadius: '0.75rem',
           textTransform: 'none',
           fontSize: '1rem',
           fontWeight: 700,
-          boxShadow: `0 8px 16px ${theme.palette.primary.main}30`,
+          boxShadow: `0 0.5rem 1rem ${theme.palette.primary.main}30`,
           '&:hover': {
-            boxShadow: `0 12px 20px ${theme.palette.primary.main}40`,
+            boxShadow: `0 0.75rem 1.25rem ${theme.palette.primary.main}40`,
             backgroundColor: theme.palette.primary.dark,
           },
         }}

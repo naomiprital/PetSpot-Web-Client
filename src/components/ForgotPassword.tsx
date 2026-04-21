@@ -1,46 +1,33 @@
-import React, { useState } from 'react';
-import { Box, Button, Link, TextField, Typography, styled } from '@mui/material';
+import { useState } from 'react';
+import { Box, Button, Link, InputBase, Typography, styled, alpha } from '@mui/material';
+import { useForm } from 'react-hook-form';
 import { useTheme } from '@mui/material/styles';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 
-const StyledInput = styled(TextField)(({ theme }) => ({
-  position: 'relative',
-  '& .MuiFormHelperText-root': {
-    position: 'absolute',
-    bottom: '-18px',
-    marginLeft: '4px',
-    fontSize: '0.7rem',
-    whiteSpace: 'nowrap',
+const inputSx = {
+  backgroundColor: 'background.default',
+  borderRadius: '0.6rem',
+  padding: '0.6rem 0.9rem',
+  fontSize: '0.95rem',
+  color: 'text.primary',
+  border: '0.09375rem solid transparent',
+  '&:focus-within': {
+    borderColor: 'primary.main',
   },
-  '& .MuiOutlinedInput-root': {
-    backgroundColor: '#F8FAFC',
-    borderRadius: '12px',
-    '& fieldset': {
-      border: '1px solid transparent',
-    },
-    '&:hover fieldset': {
-      border: '1px solid transparent',
-    },
-    '&.Mui-focused fieldset': {
-      border: `2px solid ${theme.palette.primary.main}20`,
-    },
-    '&.Mui-error fieldset': {
-      border: `1px solid ${theme.palette.error.main}`,
-    },
-  },
-  '& .MuiInputBase-input': {
-    padding: '14px 16px',
-    fontSize: '0.95rem',
-  },
-}));
+};
+
+const errorInputSx = {
+  ...inputSx,
+  borderColor: 'error.main',
+};
 
 const InputLabel = styled(Typography)(({ theme }) => ({
   fontSize: '0.75rem',
   fontWeight: 700,
   color: theme.palette.text.secondary,
   textTransform: 'uppercase',
-  marginBottom: '8px',
-  letterSpacing: '0.5px',
+  marginBottom: '0.25rem',
+  letterSpacing: '0.03125rem',
 }));
 
 interface ForgotPasswordProps {
@@ -51,32 +38,25 @@ interface ForgotPasswordProps {
 
 const ForgotPassword = ({ initialEmail = '', onBackToLogin, onSubmit }: ForgotPasswordProps) => {
   const theme = useTheme();
-  const [email, setEmail] = useState(initialEmail);
-  const [error, setError] = useState('');
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    mode: 'onChange',
+    defaultValues: { email: initialEmail },
+  });
+
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const validate = () => {
-    if (!email) {
-      setError('Email is required');
-      return false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setError('Email is invalid');
-      return false;
-    }
-    setError('');
-    return true;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validate()) {
-      if (onSubmit) onSubmit(email);
-      setIsSubmitted(true);
-    }
+  const onFormSubmit = () => {
+    if (onSubmit) onSubmit(getValues('email'));
+    setIsSubmitted(true);
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box component="form" onSubmit={handleSubmit(onFormSubmit)} noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Box sx={{ mb: 1 }}>
         <Typography variant="h6" sx={{ fontWeight: 800, color: theme.palette.secondary.main, mb: 0.5, fontSize: '1.25rem' }}>
           Reset Password
@@ -88,37 +68,41 @@ const ForgotPassword = ({ initialEmail = '', onBackToLogin, onSubmit }: ForgotPa
 
       {!isSubmitted ? (
         <>
-          <Box>
+          <Box sx={{ position: 'relative' }}>
             <InputLabel>Email Address</InputLabel>
-            <StyledInput
-              fullWidth
-              placeholder="name@example.com"
-              type="email"
-              variant="outlined"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (error) setError('');
-              }}
-              error={!!error}
-              helperText={error}
-            />
+            <Box sx={errors.email ? errorInputSx : inputSx}>
+              <InputBase
+                fullWidth
+                placeholder="name@example.com"
+                type="email"
+                {...register('email', {
+                  required: 'Email is required',
+                  pattern: { value: /\S+@\S+\.\S+/, message: 'Email is invalid' },
+                })}
+                sx={{ fontSize: '0.95rem', color: 'text.primary' }}
+              />
+            </Box>
+            {errors.email && (
+              <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+                {errors.email.message as string}
+              </Typography>
+            )}
           </Box>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
             <Button
               fullWidth
+              type="submit"
               variant="contained"
-              onClick={handleSubmit}
               sx={{
-                py: 1.6,
-                borderRadius: '12px',
+                py: 1.2,
+                borderRadius: '0.75rem',
                 textTransform: 'none',
                 fontSize: '1rem',
                 fontWeight: 700,
-                boxShadow: `0 8px 16px ${theme.palette.primary.main}30`,
+                boxShadow: `0 0.5rem 1rem ${theme.palette.primary.main}30`,
                 '&:hover': {
-                  boxShadow: `0 12px 20px ${theme.palette.primary.main}40`,
+                  boxShadow: `0 0.75rem 1.25rem ${theme.palette.primary.main}40`,
                   backgroundColor: theme.palette.primary.dark,
                 },
               }}
@@ -128,8 +112,8 @@ const ForgotPassword = ({ initialEmail = '', onBackToLogin, onSubmit }: ForgotPa
 
             <Link
               component="button"
-              onClick={(e) => {
-                e.preventDefault();
+              onClick={(event) => {
+                event.preventDefault();
                 onBackToLogin();
               }}
               underline="none"
@@ -151,23 +135,23 @@ const ForgotPassword = ({ initialEmail = '', onBackToLogin, onSubmit }: ForgotPa
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pt: 1, pb: 2, gap: 1.5 }}>
           <Box
             sx={{
-              width: 56,
-              height: 56,
+              width: '3.5rem',
+              height: '3.5rem',
               borderRadius: '50%',
-              backgroundColor: '#dcfce7',
+              backgroundColor: alpha(theme.palette.success.main, 0.1),
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               mb: 1
             }}
           >
-            <CheckOutlinedIcon sx={{ color: '#22c55e', fontSize: 32 }} />
+            <CheckOutlinedIcon sx={{ color: theme.palette.success.main, fontSize: '2rem' }} />
           </Box>
           <Typography sx={{ fontWeight: 800, color: theme.palette.secondary.main, fontSize: '1.05rem' }}>
             Check your email
           </Typography>
           <Typography sx={{ color: theme.palette.text.secondary, fontSize: '0.9rem', textAlign: 'center', mb: 1 }}>
-            We've sent a password reset link to <strong>{email}</strong>
+            We've sent a password reset link to <strong>{getValues('email')}</strong>
           </Typography>
           <Button
             fullWidth
@@ -176,14 +160,14 @@ const ForgotPassword = ({ initialEmail = '', onBackToLogin, onSubmit }: ForgotPa
             disableElevation
             sx={{
               py: 1.2,
-              borderRadius: '12px',
+              borderRadius: '0.75rem',
               textTransform: 'none',
               fontSize: '0.95rem',
               fontWeight: 700,
-              backgroundColor: '#F1F5F9',
+              backgroundColor: theme.palette.grey[200],
               color: theme.palette.secondary.main,
               '&:hover': {
-                backgroundColor: '#e2e8f0',
+                backgroundColor: theme.palette.grey[300],
               },
             }}
           >

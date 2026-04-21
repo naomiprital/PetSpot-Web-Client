@@ -1,45 +1,32 @@
-import React, { useState } from 'react';
-import { Box, Button, Link, TextField, Typography, styled } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 
-const StyledInput = styled(TextField)(({ theme }) => ({
-  position: 'relative',
-  '& .MuiFormHelperText-root': {
-    position: 'absolute',
-    bottom: '-18px',
-    marginLeft: '4px',
-    fontSize: '0.7rem',
-    whiteSpace: 'nowrap',
+import { Box, Button, Link, InputBase, Typography, styled } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { useForm } from 'react-hook-form';
+
+const inputSx = {
+  backgroundColor: 'background.default',
+  borderRadius: '0.6rem',
+  padding: '0.6rem 0.9rem',
+  fontSize: '0.95rem',
+  color: 'text.primary',
+  border: '0.09375rem solid transparent',
+  '&:focus-within': {
+    borderColor: 'primary.main',
   },
-  '& .MuiOutlinedInput-root': {
-    backgroundColor: '#F8FAFC',
-    borderRadius: '12px',
-    '& fieldset': {
-      border: '1px solid transparent',
-    },
-    '&:hover fieldset': {
-      border: '1px solid transparent',
-    },
-    '&.Mui-focused fieldset': {
-      border: `2px solid ${theme.palette.primary.main}20`,
-    },
-    '&.Mui-error fieldset': {
-      border: `1px solid ${theme.palette.error.main}`,
-    },
-  },
-  '& .MuiInputBase-input': {
-    padding: '14px 16px',
-    fontSize: '0.95rem',
-  },
-}));
+};
+
+const errorInputSx = {
+  ...inputSx,
+  borderColor: 'error.main',
+};
 
 const InputLabel = styled(Typography)(({ theme }) => ({
   fontSize: '0.75rem',
   fontWeight: 700,
   color: theme.palette.text.secondary,
   textTransform: 'uppercase',
-  marginBottom: '8px',
-  letterSpacing: '0.5px',
+  marginBottom: '0.25rem',
+  letterSpacing: '0.03125rem',
 }));
 
 interface LoginProps {
@@ -49,83 +36,75 @@ interface LoginProps {
 
 const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
   const theme = useTheme();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({ email: '', password: '' });
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    mode: 'onChange',
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
-  const validate = () => {
-    let valid = true;
-    const newErrors = { email: '', password: '' };
-
-    if (!email) {
-      newErrors.email = 'Email is required';
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email is invalid';
-      valid = false;
-    }
-
-    if (!password) {
-      newErrors.password = 'Password is required';
-      valid = false;
-    } else if (password.length < 5) {
-      newErrors.password = 'Password must be at least 5 characters';
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validate() && onLogin) {
+  const onSubmit = () => {
+    if (onLogin) {
       onLogin();
     }
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <Box>
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+      <Box sx={{ position: 'relative' }}>
         <InputLabel>Email Address</InputLabel>
-        <StyledInput
-          fullWidth
-          placeholder="name@example.com"
-          type="email"
-          variant="outlined"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            if (errors.email) setErrors({ ...errors, email: '' });
-          }}
-          error={!!errors.email}
-          helperText={errors.email}
-        />
+        <Box sx={errors.email ? errorInputSx : inputSx}>
+          <InputBase
+            fullWidth
+            placeholder="name@example.com"
+            type="email"
+            {...register('email', {
+              required: 'Email is required',
+              pattern: { value: /\S+@\S+\.\S+/, message: 'Email is invalid' },
+            })}
+            sx={{ fontSize: '0.95rem', color: 'text.primary' }}
+          />
+        </Box>
+        {errors.email && (
+          <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+            {errors.email.message as string}
+          </Typography>
+        )}
       </Box>
 
-      <Box>
+      <Box sx={{ position: 'relative' }}>
         <InputLabel>Password</InputLabel>
-        <StyledInput
-          fullWidth
-          placeholder="••••••••"
-          type="password"
-          variant="outlined"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            if (errors.password) setErrors({ ...errors, password: '' });
-          }}
-          error={!!errors.password}
-          helperText={errors.password}
-        />
+        <Box sx={errors.password ? errorInputSx : inputSx}>
+          <InputBase
+            fullWidth
+            placeholder="••••••••"
+            type="password"
+            {...register('password', {
+              required: 'Password is required',
+              minLength: { value: 5, message: 'Password must be at least 5 characters' },
+            })}
+            sx={{ fontSize: '0.95rem', color: 'text.primary' }}
+          />
+        </Box>
+        {errors.password && (
+          <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+            {errors.password.message as string}
+          </Typography>
+        )}
       </Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: -1 }}>
         <Link
           component="button"
-          onClick={(e) => {
-            e.preventDefault();
-            if (onForgotPassword) onForgotPassword(email);
+          onClick={(event) => {
+            event.preventDefault();
+            if (onForgotPassword) onForgotPassword(getValues('email'));
           }}
           underline="none"
           sx={{
@@ -140,18 +119,18 @@ const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
 
       <Button
         fullWidth
+        type="submit"
         variant="contained"
-        onClick={handleSubmit}
         sx={{
-          mt: 1,
-          py: 1.6,
-          borderRadius: '12px',
+          mt: 0.5,
+          py: 1.2,
+          borderRadius: '0.75rem',
           textTransform: 'none',
           fontSize: '1rem',
           fontWeight: 700,
-          boxShadow: `0 8px 16px ${theme.palette.primary.main}30`,
+          boxShadow: `0 0.5rem 1rem ${theme.palette.primary.main}30`,
           '&:hover': {
-            boxShadow: `0 12px 20px ${theme.palette.primary.main}40`,
+            boxShadow: `0 0.75rem 1.25rem ${theme.palette.primary.main}40`,
             backgroundColor: theme.palette.primary.dark,
           },
         }}
