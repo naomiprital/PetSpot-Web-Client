@@ -7,6 +7,8 @@ import {
   Avatar,
   Chip,
   Divider,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
@@ -14,6 +16,8 @@ import moment from 'moment';
 import { StatusEnum } from '../../utils/consts';
 import { useState } from 'react';
 import ListingDetailsDialog from './ListingDetailsDialog';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaw } from '@fortawesome/free-solid-svg-icons';
 
 export interface Comment {
   id: string;
@@ -34,6 +38,7 @@ export interface Listing {
   date: number;
   description: string;
   comments: Comment[];
+  boosts: string[];
   userId: string;
   user: {
     name: string;
@@ -46,9 +51,11 @@ export interface Listing {
 
 interface ListingCardProps {
   listing: Listing;
+  onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  isUserBoostedListing: (listing: Listing) => boolean;
 }
 
-const ListingCard = ({ listing }: ListingCardProps) => {
+const ListingCard = ({ listing, onBoost, isUserBoostedListing }: ListingCardProps) => {
   const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);
 
   return (
@@ -146,13 +153,55 @@ const ListingCard = ({ listing }: ListingCardProps) => {
             <Box
               sx={{
                 display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
                 alignItems: 'center',
-                gap: '0.25rem',
-                color: 'text.secondary',
+                gap: '0.6rem',
               }}
             >
-              <ChatBubbleIcon sx={{ fontSize: '1.1rem', color: 'text.secondary' }} />
-              <Typography variant="body2">{listing.comments.length} comments</Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '0.2rem',
+                }}
+              >
+                <ChatBubbleIcon sx={{ fontSize: '1.1rem', color: 'text.secondary' }} />
+                <Typography variant="body2">{listing.comments.length}</Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '0.2rem',
+                }}
+              >
+                <Tooltip
+                  title={
+                    isUserBoostedListing(listing) ? 'You boosted this listing' : 'Click to boost!'
+                  }
+                  placement="bottom"
+                  arrow
+                >
+                  <IconButton
+                    sx={{
+                      color: isUserBoostedListing(listing) ? 'primary.main' : 'text.secondary',
+                      '&:hover': {
+                        backgroundColor: 'transparent',
+                      },
+                      padding: 0,
+                    }}
+                    onClick={onBoost}
+                  >
+                    <FontAwesomeIcon size="xs" icon={faPaw} />
+                  </IconButton>
+                </Tooltip>
+                <Typography variant="body2">{listing.boosts.length}</Typography>
+              </Box>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Avatar src={listing.user.avatar} sx={{ width: '1.5rem', height: '1.5rem' }} />
@@ -167,6 +216,8 @@ const ListingCard = ({ listing }: ListingCardProps) => {
         open={listingDetailsDialogOpen}
         onClose={() => setListingDetailsDialogOpen(false)}
         listing={listing}
+        isUserBoostedListing={isUserBoostedListing}
+        onBoost={onBoost}
       />
     </>
   );

@@ -12,9 +12,11 @@ import ListingDetailsDialog from './ListingDetailsDialog';
 
 interface UserListingProps {
   listing: Listing;
+  onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  isUserBoostedListing: (listing: Listing) => boolean;
 }
 
-const UserListing = ({ listing }: UserListingProps) => {
+const UserListing = ({ listing, onBoost, isUserBoostedListing }: UserListingProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [resolveDialogOpen, setResolveDialogOpen] = useState(false);
   const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);
@@ -199,6 +201,8 @@ const UserListing = ({ listing }: UserListingProps) => {
         open={listingDetailsDialogOpen}
         onClose={() => (setListingDetailsDialogOpen(false), console.log('here'))}
         listing={listing}
+        onBoost={onBoost}
+        isUserBoostedListing={isUserBoostedListing}
       />
     </>
   );

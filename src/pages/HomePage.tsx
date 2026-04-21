@@ -1,7 +1,7 @@
-import { useState, useMemo } from 'react';
-import { Box, Fab, Typography } from '@mui/material';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { Box, Typography, CircularProgress, Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import ListingCard from '../components/ListingCard';
+import ListingCard, { type Listing } from '../components/ListingCard';
 import FilterBar, {
   type StatusFilter,
   type AnimalFilter,
@@ -10,15 +10,24 @@ import FilterBar, {
 import { useListings } from '../context/ListingsContext';
 import PublishReportDialog from '../components/PublishReportDialog';
 
-const HomePage = () => {
+const PAGE_SIZE = 3;
+
+interface HomePageProps {
+  onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  isUserBoostedListing: (listing: Listing) => boolean;
+}
+
+const HomePage = ({ onBoost, isUserBoostedListing }: HomePageProps) => {
   const listings = useListings();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [type, setType] = useState<StatusFilter>('all');
   const [animal, setAnimal] = useState<AnimalFilter>('all');
   const [sortOrder, setSortOrder] = useState<SortOrderFilter>('newest');
+  const [page, setPage] = useState(1);
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState<boolean>(false);
 
   const filteredListings = useMemo(() => {
+    setPage(1);
     return listings
       .filter((listing) => {
         const isResolved = listing.isResolved;
@@ -31,9 +40,33 @@ const HomePage = () => {
       })
       .sort((a, b) => {
         if (sortOrder === 'newest') return b.date - a.date;
-        return a.date - b.date;
+        if (sortOrder === 'oldest') return a.date - b.date;
+        if (sortOrder === 'highest-boosted') return b.boosts.length - a.boosts.length;
+        return a.boosts.length - b.boosts.length;
       });
   }, [listings, searchQuery, type, animal, sortOrder]);
+
+  const visibleListings = filteredListings.slice(0, page * PAGE_SIZE);
+  const hasMore = visibleListings.length < filteredListings.length;
+
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore]);
 
   return (
     <Box sx={{ padding: '2rem' }}>
@@ -55,8 +88,13 @@ const HomePage = () => {
           justifyContent: 'center',
         }}
       >
-        {filteredListings.map((listing) => (
-          <ListingCard key={listing.id} listing={listing} />
+        {visibleListings.map((listing) => (
+          <ListingCard
+            key={listing.id}
+            listing={listing}
+            onBoost={onBoost}
+            isUserBoostedListing={isUserBoostedListing}
+          />
         ))}
         {filteredListings.length === 0 && (
           <Typography sx={{ color: 'text.secondary', marginTop: '2rem' }}>
@@ -64,11 +102,17 @@ const HomePage = () => {
           </Typography>
         )}
       </Box>
+      <Box
+        ref={sentinelRef}
+        sx={{ display: 'flex', justifyContent: 'center', mt: '2rem', minHeight: '2rem' }}
+      >
+        {hasMore && <CircularProgress size={'3rem'} sx={{ color: 'primary.main' }} />}
+      </Box>
       <Fab
         color="primary"
         onClick={() => setIsPublishDialogOpen(true)}
         sx={{
-          position: 'absolute',
+          position: 'fixed',
           bottom: '2rem',
           right: '2rem',
         }}

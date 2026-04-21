@@ -4,7 +4,7 @@ import { StatusEnum, AnimalsEnum } from '../../utils/consts';
 
 export type StatusFilter = (typeof StatusEnum)[keyof typeof StatusEnum] | 'all';
 export type AnimalFilter = (typeof AnimalsEnum)[keyof typeof AnimalsEnum] | 'all';
-export type SortOrderFilter = 'newest' | 'oldest';
+export type SortOrderFilter = 'newest' | 'oldest' | 'highest-boosted' | 'lowest-boosted';
 
 export interface FilterBarProps {
   searchQuery: string;
@@ -103,17 +103,22 @@ const FilterBar = ({
       </Select>
       <Select
         value={sortOrder}
-        onChange={(e) => setSortOrder(e.target.value as SortOrderFilter)}
+        onChange={(event) => setSortOrder(event.target.value as SortOrderFilter)}
         displayEmpty
-        sx={{
+        sx={(theme) => ({
           width: { xs: '100%', md: '10rem' },
-          backgroundColor: 'background.default',
           borderRadius: '0.75rem',
-          '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-        }}
+          backgroundColor:
+            sortOrder !== 'newest' ? alpha(theme.palette.primary.main, 0.1) : 'background.default',
+          '& .MuiOutlinedInput-notchedOutline': {
+            border: sortOrder !== 'newest' ? `1px solid ${theme.palette.primary.main}` : 'none',
+          },
+        })}
       >
         <MenuItem value="newest">Newest First</MenuItem>
         <MenuItem value="oldest">Oldest First</MenuItem>
+        <MenuItem value="highest-boosted">Most Boosted</MenuItem>
+        <MenuItem value="lowest-boosted">Least Boosted</MenuItem>
       </Select>
     </Card>
   );
