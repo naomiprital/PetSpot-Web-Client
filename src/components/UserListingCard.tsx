@@ -1,22 +1,35 @@
 import { useState } from 'react';
-import { Box, Typography, Button, Divider, Chip, alpha, Tooltip, CardMedia } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Button,
+  Divider,
+  Chip,
+  alpha,
+  Tooltip,
+  CardMedia,
+  IconButton,
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
 import { StatusEnum } from '../../utils/consts';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import moment from 'moment';
-import AreYouSureDialog from '../components/AreYouSureDialog';
-import type { Listing } from '../components/ListingCard';
+import AreYouSureDialog from './AreYouSureDialog';
+import type { Listing } from './MainFeedListingCard';
 import ListingDetailsDialog from './ListingDetailsDialog';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaw } from '@fortawesome/free-solid-svg-icons';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 
-interface UserListingProps {
+interface UserListingCardProps {
   listing: Listing;
   onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
   isUserBoostedListing: (listing: Listing) => boolean;
 }
 
-const UserListing = ({ listing, onBoost, isUserBoostedListing }: UserListingProps) => {
+const UserListingCard = ({ listing, onBoost, isUserBoostedListing }: UserListingCardProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [resolveDialogOpen, setResolveDialogOpen] = useState(false);
   const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);
@@ -80,17 +93,64 @@ const UserListing = ({ listing, onBoost, isUserBoostedListing }: UserListingProp
                 {moment(listing.date).format('DD/MM/YYYY')}
               </Typography>
             </Box>
-            <Box sx={{ display: 'flex', gap: '0.5rem' }}>
-              <LocationOnIcon sx={{ color: 'primary.main', fontSize: '1.25rem' }} />
-              <Typography
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Box sx={{ display: 'flex', gap: '0.5rem' }}>
+                <LocationOnIcon sx={{ color: 'primary.main', fontSize: '1.25rem' }} />
+                <Typography
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    color: 'text.primary',
+                  }}
+                >
+                  {listing.location}
+                </Typography>
+              </Box>
+              <Box
                 sx={{
-                  fontWeight: 600,
-                  fontSize: '1rem',
-                  color: 'text.primary',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '0.6rem',
                 }}
               >
-                {listing.location}
-              </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '0.2rem',
+                  }}
+                >
+                  <ChatBubbleIcon sx={{ fontSize: '1.1rem', color: 'text.secondary' }} />
+                  <Typography variant="body2">{listing.comments.length}</Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '0.2rem',
+                  }}
+                >
+                  <IconButton
+                    sx={{
+                      color: isUserBoostedListing(listing) ? 'primary.main' : 'text.secondary',
+                      '&:hover': {
+                        backgroundColor: 'transparent',
+                      },
+                      padding: 0,
+                    }}
+                    onClick={onBoost}
+                  >
+                    <FontAwesomeIcon size="xs" icon={faPaw} />
+                  </IconButton>
+                  <Typography variant="body2">{listing.boosts.length}</Typography>
+                </Box>
+              </Box>
             </Box>
           </Box>
           {listing.isResolved ? (
@@ -208,4 +268,4 @@ const UserListing = ({ listing, onBoost, isUserBoostedListing }: UserListingProp
   );
 };
 
-export default UserListing;
+export default UserListingCard;

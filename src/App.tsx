@@ -8,7 +8,7 @@ import { ListingsProvider } from './context/ListingsContext';
 import { ToastContainer } from 'react-toastify';
 import AuthPage from './pages/AuthPage';
 import ProfilePage from './pages/ProfilePage';
-import type { Listing } from './components/ListingCard';
+import type { Listing } from './components/MainFeedListingCard';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

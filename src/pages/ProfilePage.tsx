@@ -6,8 +6,8 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import { useUser } from '../context/UserContext';
 import { useListings } from '../context/ListingsContext';
 import { StatusEnum } from '../../utils/consts';
-import UserListing from '../components/UserListing';
-import type { Listing } from '../components/ListingCard';
+import UserListingCard from '../components/UserListingCard';
+import type { Listing } from '../components/MainFeedListingCard';
 
 interface ProfilePageProps {
   onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -207,12 +207,12 @@ const ProfilePage = ({ onBoost, isUserBoostedListing }: ProfilePageProps) => {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
               gap: '1.5rem',
             }}
           >
             {userListings.map((listing) => (
-              <UserListing
+              <UserListingCard
                 listing={listing}
                 onBoost={onBoost}
                 isUserBoostedListing={isUserBoostedListing}

@@ -49,13 +49,17 @@ export interface Listing {
   isDeleted: boolean;
 }
 
-interface ListingCardProps {
+interface MainFeedListingCardProps {
   listing: Listing;
   onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
   isUserBoostedListing: (listing: Listing) => boolean;
 }
 
-const ListingCard = ({ listing, onBoost, isUserBoostedListing }: ListingCardProps) => {
+const MainFeedListingCard = ({
+  listing,
+  onBoost,
+  isUserBoostedListing,
+}: MainFeedListingCardProps) => {
   const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);
 
   return (
@@ -223,4 +227,4 @@ const ListingCard = ({ listing, onBoost, isUserBoostedListing }: ListingCardProp
   );
 };
 
-export default ListingCard;
+export default MainFeedListingCard;

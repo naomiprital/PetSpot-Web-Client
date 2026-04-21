@@ -11,7 +11,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import type { Listing } from './ListingCard';
+import type { Listing } from './MainFeedListingCard';
 import { StatusEnum } from '../../utils/consts';
 import moment from 'moment';
 import LocationOnIcon from '@mui/icons-material/LocationOn';

@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Box, Typography, CircularProgress, Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import ListingCard, { type Listing } from '../components/ListingCard';
+import MainFeedListingCard, { type Listing } from '../components/MainFeedListingCard';
 import FilterBar, {
   type StatusFilter,
   type AnimalFilter,
@@ -89,7 +89,7 @@ const HomePage = ({ onBoost, isUserBoostedListing }: HomePageProps) => {
         }}
       >
         {visibleListings.map((listing) => (
-          <ListingCard
+          <MainFeedListingCard
             key={listing.id}
             listing={listing}
             onBoost={onBoost}
