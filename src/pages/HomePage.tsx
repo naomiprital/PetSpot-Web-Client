@@ -102,7 +102,7 @@ const HomePage = () => {
         color="primary"
         onClick={() => setIsPublishDialogOpen(true)}
         sx={{
-          position: 'absolute',
+          position: 'fixed',
           bottom: '2rem',
           right: '2rem',
         }}

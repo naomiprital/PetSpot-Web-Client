@@ -223,6 +223,7 @@ const ListingCard = ({ listing }: ListingCardProps) => {
         onClose={() => setOpen(false)}
         listing={listing}
         isUserBoostedListing={isUserBoostedListing}
+        onBoost={onBoost}
       />
     </>
   );
