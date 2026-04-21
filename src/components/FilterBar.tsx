@@ -194,6 +194,8 @@ const FilterBar = ({
         >
           <MenuItem value="newest">Newest First</MenuItem>
           <MenuItem value="oldest">Oldest First</MenuItem>
+          <MenuItem value="highest-boosted">Most Boosted</MenuItem>
+          <MenuItem value="lowest-boosted">Least Boosted</MenuItem>
         </Select>
       </Box>
     </Card>

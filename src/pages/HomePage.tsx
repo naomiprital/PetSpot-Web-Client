@@ -9,6 +9,7 @@ import FilterBar, {
 } from '../components/FilterBar';
 import { useListings } from '../context/ListingsContext';
 import PublishReportDialog from '../components/PublishReportDialog';
+import { toast } from 'react-toastify';
 import { rankListingsByDescription } from '../services/aiSearch';
 
 const PAGE_SIZE = 3;
@@ -33,7 +34,7 @@ const HomePage = () => {
       const ranked = await rankListingsByDescription(aiQuery.trim(), listings);
       if (ranked !== null) setAiRankedIds(ranked);
     } catch (err) {
-      console.error('AI search failed:', err);
+      toast.error('AI search failed. Please try again.');
     } finally {
       setIsAiSearching(false);
     }
