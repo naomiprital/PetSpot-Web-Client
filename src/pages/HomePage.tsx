@@ -18,12 +18,13 @@ const HomePage = () => {
   const filteredListings = useMemo(() => {
     return listings
       .filter((listing) => {
+        const isResolved = listing.isResolved;
         const matchesSearch =
           listing.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
           listing.location.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesType = type === 'all' || listing.status === type;
         const matchesAnimal = animal === 'all' || listing.animal === animal;
-        return matchesSearch && matchesType && matchesAnimal;
+        return matchesSearch && matchesType && matchesAnimal && !isResolved;
       })
       .sort((a, b) => {
         if (sortOrder === 'newest') return b.date - a.date;

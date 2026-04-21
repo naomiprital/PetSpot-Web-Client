@@ -1,14 +1,12 @@
 import { useMemo } from 'react';
-import { Box, Typography, Button, Divider, Chip, alpha, Tooltip } from '@mui/material';
+import { Box, Typography, Button, Divider, Chip, alpha } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import { useUser } from '../context/UserContext';
 import { useListings } from '../context/ListingsContext';
 import { StatusEnum } from '../../utils/consts';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import moment from 'moment';
+import UserListing from '../components/UserListing';
 
 const ProfilePage = () => {
   const user = useUser();
@@ -208,106 +206,7 @@ const ProfilePage = () => {
             }}
           >
             {userListings.map((listing) => (
-              <Box
-                key={listing.id}
-                sx={{
-                  borderRadius: '1rem',
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.07)',
-                  backgroundColor: 'background.paper',
-                }}
-                onClick={() => {
-                  // TODO: Open listing details dialog
-                }}
-              >
-                <Box sx={{ position: 'relative', height: '14rem' }}>
-                  <img
-                    src={listing.imageUrl}
-                    alt="Pet image"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      overflow: 'hidden',
-                    }}
-                  />
-                </Box>
-                <Box sx={{ padding: '1rem' }}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '1rem',
-                    }}
-                  >
-                    <Chip
-                      label={listing.status.toUpperCase()}
-                      sx={{
-                        backgroundColor:
-                          listing.status === StatusEnum.LOST ? 'error.main' : 'success.main',
-                        color: 'white',
-                        fontWeight: 'bold',
-                        fontSize: '0.8rem',
-                      }}
-                    />
-                    <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
-                      {moment(listing.date).format('DD/MM/YYYY')}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', gap: '0.5rem' }}>
-                    <LocationOnIcon sx={{ color: 'primary.main', fontSize: '1.25rem' }} />
-                    <Typography
-                      sx={{
-                        fontWeight: 600,
-                        fontSize: '1rem',
-                        color: 'text.primary',
-                      }}
-                    >
-                      {listing.location}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Divider sx={{ borderColor: 'grey.200' }} />
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Button
-                    startIcon={<EditIcon sx={{ fontSize: '1rem' }} />}
-                    onClick={() => {
-                      /* TODO: Edit listing dialog*/
-                    }}
-                    fullWidth
-                    sx={(theme) => ({
-                      color: 'text.secondary',
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      fontSize: '1rem',
-                      padding: '0.7rem 0',
-                      '&:hover': {
-                        backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                      },
-                    })}
-                  >
-                    Edit Listing
-                  </Button>
-                  <Divider orientation="vertical" flexItem sx={{ borderColor: 'grey.200' }} />
-                  <Tooltip arrow title="Delete Listing" placement="top">
-                    <Button
-                      onClick={() => {
-                        /* TODO: Handle delete listing */
-                      }}
-                      sx={(theme) => ({
-                        minWidth: '3.5rem',
-                        color: 'error.main',
-                        padding: '1rem 0',
-                        borderRadius: 0,
-                        '&:hover': { backgroundColor: alpha(theme.palette.error.main, 0.1) },
-                      })}
-                    >
-                      <DeleteIcon sx={{ fontSize: '1.2rem' }} />
-                    </Button>
-                  </Tooltip>
-                </Box>
-              </Box>
+              <UserListing listing={listing} />
             ))}
           </Box>
         )}

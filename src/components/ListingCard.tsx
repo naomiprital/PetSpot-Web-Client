@@ -27,6 +27,8 @@ export interface Listing {
     name: string;
     avatar: string;
   };
+  isResolved: boolean;
+  isDeleted: boolean;
 }
 
 interface ListingCardProps {
@@ -120,9 +122,7 @@ const ListingCard = ({ listing }: ListingCardProps) => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#64748b' }}>
             <ChatBubbleIcon sx={{ fontSize: '1.1rem', color: '#94a3b8' }} />
-            <Typography variant="body2">
-              {listing.comments} comments
-            </Typography>
+            <Typography variant="body2">{listing.comments} comments</Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Avatar src={listing.user.avatar} sx={{ width: '1.5rem', height: '1.5rem' }} />

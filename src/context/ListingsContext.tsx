@@ -25,6 +25,8 @@ export const MOCK_LISTINGS: Listing[] = [
       name: 'John Doe',
       avatar: '/basicProfilePicture.png',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '2',
@@ -42,6 +44,8 @@ export const MOCK_LISTINGS: Listing[] = [
       avatar:
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '3',
@@ -59,6 +63,8 @@ export const MOCK_LISTINGS: Listing[] = [
       avatar:
         'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '4',
@@ -75,6 +81,8 @@ export const MOCK_LISTINGS: Listing[] = [
       name: 'John Doe',
       avatar: '/basicProfilePicture.png',
     },
+    isResolved: false,
+    isDeleted: false,
   },
   {
     id: '5',
@@ -91,6 +99,8 @@ export const MOCK_LISTINGS: Listing[] = [
       name: 'John Doe',
       avatar: '/basicProfilePicture.png',
     },
+    isResolved: true,
+    isDeleted: false,
   },
 ];
 
