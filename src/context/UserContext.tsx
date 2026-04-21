@@ -1,8 +1,9 @@
-import { createContext, useContext, type ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 
 export interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   avatarUrl: string;
@@ -11,6 +12,7 @@ export interface User {
 
 interface UserContextType {
   user: User;
+  updateUser: (updates: Partial<Omit<User, 'id' | 'email' | 'createdAt'>>) => void;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -18,7 +20,8 @@ const UserContext = createContext<UserContextType | null>(null);
 // TODO: Replace with real user data
 const MOCK_USER: User = {
   id: 'user-1',
-  name: 'John Doe',
+  firstName: 'John',
+  lastName: 'Doe',
   email: 'john@example.com',
   phone: '+972 501234567',
   avatarUrl: '/basicProfilePicture.png',
@@ -26,11 +29,18 @@ const MOCK_USER: User = {
 };
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  return <UserContext.Provider value={{ user: MOCK_USER }}>{children}</UserContext.Provider>;
+  const [user, setUser] = useState<User>(MOCK_USER);
+
+  const updateUser = (updates: Partial<Omit<User, 'id' | 'email' | 'createdAt'>>) => {
+    // TODO: Replace with api call.
+    setUser((prev) => ({ ...prev, ...updates }));
+  };
+
+  return <UserContext.Provider value={{ user, updateUser }}>{children}</UserContext.Provider>;
 };
 
-export const useUser = (): User => {
+export const useUser = (): UserContextType => {
   const context = useContext(UserContext);
   if (!context) throw new Error('useUser must be used inside <UserProvider>');
-  return context.user;
+  return context;
 };
