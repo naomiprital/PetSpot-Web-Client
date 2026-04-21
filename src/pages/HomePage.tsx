@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Box } from '@mui/material';
+import { Box, Fab, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import ListingCard from '../components/ListingCard';
 import FilterBar, {
   type StatusFilter,
@@ -7,6 +8,7 @@ import FilterBar, {
   type SortOrderFilter,
 } from '../components/FilterBar';
 import { useListings } from '../context/ListingsContext';
+import PublishReportDialog from '../components/PublishReportDialog';
 
 const HomePage = () => {
   const listings = useListings();
@@ -14,6 +16,7 @@ const HomePage = () => {
   const [type, setType] = useState<StatusFilter>('all');
   const [animal, setAnimal] = useState<AnimalFilter>('all');
   const [sortOrder, setSortOrder] = useState<SortOrderFilter>('newest');
+  const [isPublishDialogOpen, setIsPublishDialogOpen] = useState<boolean>(false);
 
   const filteredListings = useMemo(() => {
     return listings
@@ -56,11 +59,27 @@ const HomePage = () => {
           <ListingCard key={listing.id} listing={listing} />
         ))}
         {filteredListings.length === 0 && (
-          <div style={{ color: '#64748b', marginTop: '2rem' }}>
+          <Typography sx={{ color: 'text.secondary', marginTop: '2rem' }}>
             No listings found matching your criteria.
-          </div>
+          </Typography>
         )}
       </Box>
+      <Fab
+        color="primary"
+        onClick={() => setIsPublishDialogOpen(true)}
+        sx={{
+          position: 'absolute',
+          bottom: '2rem',
+          right: '2rem',
+        }}
+      >
+        <AddIcon />
+      </Fab>
+
+      <PublishReportDialog
+        open={isPublishDialogOpen}
+        onClose={() => setIsPublishDialogOpen(false)}
+      />
     </Box>
   );
 };
