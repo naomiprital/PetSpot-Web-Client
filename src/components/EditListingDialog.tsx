@@ -18,7 +18,7 @@ const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) =
   const currentValues: FormValues = {
     status: listing.status as (typeof StatusEnum)[keyof typeof StatusEnum],
     animalType: listing.animal,
-    contactNumber: listing.user.phone || '',
+    contactNumber: listing.user.phone,
     lastSeenLocation: listing.location,
     dateTime: getLocalDateTimeString(listing.date),
     image: listing.imageUrl,
