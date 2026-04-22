@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Box, Typography, CircularProgress, Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import ListingCard from '../components/ListingCard';
+import MainFeedListingCard, { type Listing } from '../components/MainFeedListingCard';
 import FilterBar, {
   type StatusFilter,
   type AnimalFilter,
@@ -123,7 +123,7 @@ const HomePage = () => {
         }}
       >
         {visibleListings.map((listing) => (
-          <ListingCard key={listing.id} listing={listing} />
+          <MainFeedListingCard key={listing.id} listing={listing} />
         ))}
         {filteredListings.length === 0 && (
           <Typography sx={{ color: 'text.secondary', marginTop: '2rem' }}>
@@ -150,7 +150,7 @@ const HomePage = () => {
       </Fab>
 
       <PublishReportDialog
-        isOpen={isPublishDialogOpen}
+        open={isPublishDialogOpen}
         onClose={() => setIsPublishDialogOpen(false)}
       />
     </Box>
