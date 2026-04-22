@@ -85,8 +85,8 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isAiAnalyzing, setIsAiAnalyzing] = useState(false);
-  const [aiSuggestion, setAiSuggestion] = useState<ImageSuggestion | null>(null);
 
   const {
     register,
@@ -141,25 +141,27 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
       setFileName(file.name);
       setPreviewUrl(URL.createObjectURL(file));
       setValue('image', event.target.files);
-
-      setIsAiAnalyzing(true);
-      setAiSuggestion(null);
-      const suggestion = await getSuggestedDescription(file);
-      if (suggestion) {
-        setAiSuggestion(suggestion);
-      }
-      setIsAiAnalyzing(false);
+      setUploadedFile(file);
     }
   };
 
-  const handleApplyAiSuggestion = () => {
-    if (aiSuggestion) {
-      setValue('description', aiSuggestion.description);
-      if (aiSuggestion.animalType) {
-        setValue('animalType', aiSuggestion.animalType);
+  const handleGenerateAiSuggestion = async () => {
+    if (!uploadedFile) return;
+
+    setIsAiAnalyzing(true);
+    try {
+      const suggestion = await getSuggestedDescription(uploadedFile);
+      if (suggestion) {
+        setValue('description', suggestion.description);
+        if (suggestion.animalType) {
+          setValue('animalType', suggestion.animalType);
+        }
+        toast.success('AI suggestion applied!');
       }
-      setAiSuggestion(null);
-      toast.success('AI suggestion applied!');
+    } catch (error) {
+      toast.error('Failed to generate suggestion.');
+    } finally {
+      setIsAiAnalyzing(false);
     }
   };
 
@@ -167,10 +169,10 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
     event.stopPropagation();
     setPreviewUrl(null);
     setFileName(null);
+    setUploadedFile(null);
     setValue('image', null);
     setValue('description', '');
     setValue('animalType', '');
-    setAiSuggestion(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -463,9 +465,9 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
               <Typography sx={{ fontSize: '0.72rem', color: 'primary.main', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                 ✨ AI is analyzing image...
               </Typography>
-            ) : aiSuggestion ? (
+            ) : uploadedFile ? (
               <Box
-                onClick={handleApplyAiSuggestion}
+                onClick={handleGenerateAiSuggestion}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -483,7 +485,7 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
                 }}
               >
                 <Typography sx={{ fontSize: '0.72rem', fontWeight: 700 }}>
-                  ✨ Auto-fill with AI
+                  ✨ Generate with AI
                 </Typography>
               </Box>
             ) : null}
