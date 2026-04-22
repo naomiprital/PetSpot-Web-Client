@@ -9,6 +9,8 @@ import FilterBar, {
 } from '../components/FilterBar';
 import { useListings } from '../context/ListingsContext';
 import PublishReportDialog from '../components/PublishReportDialog';
+import { toast } from 'react-toastify';
+import { rankListingsByDescription } from '../services/AiSearch';
 
 const PAGE_SIZE = 3;
 
@@ -21,25 +23,57 @@ const HomePage = () => {
   const [page, setPage] = useState(1);
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState<boolean>(false);
 
+  const [aiQuery, setAiQuery] = useState('');
+  const [aiRankedIds, setAiRankedIds] = useState<string[] | null>(null);
+  const [isAiSearching, setIsAiSearching] = useState(false);
+
+  const handleAiSearch = async () => {
+    if (!aiQuery.trim()) return;
+    setIsAiSearching(true);
+    try {
+      const ranked = await rankListingsByDescription(aiQuery.trim(), listings);
+      if (ranked !== null) setAiRankedIds(ranked);
+    } catch (err) {
+      toast.error('AI search failed. Please try again.');
+    } finally {
+      setIsAiSearching(false);
+    }
+  };
+
+  const handleAiClear = () => {
+    setAiQuery('');
+    setAiRankedIds(null);
+    setSearchQuery('');
+  };
+
   const filteredListings = useMemo(() => {
-    setPage(1);
-    return listings
-      .filter((listing) => {
-        const isResolved = listing.isResolved;
-        const matchesSearch =
-          listing.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          listing.location.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesType = type === 'all' || listing.status === type;
-        const matchesAnimal = animal === 'all' || listing.animal === animal;
-        return matchesSearch && matchesType && matchesAnimal && !isResolved;
-      })
-      .sort((a, b) => {
+    let filtered = listings.filter((listing) => {
+      const matchesSearch = aiRankedIds !== null
+        ? true
+        : listing.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        listing.location.toLowerCase().includes(searchQuery.toLowerCase());
+      const isResolved = listing.isResolved;
+      const matchesType = type === 'all' || listing.status === type;
+      const matchesAnimal = animal === 'all' || listing.animal === animal;
+      return matchesSearch && matchesType && matchesAnimal && !isResolved;
+    });
+
+    if (aiRankedIds) {
+      const idIndex = Object.fromEntries(aiRankedIds.map((id, index) => [id, index]));
+      filtered = filtered
+        .filter((listing) => idIndex[listing.id] !== undefined)
+        .sort((a, b) => idIndex[a.id] - idIndex[b.id]);
+    } else {
+      filtered = filtered.sort((a, b) => {
         if (sortOrder === 'newest') return b.date - a.date;
         if (sortOrder === 'oldest') return a.date - b.date;
         if (sortOrder === 'highest-boosted') return b.boosts.length - a.boosts.length;
         return a.boosts.length - b.boosts.length;
       });
-  }, [listings, searchQuery, type, animal, sortOrder]);
+    }
+
+    return filtered;
+  }, [searchQuery, type, animal, sortOrder, aiRankedIds, listings]);
 
   const visibleListings = filteredListings.slice(0, page * PAGE_SIZE);
   const hasMore = visibleListings.length < filteredListings.length;
@@ -74,6 +108,11 @@ const HomePage = () => {
         setAnimal={setAnimal}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
+        setAiQuery={setAiQuery}
+        isAiSearching={isAiSearching}
+        aiRankedIds={aiRankedIds}
+        onAiSearch={handleAiSearch}
+        onAiClear={handleAiClear}
       />
       <Box
         sx={{

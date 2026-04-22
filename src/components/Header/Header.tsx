@@ -31,7 +31,7 @@ const MenuCard = ({ anchorEl, handleClose, onLogout }: MenuCardProps) => {
   const menuCardOpen = Boolean(anchorEl);
   const id = menuCardOpen ? 'simple-popper' : undefined;
   const navigate = useNavigate();
-  const user = useUser();
+  const { user } = useUser();
 
   return (
     <Popper
@@ -51,7 +51,7 @@ const MenuCard = ({ anchorEl, handleClose, onLogout }: MenuCardProps) => {
         }}
       >
         <Box sx={{ margin: '1rem' }}>
-          <Typography sx={{ fontSize: '1.1rem' }}>{user.name}</Typography>
+          <Typography sx={{ fontSize: '1.1rem' }}>{user.firstName} {user.lastName}</Typography>
           <Typography sx={{ fontSize: '0.9rem', color: 'text.secondary' }}>{user.email}</Typography>
         </Box>
         <Divider />
@@ -103,7 +103,7 @@ interface HeaderProps {
 
 const Header = ({ onLogout }: HeaderProps) => {
   const navigate = useNavigate();
-  const user = useUser();
+  const { user } = useUser();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {

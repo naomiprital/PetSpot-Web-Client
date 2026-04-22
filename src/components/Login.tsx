@@ -2,6 +2,7 @@
 import { Box, Button, Link, InputBase, Typography, styled } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useForm } from 'react-hook-form';
+import GoogleAuthButton from './GoogleAuthButton';
 
 const inputSx = {
   backgroundColor: 'background.default',
@@ -137,6 +138,14 @@ const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
       >
         Welcome Back!
       </Button>
+
+      <GoogleAuthButton
+        label="Continue with Google"
+        onClick={() => {
+          // TODO: Trigger real Google OAuth flow
+          if (onLogin) onLogin();
+        }}
+      />
     </Box>
   );
 };
