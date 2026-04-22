@@ -18,10 +18,10 @@ const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) =
   const currentValues: FormValues = {
     status: listing.status as (typeof StatusEnum)[keyof typeof StatusEnum],
     animalType: listing.animal,
-    contactNumber: listing.user?.phone || '',
+    contactNumber: listing.user.phone || '',
     lastSeenLocation: listing.location,
     dateTime: getLocalDateTimeString(listing.date),
-    image: null,
+    image: listing.imageUrl,
     description: listing.description,
   };
 
@@ -69,7 +69,6 @@ const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) =
       </Box>
       <ListingForm
         defaultValues={currentValues}
-        existingImageUrl={listing.imageUrl}
         submitButtonText="Save Changes"
         onSubmit={onSubmit}
       />

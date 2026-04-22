@@ -20,13 +20,12 @@ export interface FormValues {
   contactNumber: string;
   lastSeenLocation: string;
   dateTime: string;
-  image: FileList | null;
+  image: string | FileList | null;
   description: string;
 }
 
 interface ListingFormProps {
   defaultValues: FormValues;
-  existingImageUrl?: string | null;
   submitButtonText: string;
   onSubmit: (data: FormValues) => void;
 }
@@ -63,17 +62,22 @@ export const FormFieldBox = ({
   </Box>
 );
 
-const ListingForm = ({
-  defaultValues,
-  existingImageUrl,
-  submitButtonText,
-  onSubmit,
-}: ListingFormProps) => {
+const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(existingImageUrl || null);
-  const [fileName, setFileName] = useState<string | null>(
-    existingImageUrl ? 'Current Image' : null
-  );
+
+  const getPreviewAndName = (image: string | FileList | null) => {
+    if (typeof image === 'string') {
+      return { url: image, name: 'Current Image' };
+    }
+    if (image instanceof FileList && image.length > 0) {
+      return { url: URL.createObjectURL(image[0]), name: image[0].name };
+    }
+    return { url: null, name: null };
+  };
+
+  const initialPreview = getPreviewAndName(defaultValues.image);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(initialPreview.url);
+  const [fileName, setFileName] = useState<string | null>(initialPreview.name);
 
   const {
     register,
@@ -87,19 +91,19 @@ const ListingForm = ({
     defaultValues,
   });
 
-  // Re-sync if default values change (needed when Edit dialog loads data)
   useEffect(() => {
     reset(defaultValues);
-    setPreviewUrl(existingImageUrl || null);
-    setFileName(existingImageUrl ? 'Current Image' : null);
-  }, [defaultValues, existingImageUrl, reset]);
+    const { url, name } = getPreviewAndName(defaultValues.image);
+    setPreviewUrl(url);
+    setFileName(name);
+  }, [defaultValues, reset]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       setFileName(file.name);
       setPreviewUrl(URL.createObjectURL(file));
-      setValue('image', e.target.files);
+      setValue('image', event.target.files);
     }
   };
 

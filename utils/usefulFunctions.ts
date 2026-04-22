@@ -1,10 +1,8 @@
 export const getLocalDateTimeString = (timestamp?: number): string => {
   let date: Date;
 
-  if (timestamp === undefined) {
+  if (!timestamp) {
     date = new Date();
-  } else if (!timestamp) {
-    return '';
   } else {
     date = new Date(timestamp);
   }
