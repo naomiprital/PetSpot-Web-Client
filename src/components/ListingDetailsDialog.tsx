@@ -11,7 +11,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import type { Listing } from './ListingCard';
+import type { Listing } from './MainFeedListingCard';
 import { StatusEnum } from '../../utils/consts';
 import moment from 'moment';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -56,15 +56,15 @@ const DetailRow = ({ icon, title, value }: DetailRowProps) => {
 };
 
 interface ListingDetailsDialogProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
   listing: Listing;
   onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  isUserBoostedListing: () => boolean;
+  isUserBoostedListing: (listing: Listing) => boolean;
 }
 
 const ListingDetailsDialog = ({
-  isOpen: open,
+  open,
   onClose,
   listing,
   onBoost,
@@ -244,13 +244,15 @@ const ListingDetailsDialog = ({
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <Tooltip
-                  title={isUserBoostedListing() ? 'You boosted this listing' : 'Click to boost!'}
+                  title={
+                    isUserBoostedListing(listing) ? 'You boosted this listing' : 'Click to boost!'
+                  }
                   placement="left"
                   arrow
                 >
                   <IconButton
                     sx={{
-                      color: isUserBoostedListing() ? 'primary.main' : 'text.secondary',
+                      color: isUserBoostedListing(listing) ? 'primary.main' : 'text.secondary',
                       '&:hover': {
                         backgroundColor: 'transparent',
                       },
