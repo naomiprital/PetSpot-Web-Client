@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import { Avatar, Box, Dialog, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
+import { useListings } from '../context/ListingsContext';
 
 interface UserDetailDialogProps {
   open: boolean;
@@ -11,15 +13,20 @@ interface UserDetailDialogProps {
     avatar: string;
     email: string;
     phone: string;
-    reportsCount?: number;
-    reunionsCount?: number;
   };
 }
 
 const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
   // TODO: Replace with API call
-  const reportsCount = user.reportsCount ?? 0;
-  const reunionsCount = user.reunionsCount ?? 0;
+  const listings = useListings();
+
+  const { reportsCount, reunionsCount } = useMemo(() => {
+    const userListings = listings.filter((listing) => listing.user.email === user.email);
+    return {
+      reportsCount: userListings.length,
+      reunionsCount: userListings.filter((listing) => listing.isResolved).length,
+    };
+  }, [listings, user.email]);
 
   return (
     <Dialog
