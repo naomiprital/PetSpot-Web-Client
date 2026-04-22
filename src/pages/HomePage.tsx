@@ -10,7 +10,7 @@ import FilterBar, {
 import { useListings } from '../context/ListingsContext';
 import PublishReportDialog from '../components/PublishReportDialog';
 import { toast } from 'react-toastify';
-import { rankListingsByDescription } from '../services/aiSearch';
+import { rankListingsByDescription } from '../services/AiSearch';
 
 const PAGE_SIZE = 3;
 
