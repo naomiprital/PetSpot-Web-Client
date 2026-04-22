@@ -259,7 +259,7 @@ const UserListingCard = ({ listing, onBoost, isUserBoostedListing }: UserListing
       />
       <ListingDetailsDialog
         open={listingDetailsDialogOpen}
-        onClose={() => (setListingDetailsDialogOpen(false), console.log('here'))}
+        onClose={() => setListingDetailsDialogOpen(false)}
         listing={listing}
         onBoost={onBoost}
         isUserBoostedListing={isUserBoostedListing}
