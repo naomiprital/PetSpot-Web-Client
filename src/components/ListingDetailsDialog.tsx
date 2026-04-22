@@ -23,6 +23,7 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
+import UserDetailDialog from './UserDetailDialog';
 
 interface DetailRowProps {
   icon: React.ReactNode;
@@ -71,6 +72,7 @@ const ListingDetailsDialog = ({
   isUserBoostedListing,
 }: ListingDetailsDialogProps) => {
   const [copied, setCopied] = useState(false);
+  const [userDetailDialogOpen, setUserDetailDialogOpen] = useState(false);
 
   const handlePhoneClick = async () => {
     try {
@@ -181,6 +183,7 @@ const ListingDetailsDialog = ({
                   cursor: 'pointer',
                 },
               }}
+              onClick={() => setUserDetailDialogOpen(true)}
             >
               <Avatar src={listing.user.avatar} sx={{ width: '3rem', height: '3rem' }} />
               <Box>
@@ -313,6 +316,16 @@ const ListingDetailsDialog = ({
           </Box>
         </Box>
       </Dialog>
+      <UserDetailDialog
+        open={userDetailDialogOpen}
+        onClose={() => setUserDetailDialogOpen(false)}
+        user={{
+          name: listing.user.name,
+          avatar: listing.user.avatar,
+          email: listing.user.email,
+          phone: listing.user.phone,
+        }}
+      />
     </>
   );
 };

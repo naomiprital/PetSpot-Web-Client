@@ -37,6 +37,7 @@ const mockListings: Listing[] = [
       name: 'John',
       avatar:
         'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
+      email: 'john@example.com',
       phone: '1234567890',
     },
     isResolved: false,
@@ -99,6 +100,7 @@ const mockListings: Listing[] = [
       name: 'Sarah',
       avatar:
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+      email: 'sarah@example.com',
       phone: '1234567890',
     },
     isResolved: false,
@@ -120,6 +122,7 @@ const mockListings: Listing[] = [
       name: 'Mike',
       avatar:
         'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
+      email: 'mike@example.com',
       phone: '1234567890',
     },
     isResolved: false,
@@ -202,6 +205,7 @@ const mockListings: Listing[] = [
       name: 'Emma',
       avatar:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
+      email: 'emma@example.com',
       phone: '1234567890',
     },
     isResolved: false,
@@ -223,6 +227,7 @@ const mockListings: Listing[] = [
       name: 'Yael',
       avatar:
         'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=100&q=80',
+      email: 'yael@example.com',
       phone: '+972501234567',
     },
     isResolved: false,
@@ -255,6 +260,7 @@ const mockListings: Listing[] = [
       name: 'Noa',
       avatar:
         'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80',
+      email: 'noa@example.com',
       phone: '+972509876543',
     },
     isResolved: false,
@@ -276,6 +282,7 @@ const mockListings: Listing[] = [
       name: 'Avi',
       avatar:
         'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
+      email: 'avi@example.com',
       phone: '+972521112222',
     },
     isResolved: false,
@@ -308,6 +315,7 @@ const mockListings: Listing[] = [
       name: 'Roni',
       avatar:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
+      email: 'roni@example.com',
       phone: '+972531231234',
     },
     isResolved: false,
@@ -329,6 +337,7 @@ const mockListings: Listing[] = [
       name: 'Maya',
       avatar:
         'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=100&q=80',
+      email: 'maya@example.com',
       phone: '+972541234567',
     },
     isResolved: false,
@@ -361,6 +370,7 @@ const mockListings: Listing[] = [
       name: 'Shira',
       avatar:
         'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80',
+      email: 'shira@example.com',
       phone: '+972551112233',
     },
     isResolved: false,

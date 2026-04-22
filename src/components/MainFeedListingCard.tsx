@@ -44,6 +44,7 @@ export interface Listing {
   user: {
     name: string;
     avatar: string;
+    email: string;
     phone: string; // TODO: Switch to real user interface
   };
   isResolved: boolean;
