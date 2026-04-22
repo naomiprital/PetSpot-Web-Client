@@ -16,6 +16,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { AnimalsEnum, StatusEnum } from '../../utils/consts';
 import { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
+import { getSuggestedDescription } from '../services/aiSearch';
 
 const getLocalDateTimeString = () => {
   const now = new Date();
@@ -84,12 +85,14 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [isAiAnalyzing, setIsAiAnalyzing] = useState(false);
 
   const {
     register,
     handleSubmit,
     control,
     setValue,
+    watch,
     reset,
     formState: { errors },
   } = useForm<FormValues>({
@@ -132,12 +135,23 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       setFileName(file.name);
       setPreviewUrl(URL.createObjectURL(file));
-      setValue('image', e.target.files);
+      setValue('image', event.target.files);
+
+      setIsAiAnalyzing(true);
+      const suggestion = await getSuggestedDescription(file);
+      if (suggestion) {
+        setValue('description', suggestion.description);
+        const currentAnimal = watch('animalType');
+        if (!currentAnimal && suggestion.animalType) {
+          setValue('animalType', suggestion.animalType);
+        }
+      }
+      setIsAiAnalyzing(false);
     }
   };
 
@@ -146,6 +160,7 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
     setPreviewUrl(null);
     setFileName(null);
     setValue('image', null);
+    setValue('description', '');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -432,7 +447,14 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
         </Box>
 
         <FormFieldBox fullWidth>
-          <FormFieldLabel>DETAILED DESCRIPTION</FormFieldLabel>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+            <FormFieldLabel>DETAILED DESCRIPTION</FormFieldLabel>
+            {isAiAnalyzing && (
+              <Typography sx={{ fontSize: '0.72rem', color: 'primary.main', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                ✨ AI is analyzing image...
+              </Typography>
+            )}
+          </Box>
           <Box sx={errors.description ? errorInputSx : inputSx}>
             <InputBase
               placeholder="Include details like breed, collar color, behavior, etc."

@@ -96,3 +96,65 @@ export async function rankListingsByDescription(
 
   return parseRankedIds(rawText);
 }
+
+export interface ImageSuggestion {
+  description: string;
+  animalType: string | null;
+}
+
+export async function getSuggestedDescription(image: File): Promise<ImageSuggestion | null> {
+  const apiKey = import.meta.env.VITE_COHERE_API_KEY as string;
+
+  if (!apiKey) {
+    toast.error('AI suggestion API key is missing.');
+    return null;
+  }
+
+  const base64Image = await new Promise<string>((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(image);
+  });
+
+  const content = [
+    {
+      type: 'text',
+      text: `You are an expert at identifying pets for lost and found reports.
+Look at the image and return a JSON object with exactly two fields:
+1. "description": A concise 1-2 sentence description of the pet (breed if recognizable, colors, distinctive features, estimated age).
+2. "animalType": One of "Dog", "Cat", "Bird", "Rabbit", "Other", or null if no animal is visible.
+
+Return ONLY valid JSON. No markdown, no explanation.
+Example: {"description": "A golden retriever with a red collar, fluffy tail, and friendly expression.", "animalType": "Dog"}`,
+    },
+    {
+      type: 'image_url',
+      image_url: { url: base64Image },
+    },
+  ];
+
+  const response = await callCohereApi(apiKey, content);
+
+  if (!response.ok) {
+    toast.error('AI failed to analyze the image.');
+    return null;
+  }
+
+  const data = await response.json();
+  const rawText: string = data?.message?.content?.[0]?.text ?? '';
+
+  try {
+    const cleaned = rawText.replace(/```json?|```/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+    if (parsed && typeof parsed.description === 'string') {
+      return {
+        description: parsed.description,
+        animalType: parsed.animalType ?? null,
+      };
+    }
+  } catch {
+    toast.error('AI returned an unexpected response.');
+  }
+
+  return null;
+}
