@@ -22,14 +22,13 @@ import ListingDetailsDialog from './ListingDetailsDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import { onBoost, isUserBoostedListing } from '../../utils/usefulFunctions';
 
 interface UserListingCardProps {
   listing: Listing;
-  onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  isUserBoostedListing: (listing: Listing) => boolean;
 }
 
-const UserListingCard = ({ listing, onBoost, isUserBoostedListing }: UserListingCardProps) => {
+const UserListingCard = ({ listing }: UserListingCardProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [resolveDialogOpen, setResolveDialogOpen] = useState(false);
   const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);

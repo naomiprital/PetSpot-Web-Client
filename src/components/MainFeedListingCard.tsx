@@ -18,6 +18,7 @@ import { useState } from 'react';
 import ListingDetailsDialog from './ListingDetailsDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
+import { onBoost, isUserBoostedListing } from '../../utils/usefulFunctions';
 
 export interface Comment {
   id: string;
@@ -51,15 +52,9 @@ export interface Listing {
 
 interface MainFeedListingCardProps {
   listing: Listing;
-  onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  isUserBoostedListing: (listing: Listing) => boolean;
 }
 
-const MainFeedListingCard = ({
-  listing,
-  onBoost,
-  isUserBoostedListing,
-}: MainFeedListingCardProps) => {
+const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
   const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);
 
   return (

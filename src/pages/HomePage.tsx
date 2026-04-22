@@ -12,12 +12,7 @@ import PublishReportDialog from '../components/PublishReportDialog';
 
 const PAGE_SIZE = 3;
 
-interface HomePageProps {
-  onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  isUserBoostedListing: (listing: Listing) => boolean;
-}
-
-const HomePage = ({ onBoost, isUserBoostedListing }: HomePageProps) => {
+const HomePage = () => {
   const listings = useListings();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [type, setType] = useState<StatusFilter>('all');
@@ -89,12 +84,7 @@ const HomePage = ({ onBoost, isUserBoostedListing }: HomePageProps) => {
         }}
       >
         {visibleListings.map((listing) => (
-          <MainFeedListingCard
-            key={listing.id}
-            listing={listing}
-            onBoost={onBoost}
-            isUserBoostedListing={isUserBoostedListing}
-          />
+          <MainFeedListingCard key={listing.id} listing={listing} />
         ))}
         {filteredListings.length === 0 && (
           <Typography sx={{ color: 'text.secondary', marginTop: '2rem' }}>

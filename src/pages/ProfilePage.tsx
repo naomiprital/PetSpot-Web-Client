@@ -7,14 +7,8 @@ import { useUser } from '../context/UserContext';
 import { useListings } from '../context/ListingsContext';
 import { StatusEnum } from '../../utils/consts';
 import UserListingCard from '../components/UserListingCard';
-import type { Listing } from '../components/MainFeedListingCard';
 
-interface ProfilePageProps {
-  onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  isUserBoostedListing: (listing: Listing) => boolean;
-}
-
-const ProfilePage = ({ onBoost, isUserBoostedListing }: ProfilePageProps) => {
+const ProfilePage = () => {
   const user = useUser();
   const listings = useListings();
 
@@ -212,11 +206,7 @@ const ProfilePage = ({ onBoost, isUserBoostedListing }: ProfilePageProps) => {
             }}
           >
             {userListings.map((listing) => (
-              <UserListingCard
-                listing={listing}
-                onBoost={onBoost}
-                isUserBoostedListing={isUserBoostedListing}
-              />
+              <UserListingCard listing={listing} />
             ))}
           </Box>
         )}

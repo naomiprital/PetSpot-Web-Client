@@ -8,7 +8,6 @@ import { ListingsProvider } from './context/ListingsContext';
 import { ToastContainer } from 'react-toastify';
 import AuthPage from './pages/AuthPage';
 import ProfilePage from './pages/ProfilePage';
-import type { Listing } from './components/MainFeedListingCard';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -26,44 +25,19 @@ const App = () => {
     navigate('/auth');
   };
 
-  const onBoost = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    // TODO: Implement boost functionality, remove user from boosts array if exists, add user to boosts array if not exists
-  };
-
-  const isUserBoostedListing = (listing: Listing) => {
-    const currentUserId = 'id7'; // TODO: Change to user from context
-    return listing.boosts.includes(currentUserId);
-  };
-
   return (
     <UserProvider>
       <ListingsProvider>
         {!isAuthPage && <Header onLogout={handleLogout} />}
         <Routes>
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? (
-                <HomePage onBoost={onBoost} isUserBoostedListing={isUserBoostedListing} />
-              ) : (
-                <Navigate to="/auth" />
-              )
-            }
-          />
+          <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to="/auth" />} />
           <Route
             path="/auth"
             element={!isAuthenticated ? <AuthPage onLogin={handleLogin} /> : <Navigate to="/" />}
           />
           <Route
             path="/profile"
-            element={
-              isAuthenticated ? (
-                <ProfilePage onBoost={onBoost} isUserBoostedListing={isUserBoostedListing} />
-              ) : (
-                <Navigate to="/auth" />
-              )
-            }
+            element={isAuthenticated ? <ProfilePage /> : <Navigate to="/auth" />}
           />
         </Routes>
         <ToastContainer position="bottom-left" />
