@@ -29,7 +29,6 @@ export interface FilterBarProps {
   setAnimal: (val: AnimalFilter) => void;
   sortOrder: SortOrderFilter;
   setSortOrder: (val: SortOrderFilter) => void;
-  // AI search
   setAiQuery: (val: string) => void;
   isAiSearching: boolean;
   aiRankedIds: string[] | null;
@@ -78,7 +77,14 @@ const FilterBar = ({
         width: '100%',
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: { xs: 'wrap', md: 'nowrap' } }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          flexWrap: { xs: 'wrap', md: 'nowrap' },
+        }}
+      >
         <Box
           sx={(theme) => ({
             display: 'flex',
@@ -96,13 +102,23 @@ const FilterBar = ({
           })}
         >
           {isAiActive ? (
-            <AutoAwesomeIcon sx={(theme) => ({ fontSize: '1.1rem', color: theme.palette.primary.main, flexShrink: 0 })} />
+            <AutoAwesomeIcon
+              sx={(theme) => ({
+                fontSize: '1.1rem',
+                color: theme.palette.primary.main,
+                flexShrink: 0,
+              })}
+            />
           ) : (
             <SearchIcon sx={{ color: 'text.secondary', flexShrink: 0, fontSize: '1.2rem' }} />
           )}
 
           <InputBase
-            placeholder={isAiActive ? 'AI results active — type to refine or click ✕ to clear' : 'Search or describe an animal…'}
+            placeholder={
+              isAiActive
+                ? 'AI results active — type to refine or click ✕ to clear'
+                : 'Search or describe an animal…'
+            }
             value={searchQuery}
             onChange={(e) => handleInputChange(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -112,7 +128,11 @@ const FilterBar = ({
 
           {isAiActive && (
             <Tooltip title="Clear AI search">
-              <IconButton size="small" onClick={onAiClear} sx={{ color: 'text.secondary', p: '0.2rem' }}>
+              <IconButton
+                size="small"
+                onClick={onAiClear}
+                sx={{ color: 'text.secondary', p: '0.2rem' }}
+              >
                 <CloseIcon fontSize="small" />
               </IconButton>
             </Tooltip>
@@ -126,9 +146,11 @@ const FilterBar = ({
             onClick={onAiSearch}
             disabled={isAiSearching || !searchQuery.trim()}
             startIcon={
-              isAiSearching
-                ? <CircularProgress size={13} color="inherit" />
-                : <AutoAwesomeIcon sx={{ fontSize: '1rem !important' }} />
+              isAiSearching ? (
+                <CircularProgress size={13} color="inherit" />
+              ) : (
+                <AutoAwesomeIcon sx={{ fontSize: '1rem !important' }} />
+              )
             }
             sx={(theme) => ({
               borderRadius: '0.5rem',
@@ -150,10 +172,16 @@ const FilterBar = ({
           onChange={(event) => setType(event.target.value as StatusFilter)}
           displayEmpty
           sx={(theme) => ({
-            backgroundColor: type !== 'all' ? alpha(theme.palette.primary.main, 0.1) : theme.palette.background.default,
+            backgroundColor:
+              type !== 'all'
+                ? alpha(theme.palette.primary.main, 0.1)
+                : theme.palette.background.default,
             borderRadius: '0.75rem',
             '& .MuiOutlinedInput-notchedOutline': {
-              border: type !== 'all' ? `1px solid ${theme.palette.primary.main}` : `1px solid ${theme.palette.grey[300]}`,
+              border:
+                type !== 'all'
+                  ? `1px solid ${theme.palette.primary.main}`
+                  : `1px solid ${theme.palette.grey[300]}`,
             },
           })}
         >
@@ -166,19 +194,25 @@ const FilterBar = ({
           onChange={(event) => setAnimal(event.target.value as AnimalFilter)}
           displayEmpty
           sx={(theme) => ({
-            backgroundColor: animal !== 'all' ? alpha(theme.palette.primary.main, 0.1) : theme.palette.background.default,
+            backgroundColor:
+              animal !== 'all'
+                ? alpha(theme.palette.primary.main, 0.1)
+                : theme.palette.background.default,
             borderRadius: '0.75rem',
             '& .MuiOutlinedInput-notchedOutline': {
-              border: animal !== 'all' ? `1px solid ${theme.palette.primary.main}` : `1px solid ${theme.palette.grey[300]}`,
+              border:
+                animal !== 'all'
+                  ? `1px solid ${theme.palette.primary.main}`
+                  : `1px solid ${theme.palette.grey[300]}`,
             },
           })}
         >
           <MenuItem value="all">All Animals</MenuItem>
-          <MenuItem value={AnimalsEnum.DOG}>Dog</MenuItem>
-          <MenuItem value={AnimalsEnum.CAT}>Cat</MenuItem>
-          <MenuItem value={AnimalsEnum.BIRD}>Bird</MenuItem>
-          <MenuItem value={AnimalsEnum.RABBIT}>Rabbit</MenuItem>
-          <MenuItem value={AnimalsEnum.OTHER}>Other</MenuItem>
+          <MenuItem value={AnimalsEnum.DOG}>{AnimalsEnum.DOG}</MenuItem>
+          <MenuItem value={AnimalsEnum.CAT}>{AnimalsEnum.CAT}</MenuItem>
+          <MenuItem value={AnimalsEnum.BIRD}>{AnimalsEnum.BIRD}</MenuItem>
+          <MenuItem value={AnimalsEnum.RABBIT}>{AnimalsEnum.RABBIT}</MenuItem>
+          <MenuItem value={AnimalsEnum.OTHER}>{AnimalsEnum.OTHER}</MenuItem>
         </Select>
         <Select
           value={sortOrder}
@@ -189,7 +223,9 @@ const FilterBar = ({
             backgroundColor: theme.palette.background.default,
             borderRadius: '0.75rem',
             opacity: isAiActive ? 0.5 : 1,
-            '& .MuiOutlinedInput-notchedOutline': { border: `1px solid ${theme.palette.grey[300]}` },
+            '& .MuiOutlinedInput-notchedOutline': {
+              border: `1px solid ${theme.palette.grey[300]}`,
+            },
           })}
         >
           <MenuItem value="newest">Newest First</MenuItem>

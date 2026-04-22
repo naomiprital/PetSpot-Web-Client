@@ -1,39 +1,43 @@
 import { Box, Dialog, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
-import { StatusEnum } from '../../utils/consts';
 import ListingForm, { type FormValues } from './ListingForm';
+import type { Listing } from './MainFeedListingCard';
+import type { StatusEnum } from '../../utils/consts';
 import { getLocalDateTimeString } from '../../utils/utilsFunctions';
 
-interface PublishReportDialogProps {
-  isOpen: boolean;
+interface EditListingDialogProps {
+  open: boolean;
   onClose: () => void;
+  listing: Listing;
 }
 
-const PublishReportDialog = ({ isOpen, onClose }: PublishReportDialogProps) => {
-  const emptyValues: FormValues = {
-    status: StatusEnum.LOST,
-    animalType: '',
-    contactNumber: '',
-    lastSeenLocation: '',
-    dateTime: getLocalDateTimeString(),
-    image: null,
-    description: '',
+const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) => {
+  if (!listing) return null;
+
+  const currentValues: FormValues = {
+    status: listing.status as (typeof StatusEnum)[keyof typeof StatusEnum],
+    animalType: listing.animal,
+    contactNumber: listing.user.phone,
+    lastSeenLocation: listing.location,
+    dateTime: getLocalDateTimeString(listing.date),
+    image: listing.imageUrl,
+    description: listing.description,
   };
 
   const onSubmit = async (data: FormValues) => {
     try {
       // TODO: replace with API call
-      toast.success('Report published successfully!');
+      toast.success('Listing updated successfully!');
       onClose();
     } catch (error) {
-      toast.error('Failed to publish report. Please try again.');
+      toast.error('Failed to update listing. Please try again.');
     }
   };
 
   return (
     <Dialog
-      open={isOpen}
+      open={open}
       onClose={onClose}
       maxWidth={false}
       sx={{
@@ -57,19 +61,19 @@ const PublishReportDialog = ({ isOpen, onClose }: PublishReportDialogProps) => {
         }}
       >
         <Typography sx={{ fontWeight: 700, fontSize: '1.25rem', color: 'text.primary' }}>
-          Publish New Report
+          Edit Listing
         </Typography>
         <IconButton onClick={onClose} size="small" sx={{ color: 'text.secondary' }}>
           <CloseIcon fontSize="small" />
         </IconButton>
       </Box>
       <ListingForm
-        defaultValues={emptyValues}
-        submitButtonText="Publish Report"
+        defaultValues={currentValues}
+        submitButtonText="Save Changes"
         onSubmit={onSubmit}
       />
     </Dialog>
   );
 };
 
-export default PublishReportDialog;
+export default EditListingDialog;

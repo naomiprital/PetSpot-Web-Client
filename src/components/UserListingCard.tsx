@@ -22,7 +22,8 @@ import ListingDetailsDialog from './ListingDetailsDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import { onBoost, isUserBoostedListing } from '../../utils/usefulFunctions';
+import { onBoost, isUserBoostedListing } from '../../utils/utilsFunctions';
+import EditListingDialog from './EditListingDialog';
 
 interface UserListingCardProps {
   listing: Listing;
@@ -32,6 +33,7 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [resolveDialogOpen, setResolveDialogOpen] = useState(false);
   const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const onResolveListing = (listing: Listing) => {
     // TODO: API call
@@ -162,7 +164,7 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
                     fullWidth
                     onClick={(event) => {
                       event.stopPropagation();
-                      /* TODO: Edit listing */
+                      setEditDialogOpen(true);
                     }}
                     sx={(theme) => ({
                       color: 'error.main',
@@ -262,6 +264,13 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
         onBoost={onBoost}
         isUserBoostedListing={isUserBoostedListing}
       />
+      {listing && (
+        <EditListingDialog
+          open={editDialogOpen}
+          onClose={() => setEditDialogOpen(false)}
+          listing={listing}
+        />
+      )}
     </>
   );
 };

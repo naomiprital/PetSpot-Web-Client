@@ -1,4 +1,4 @@
-import type { Listing } from '../components/ListingCard';
+import type { Listing } from '../components/MainFeedListingCard';
 import { toast } from 'react-toastify';
 
 const COHERE_API_URL = 'https://api.cohere.com/v2/chat';
@@ -6,9 +6,7 @@ const AI_MODEL = 'command-a-vision-07-2025';
 const MAX_AI_LISTINGS = 50;
 
 function getNewestListings(listings: Listing[], limit: number): Listing[] {
-  return [...listings]
-    .sort((a, b) => b.date - a.date)
-    .slice(0, limit);
+  return [...listings].sort((a, b) => b.date - a.date).slice(0, limit);
 }
 
 function buildPrompt(query: string): string {
