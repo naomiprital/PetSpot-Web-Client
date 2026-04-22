@@ -8,7 +8,7 @@ import FilterBar, {
   type SortOrderFilter,
 } from '../components/FilterBar';
 import { useListings } from '../context/ListingsContext';
-import PublishReportDialog from '../components/PublishReportDialog';
+import PublishReportDialog from '../components/ListingFormDialogs/PublishReportDialog';
 
 const PAGE_SIZE = 3;
 

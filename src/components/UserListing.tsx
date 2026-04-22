@@ -8,6 +8,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import moment from 'moment';
 import AreYouSureDialog from '../components/AreYouSureDialog';
 import type { Listing } from '../components/ListingCard';
+import EditListingDialog from './ListingFormDialogs/EditListingDialog';
 
 interface UserListingProps {
   listing: Listing;
@@ -16,6 +17,7 @@ interface UserListingProps {
 const UserListing = ({ listing }: UserListingProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [resolveDialogOpen, setResolveDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const onResolveListing = (listing: Listing) => {
     // TODO: API call
@@ -96,7 +98,7 @@ const UserListing = ({ listing }: UserListingProps) => {
                 <Button
                   fullWidth
                   onClick={() => {
-                    /* TODO: Edit listing */
+                    setEditDialogOpen(true);
                   }}
                   sx={(theme) => ({
                     color: 'error.main',
@@ -186,6 +188,13 @@ const UserListing = ({ listing }: UserListingProps) => {
           false
         )}
       </Box>
+      {listing && (
+        <EditListingDialog
+          open={editDialogOpen}
+          onClose={() => setEditDialogOpen(false)}
+          listing={listing}
+        />
+      )}
     </Box>
   );
 };
