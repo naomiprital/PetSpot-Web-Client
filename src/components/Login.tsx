@@ -1,8 +1,7 @@
-
 import { Box, Button, Link, InputBase, Typography, styled } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useForm } from 'react-hook-form';
-import GoogleAuthButton from './GoogleAuthButton';
+import GoogleLoginButton from './GoogleLoginButton';
 
 const inputSx = {
   backgroundColor: 'background.default',
@@ -57,7 +56,12 @@ const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}
+    >
       <Box sx={{ position: 'relative' }}>
         <InputLabel>Email Address</InputLabel>
         <Box sx={errors.email ? errorInputSx : inputSx}>
@@ -73,7 +77,16 @@ const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
           />
         </Box>
         {errors.email && (
-          <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+          <Typography
+            sx={{
+              color: 'error.main',
+              fontSize: '0.7rem',
+              position: 'absolute',
+              bottom: '-1.125rem',
+              marginLeft: '0.25rem',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {errors.email.message as string}
           </Typography>
         )}
@@ -94,7 +107,16 @@ const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
           />
         </Box>
         {errors.password && (
-          <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+          <Typography
+            sx={{
+              color: 'error.main',
+              fontSize: '0.7rem',
+              position: 'absolute',
+              bottom: '-1.125rem',
+              marginLeft: '0.25rem',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {errors.password.message as string}
           </Typography>
         )}
@@ -139,13 +161,7 @@ const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
         Welcome Back!
       </Button>
 
-      <GoogleAuthButton
-        label="Continue with Google"
-        onClick={() => {
-          // TODO: Trigger real Google OAuth flow
-          if (onLogin) onLogin();
-        }}
-      />
+      <GoogleLoginButton />
     </Box>
   );
 };

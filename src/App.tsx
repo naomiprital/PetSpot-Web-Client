@@ -8,8 +8,10 @@ import { ListingsProvider } from './context/ListingsContext';
 import { ToastContainer } from 'react-toastify';
 import AuthPage from './pages/AuthPage';
 import ProfilePage from './pages/ProfilePage';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const App = () => {
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string;
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -26,23 +28,25 @@ const App = () => {
   };
 
   return (
-    <UserProvider>
-      <ListingsProvider>
-        {!isAuthPage && <Header onLogout={handleLogout} />}
-        <Routes>
-          <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to="/auth" />} />
-          <Route
-            path="/auth"
-            element={!isAuthenticated ? <AuthPage onLogin={handleLogin} /> : <Navigate to="/" />}
-          />
-          <Route
-            path="/profile"
-            element={isAuthenticated ? <ProfilePage /> : <Navigate to="/auth" />}
-          />
-        </Routes>
-        <ToastContainer position="bottom-left" />
-      </ListingsProvider>
-    </UserProvider>
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <UserProvider>
+        <ListingsProvider>
+          {!isAuthPage && <Header onLogout={handleLogout} />}
+          <Routes>
+            <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to="/auth" />} />
+            <Route
+              path="/auth"
+              element={!isAuthenticated ? <AuthPage onLogin={handleLogin} /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/profile"
+              element={isAuthenticated ? <ProfilePage /> : <Navigate to="/auth" />}
+            />
+          </Routes>
+          <ToastContainer position="bottom-left" />
+        </ListingsProvider>
+      </UserProvider>
+    </GoogleOAuthProvider>
   );
 };
 
