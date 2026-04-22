@@ -16,6 +16,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { AnimalsEnum, StatusEnum } from '../../utils/consts';
 import { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
+import { getSuggestedDescription, type ImageSuggestion } from '../services/AiService';
 
 const getLocalDateTimeString = () => {
   const now = new Date();
@@ -84,6 +85,8 @@ const PublishReportDialog = ({ open, onClose }: PublishReportDialogProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isAiAnalyzing, setIsAiAnalyzing] = useState(false);
 
   const {
     register,
@@ -132,12 +135,33 @@ const PublishReportDialog = ({ open, onClose }: PublishReportDialogProps) => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       setFileName(file.name);
       setPreviewUrl(URL.createObjectURL(file));
-      setValue('image', e.target.files);
+      setValue('image', event.target.files);
+      setUploadedFile(file);
+    }
+  };
+
+  const handleGenerateAiSuggestion = async () => {
+    if (!uploadedFile) return;
+
+    setIsAiAnalyzing(true);
+    try {
+      const suggestion = await getSuggestedDescription(uploadedFile);
+      if (suggestion) {
+        setValue('description', suggestion.description);
+        if (suggestion.animalType) {
+          setValue('animalType', suggestion.animalType);
+        }
+        toast.success('AI suggestion applied!');
+      }
+    } catch (error) {
+      toast.error('Failed to generate suggestion.');
+    } finally {
+      setIsAiAnalyzing(false);
     }
   };
 
@@ -145,7 +169,10 @@ const PublishReportDialog = ({ open, onClose }: PublishReportDialogProps) => {
     event.stopPropagation();
     setPreviewUrl(null);
     setFileName(null);
+    setUploadedFile(null);
     setValue('image', null);
+    setValue('description', '');
+    setValue('animalType', '');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -432,7 +459,37 @@ const PublishReportDialog = ({ open, onClose }: PublishReportDialogProps) => {
         </Box>
 
         <FormFieldBox fullWidth>
-          <FormFieldLabel>DETAILED DESCRIPTION</FormFieldLabel>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+            <FormFieldLabel>DETAILED DESCRIPTION</FormFieldLabel>
+            {isAiAnalyzing ? (
+              <Typography sx={{ fontSize: '0.72rem', color: 'primary.main', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                ✨ AI is analyzing image...
+              </Typography>
+            ) : uploadedFile ? (
+              <Box
+                onClick={handleGenerateAiSuggestion}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  cursor: 'pointer',
+                  padding: '0.2rem 0.5rem',
+                  borderRadius: '0.4rem',
+                  backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                  color: 'primary.main',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.15),
+                    transform: 'translateY(-1px)',
+                  },
+                }}
+              >
+                <Typography sx={{ fontSize: '0.72rem', fontWeight: 700 }}>
+                  ✨ Generate with AI
+                </Typography>
+              </Box>
+            ) : null}
+          </Box>
           <Box sx={errors.description ? errorInputSx : inputSx}>
             <InputBase
               placeholder="Include details like breed, collar color, behavior, etc."
