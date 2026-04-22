@@ -16,7 +16,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { AnimalsEnum, StatusEnum } from '../../utils/consts';
 import { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getSuggestedDescription } from '../services/AiService';
+import { getSuggestedDescription, type ImageSuggestion } from '../services/AiService';
 
 const getLocalDateTimeString = () => {
   const now = new Date();
@@ -86,13 +86,13 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isAiAnalyzing, setIsAiAnalyzing] = useState(false);
+  const [aiSuggestion, setAiSuggestion] = useState<ImageSuggestion | null>(null);
 
   const {
     register,
     handleSubmit,
     control,
     setValue,
-    watch,
     reset,
     formState: { errors },
   } = useForm<FormValues>({
@@ -143,15 +143,23 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
       setValue('image', event.target.files);
 
       setIsAiAnalyzing(true);
+      setAiSuggestion(null);
       const suggestion = await getSuggestedDescription(file);
       if (suggestion) {
-        setValue('description', suggestion.description);
-        const currentAnimal = watch('animalType');
-        if (!currentAnimal && suggestion.animalType) {
-          setValue('animalType', suggestion.animalType);
-        }
+        setAiSuggestion(suggestion);
       }
       setIsAiAnalyzing(false);
+    }
+  };
+
+  const handleApplyAiSuggestion = () => {
+    if (aiSuggestion) {
+      setValue('description', aiSuggestion.description);
+      if (aiSuggestion.animalType) {
+        setValue('animalType', aiSuggestion.animalType);
+      }
+      setAiSuggestion(null);
+      toast.success('AI suggestion applied!');
     }
   };
 
@@ -162,6 +170,7 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
     setValue('image', null);
     setValue('description', '');
     setValue('animalType', '');
+    setAiSuggestion(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -450,11 +459,34 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
         <FormFieldBox fullWidth>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
             <FormFieldLabel>DETAILED DESCRIPTION</FormFieldLabel>
-            {isAiAnalyzing && (
+            {isAiAnalyzing ? (
               <Typography sx={{ fontSize: '0.72rem', color: 'primary.main', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                 ✨ AI is analyzing image...
               </Typography>
-            )}
+            ) : aiSuggestion ? (
+              <Box
+                onClick={handleApplyAiSuggestion}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  cursor: 'pointer',
+                  padding: '0.2rem 0.5rem',
+                  borderRadius: '0.4rem',
+                  backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                  color: 'primary.main',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.15),
+                    transform: 'translateY(-1px)',
+                  },
+                }}
+              >
+                <Typography sx={{ fontSize: '0.72rem', fontWeight: 700 }}>
+                  ✨ Auto-fill with AI
+                </Typography>
+              </Box>
+            ) : null}
           </Box>
           <Box sx={errors.description ? errorInputSx : inputSx}>
             <InputBase
