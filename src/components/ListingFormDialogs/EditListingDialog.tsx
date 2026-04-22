@@ -2,9 +2,9 @@ import { Box, Dialog, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
 import ListingForm, { type FormValues } from './ListingForm';
-import type { Listing } from '../ListingCard';
-import type { StatusEnum } from '../../../utils/consts';
-import { getLocalDateTimeString } from '../../../utils/usefulFunctions';
+import type { Listing } from '../HomePageComponents/HomePageListingCard';
+import type { StatusEnum } from '../../utils/consts';
+import { getLocalDateTimeString } from '../../utils/usefulFunctions';
 
 interface EditListingDialogProps {
   open: boolean;

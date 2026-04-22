@@ -1,6 +1,6 @@
 import { createContext, useContext, type ReactNode } from 'react';
-import type { Listing } from '../components/ListingCard';
-import { StatusEnum, AnimalsEnum } from '../../utils/consts';
+import type { Listing } from '../components/HomePageComponents/HomePageListingCard';
+import { StatusEnum, AnimalsEnum } from '../utils/consts';
 
 interface ListingsContextType {
   listings: Listing[];

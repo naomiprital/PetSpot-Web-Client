@@ -4,6 +4,13 @@ import '@fontsource/heebo/600.css';
 import '@fontsource/heebo/700.css';
 import '@fontsource/heebo/800.css';
 
+export const GOOGLE_COLORS = {
+  blue: '#4285F4',
+  green: '#34A853',
+  yellow: '#FBBC05',
+  red: '#EA4335',
+} as const;
+
 const theme = createTheme({
   palette: {
     primary: {

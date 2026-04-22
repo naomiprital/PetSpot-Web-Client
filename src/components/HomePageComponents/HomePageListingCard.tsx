@@ -15,9 +15,10 @@ import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import moment from 'moment';
 import { StatusEnum } from '../../utils/consts';
 import { useState } from 'react';
-import ListingDetailsDialog from './ListingDetailsDialog';
+import ListingDetailsDialog from '../ListingFormDialogs/ListingDetailsDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
+import { onBoost, isUserBoostedListing } from '../../utils/usefulFunctions';
 
 export interface Comment {
   id: string;
@@ -49,27 +50,17 @@ export interface Listing {
   isDeleted: boolean;
 }
 
-interface ListingCardProps {
+interface HomePageListingCardProps {
   listing: Listing;
 }
 
-const ListingCard = ({ listing }: ListingCardProps) => {
-  const currentUserId = 'id7'; // TODO: Change to user from context
-  const [open, setOpen] = useState(false);
-
-  const onBoost = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    // TODO: Implement boost functionality, remove user from boosts array if exists, add user to boosts array if not exists
-  };
-
-  const isUserBoostedListing = () => {
-    return listing.boosts.includes(currentUserId);
-  };
+const HomePageListingCard = ({ listing }: HomePageListingCardProps) => {
+  const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);
 
   return (
     <>
       <Card
-        onClick={() => setOpen(true)}
+        onClick={() => setListingDetailsDialogOpen(true)}
         sx={{
           width: '100%',
           maxWidth: '24rem',
@@ -189,13 +180,15 @@ const ListingCard = ({ listing }: ListingCardProps) => {
                 }}
               >
                 <Tooltip
-                  title={isUserBoostedListing() ? 'You boosted this listing' : 'Click to boost!'}
+                  title={
+                    isUserBoostedListing(listing) ? 'You boosted this listing' : 'Click to boost!'
+                  }
                   placement="bottom"
                   arrow
                 >
                   <IconButton
                     sx={{
-                      color: isUserBoostedListing() ? 'primary.main' : 'text.secondary',
+                      color: isUserBoostedListing(listing) ? 'primary.main' : 'text.secondary',
                       '&:hover': {
                         backgroundColor: 'transparent',
                       },
@@ -219,8 +212,8 @@ const ListingCard = ({ listing }: ListingCardProps) => {
         </CardContent>
       </Card>
       <ListingDetailsDialog
-        isOpen={open}
-        onClose={() => setOpen(false)}
+        open={listingDetailsDialogOpen}
+        onClose={() => setListingDetailsDialogOpen(false)}
         listing={listing}
         isUserBoostedListing={isUserBoostedListing}
         onBoost={onBoost}
@@ -229,4 +222,4 @@ const ListingCard = ({ listing }: ListingCardProps) => {
   );
 };
 
-export default ListingCard;
+export default HomePageListingCard;

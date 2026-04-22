@@ -11,8 +11,10 @@ import {
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { Controller, useForm } from 'react-hook-form';
-import { AnimalsEnum, StatusEnum } from '../../../utils/consts';
+import { AnimalsEnum, StatusEnum } from '../../utils/consts';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
+import { getSuggestedDescription } from '../../services/AiService';
 
 export interface FormValues {
   status: (typeof StatusEnum)[keyof typeof StatusEnum];
@@ -65,6 +67,10 @@ export const FormFieldBox = ({
 const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // --- AI State Additions ---
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isAiAnalyzing, setIsAiAnalyzing] = useState(false);
+
   const getPreviewAndName = (image: string | FileList | null) => {
     if (typeof image === 'string') {
       return { url: image, name: 'Current Image' };
@@ -96,6 +102,13 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
     const { url, name } = getPreviewAndName(defaultValues.image);
     setPreviewUrl(url);
     setFileName(name);
+
+    // Sync uploadedFile state if defaultValues.image is already a FileList
+    if (defaultValues.image instanceof FileList && defaultValues.image.length > 0) {
+      setUploadedFile(defaultValues.image[0]);
+    } else {
+      setUploadedFile(null);
+    }
   }, [defaultValues, reset]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,6 +117,7 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
       setFileName(file.name);
       setPreviewUrl(URL.createObjectURL(file));
       setValue('image', event.target.files);
+      setUploadedFile(file); // Store file for AI analysis
     }
   };
 
@@ -112,7 +126,35 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
     setPreviewUrl(null);
     setFileName(null);
     setValue('image', null);
+    setUploadedFile(null); // Clear file from AI state
+
+    // Optional: Clear AI generated fields when image is removed (matching dev branch)
+    setValue('description', '');
+    setValue('animalType', '');
+
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  // --- AI Generation Logic ---
+  const handleGenerateAiSuggestion = async () => {
+    if (!uploadedFile) return;
+
+    setIsAiAnalyzing(true);
+    try {
+      const suggestion = await getSuggestedDescription(uploadedFile);
+      if (suggestion) {
+        // Added shouldValidate: true so react-hook-form clears any validation errors immediately
+        setValue('description', suggestion.description, { shouldValidate: true });
+        if (suggestion.animalType) {
+          setValue('animalType', suggestion.animalType, { shouldValidate: true });
+        }
+        toast.success('AI suggestion applied!');
+      }
+    } catch (error) {
+      toast.error('Failed to generate suggestion.');
+    } finally {
+      setIsAiAnalyzing(false);
+    }
   };
 
   return (
@@ -357,7 +399,56 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
       </Box>
 
       <FormFieldBox fullWidth>
-        <FormFieldLabel>DETAILED DESCRIPTION</FormFieldLabel>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '0.4rem',
+          }}
+        >
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.secondary' }}>
+            DETAILED DESCRIPTION
+          </Typography>
+          {isAiAnalyzing ? (
+            <Typography
+              sx={{
+                fontSize: '0.72rem',
+                color: 'primary.main',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+              }}
+            >
+              ✨ AI is analyzing image...
+            </Typography>
+          ) : uploadedFile ? (
+            <Box
+              onClick={handleGenerateAiSuggestion}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                cursor: 'pointer',
+                padding: '0.2rem 0.5rem',
+                borderRadius: '0.4rem',
+                backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                color: 'primary.main',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.15),
+                  transform: 'translateY(-1px)',
+                },
+              }}
+            >
+              <Typography sx={{ fontSize: '0.72rem', fontWeight: 700 }}>
+                ✨ Generate with AI
+              </Typography>
+            </Box>
+          ) : null}
+        </Box>
+
         <Box sx={errors.description ? errorInputSx : inputSx}>
           <InputBase
             placeholder="Include details like breed, collar color, behavior, etc."

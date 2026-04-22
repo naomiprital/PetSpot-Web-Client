@@ -1,9 +1,9 @@
 import { Box, Dialog, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
-import { StatusEnum } from '../../../utils/consts';
+import { StatusEnum } from '../../utils/consts';
 import ListingForm, { type FormValues } from './ListingForm';
-import { getLocalDateTimeString } from '../../../utils/usefulFunctions';
+import { getLocalDateTimeString } from '../../utils/usefulFunctions';
 
 interface PublishReportDialogProps {
   isOpen: boolean;
