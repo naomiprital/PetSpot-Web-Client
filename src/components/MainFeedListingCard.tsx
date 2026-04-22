@@ -18,7 +18,7 @@ import { useState } from 'react';
 import ListingDetailsDialog from './ListingDetailsDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
-import { onBoost, isUserBoostedListing } from '../../utils/usefulFunctions';
+import { onBoost, isUserBoostedListing } from '../../utils/utilsFunctions';
 
 export interface Comment {
   id: string;

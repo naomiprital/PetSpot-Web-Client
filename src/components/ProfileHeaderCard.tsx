@@ -1,12 +1,5 @@
 import { useState } from 'react';
-import {
-  Box,
-  Typography,
-  Button,
-  Divider,
-  alpha,
-  InputBase,
-} from '@mui/material';
+import { Box, Typography, Button, Divider, alpha, InputBase } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -38,7 +31,7 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
     firstName: '',
     lastName: '',
     phone: '',
-    avatarUrl: ''
+    avatarUrl: '',
   });
 
   const memberSinceYear = new Date(user.createdAt).getFullYear();
@@ -48,7 +41,7 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
       firstName: user.firstName,
       lastName: user.lastName,
       phone: user.phone,
-      avatarUrl: user.avatarUrl
+      avatarUrl: user.avatarUrl,
     });
     setIsEditingProfile(true);
   };
@@ -70,6 +63,7 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
       avatarUrl: editForm.avatarUrl,
     });
     setIsEditingProfile(false);
+    toast.success('Profile updated successfully!');
   };
 
   const handleAvatarFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
