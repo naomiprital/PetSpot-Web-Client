@@ -16,7 +16,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { AnimalsEnum, StatusEnum } from '../../utils/consts';
 import { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getSuggestedDescription } from '../services/aiSearch';
+import { getSuggestedDescription } from '../services/AiService';
 
 const getLocalDateTimeString = () => {
   const now = new Date();
@@ -161,6 +161,7 @@ const PublishReportDialog = ({ isOpen: open, onClose }: PublishReportDialogProps
     setFileName(null);
     setValue('image', null);
     setValue('description', '');
+    setValue('animalType', '');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
