@@ -65,7 +65,7 @@ const ProfilePage = () => {
             }}
           >
             {userListings.map((listing) => (
-              <UserListingCard listing={listing} />
+              <UserListingCard key={listing.id} listing={listing} />
             ))}
           </Box>
         )}

@@ -44,7 +44,6 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
     <>
       <Box
         onClick={() => setListingDetailsDialogOpen(true)}
-        key={listing.id}
         sx={{
           borderRadius: '1rem',
           overflow: 'hidden',
