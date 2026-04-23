@@ -17,7 +17,7 @@ const PAGE_SIZE = 3;
 
 const HomePage = () => {
   // const listings = useListings();
-  const { data: listings, isLoading, isError, error } = useListings();
+  const { data: listings, isLoading: isListingsLoading } = useListings();
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [type, setType] = useState<StatusFilter>('all');
