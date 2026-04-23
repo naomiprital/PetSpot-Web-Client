@@ -1,9 +1,12 @@
 import { Box, Dialog, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
-import { StatusEnum } from '../../utils/consts';
 import ListingForm, { type FormValues } from './ListingForm';
 import { getLocalDateTimeString } from '../../utils/utilsFunctions';
+import { ListingTypeEnum, type NewListing } from '../types/Listing';
+import { useCreateListing } from '../hooks/useListings';
+import moment from 'moment';
+// import { useAuthUser } from '../hooks/useAuthUser'; // TODO: Import your user state hook!
 
 interface PublishReportDialogProps {
   isOpen: boolean;
@@ -11,19 +14,37 @@ interface PublishReportDialogProps {
 }
 
 const PublishReportDialog = ({ isOpen, onClose }: PublishReportDialogProps) => {
-  const emptyValues: FormValues = {
-    status: StatusEnum.LOST,
+  const { mutateAsync: createListing } = useCreateListing();
+
+  // const { data: currentUser } = useAuthUser(); // TODO for real phone number
+
+  const emptyValues = {
+    listingType: ListingTypeEnum.LOST,
     animalType: '',
-    contactNumber: '',
-    lastSeenLocation: '',
-    dateTime: getLocalDateTimeString(),
+    location: '',
+    lastSeen: getLocalDateTimeString(),
     image: null,
     description: '',
-  };
+    contactNumber: '+972 50-000-0000', // TODO: currentUser?.phoneNumber
+  } as unknown as FormValues;
 
   const onSubmit = async (data: FormValues) => {
     try {
-      // TODO: replace with API call
+      const formData = new FormData();
+
+      formData.append('listingType', data.listingType);
+      formData.append('animalType', data.animalType);
+      formData.append('location', data.location);
+      formData.append('description', data.description);
+      const lastSeenTimestamp = moment(data.lastSeen).valueOf();
+      formData.append('lastSeen', lastSeenTimestamp.toString());
+
+      if (data.image instanceof FileList && data.image.length > 0) {
+        formData.append('image', data.image[0]);
+      }
+
+      await createListing(formData);
+
       toast.success('Report published successfully!');
       onClose();
     } catch (error) {

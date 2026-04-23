@@ -15,9 +15,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
 import { StatusEnum, AnimalsEnum } from '../../utils/consts';
+import type { ListingType, AnimalType } from '../types/Listing';
 
-export type StatusFilter = (typeof StatusEnum)[keyof typeof StatusEnum] | 'all';
-export type AnimalFilter = (typeof AnimalsEnum)[keyof typeof AnimalsEnum] | 'all';
+export type StatusFilter = ListingType | 'all';
+export type AnimalFilter = AnimalType | 'all';
 export type SortOrderFilter = 'newest' | 'oldest' | 'highest-boosted' | 'lowest-boosted';
 
 export interface FilterBarProps {

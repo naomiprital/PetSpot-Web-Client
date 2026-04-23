@@ -1,23 +1,25 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Box, Typography, CircularProgress, Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import MainFeedListingCard, { type Listing } from '../components/MainFeedListingCard';
+import MainFeedListingCard from '../components/MainFeedListingCard';
 import FilterBar, {
   type StatusFilter,
   type AnimalFilter,
   type SortOrderFilter,
 } from '../components/FilterBar';
-// import { useListings } from '../context/ListingsContext';
+import { useListingsOld } from '../context/ListingsContext';
 import PublishReportDialog from '../components/PublishReportDialog';
 import { toast } from 'react-toastify';
 import { rankListingsByDescription } from '../services/AiService';
 import { useListings } from '../hooks/useListings';
+import type { NewListing } from '../types/Listing';
 
 const PAGE_SIZE = 3;
 
 const HomePage = () => {
-  // const listings = useListings();
-  const { data: listings, isLoading: isListingsLoading } = useListings();
+  const listings = useListingsOld();
+
+  const { data: newListings, isLoading: isListingsLoading } = useListings();
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [type, setType] = useState<StatusFilter>('all');
@@ -50,8 +52,8 @@ const HomePage = () => {
   };
 
   const filteredListings = useMemo(() => {
-    if (listings?.length > 0) {
-      let filtered = listings?.filter((listing) => {
+    if (newListings?.length > 0) {
+      let filtered = newListings?.filter((listing: NewListing) => {
         const matchesSearch =
           aiRankedIds !== null
             ? true
@@ -79,7 +81,7 @@ const HomePage = () => {
 
       return filtered;
     }
-  }, [searchQuery, type, animal, sortOrder, aiRankedIds, listings]);
+  }, [searchQuery, type, animal, sortOrder, aiRankedIds, listings, newListings]);
 
   const visibleListings = filteredListings?.slice(0, page * PAGE_SIZE);
   const hasMore = visibleListings?.length < filteredListings?.length;
@@ -104,62 +106,66 @@ const HomePage = () => {
   }, [hasMore]);
 
   return (
-    <Box sx={{ padding: '2rem' }}>
-      <FilterBar
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        type={type}
-        setType={setType}
-        animal={animal}
-        setAnimal={setAnimal}
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
-        setAiQuery={setAiQuery}
-        isAiSearching={isAiSearching}
-        aiRankedIds={aiRankedIds}
-        onAiSearch={handleAiSearch}
-        onAiClear={handleAiClear}
-      />
-      <Box
-        sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '1.2rem',
-          justifyContent: 'center',
-        }}
-      >
-        {visibleListings?.map((listing) => (
-          <MainFeedListingCard key={listing.id} listing={listing} />
-        ))}
-        {filteredListings?.length === 0 && (
-          <Typography sx={{ color: 'text.secondary', marginTop: '2rem' }}>
-            No listings found matching your criteria.
-          </Typography>
-        )}
-      </Box>
-      <Box
-        ref={sentinelRef}
-        sx={{ display: 'flex', justifyContent: 'center', mt: '2rem', minHeight: '2rem' }}
-      >
-        {hasMore && <CircularProgress size={'3rem'} sx={{ color: 'primary.main' }} />}
-      </Box>
-      <Fab
-        color="primary"
-        onClick={() => setIsPublishDialogOpen(true)}
-        sx={{
-          position: 'fixed',
-          bottom: '2rem',
-          right: '2rem',
-        }}
-      >
-        <AddIcon />
-      </Fab>
+    <>
+      {!isListingsLoading && (
+        <Box sx={{ padding: '2rem' }}>
+          <FilterBar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            type={type}
+            setType={setType}
+            animal={animal}
+            setAnimal={setAnimal}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+            setAiQuery={setAiQuery}
+            isAiSearching={isAiSearching}
+            aiRankedIds={aiRankedIds}
+            onAiSearch={handleAiSearch}
+            onAiClear={handleAiClear}
+          />
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '1.2rem',
+              justifyContent: 'center',
+            }}
+          >
+            {visibleListings?.map((listing: NewListing) => (
+              <MainFeedListingCard key={listing._id} listing={listing} />
+            ))}
+            {filteredListings?.length === 0 && (
+              <Typography sx={{ color: 'text.secondary', marginTop: '2rem' }}>
+                No listings found matching your criteria.
+              </Typography>
+            )}
+          </Box>
+          <Box
+            ref={sentinelRef}
+            sx={{ display: 'flex', justifyContent: 'center', mt: '2rem', minHeight: '2rem' }}
+          >
+            {hasMore && <CircularProgress size={'3rem'} sx={{ color: 'primary.main' }} />}
+          </Box>
+          <Fab
+            color="primary"
+            onClick={() => setIsPublishDialogOpen(true)}
+            sx={{
+              position: 'fixed',
+              bottom: '2rem',
+              right: '2rem',
+            }}
+          >
+            <AddIcon />
+          </Fab>
 
-      <PublishReportDialog
-        isOpen={isPublishDialogOpen}
-        onClose={() => setIsPublishDialogOpen(false)}
-      />
-    </Box>
+          <PublishReportDialog
+            isOpen={isPublishDialogOpen}
+            onClose={() => setIsPublishDialogOpen(false)}
+          />
+        </Box>
+      )}
+    </>
   );
 };
 

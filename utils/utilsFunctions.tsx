@@ -1,4 +1,4 @@
-import type { Listing } from '../src/components/MainFeedListingCard';
+import type { NewListing } from '../src/types/Listing';
 
 export const getLocalDateTimeString = (timestamp?: number): string => {
   let date: Date;
@@ -18,7 +18,7 @@ export const onBoost = (event: React.MouseEvent<HTMLButtonElement>) => {
   // TODO: Implement boost functionality, remove user from boosts array if exists, add user to boosts array if not exists
 };
 
-export const isUserBoostedListing = (listing: Listing) => {
+export const isUserBoostedListing = (listing: NewListing) => {
   const currentUserId = 'id7'; // TODO: Change to user from context
   return listing.boosts.includes(currentUserId);
 };
