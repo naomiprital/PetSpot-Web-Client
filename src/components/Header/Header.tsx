@@ -37,18 +37,15 @@ const MenuCard = ({ anchorEl, handleClose }: MenuCardProps) => {
   const logoutMutation = useLogout();
 
   const handleLogout = async () => {
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (refreshToken) {
-      try {
-        await logoutMutation.mutateAsync(refreshToken);
-      } catch (error) {
-        toast.error('Failed to logout');
-      }
+    try {
+      await logoutMutation.mutateAsync();
+    } catch (error) {
+      toast.error('Failed to logout');
     }
+
     navigate('/auth');
     handleClose();
   };
-
   return (
     <Popper
       id={id}
@@ -140,7 +137,7 @@ const Header = () => {
           top: 0,
           zIndex: 100,
           borderBottom: '1px solid',
-          borderColor: 'grey.200'
+          borderColor: 'grey.200',
         }}
       >
         <Toolbar
