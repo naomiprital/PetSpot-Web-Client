@@ -38,3 +38,8 @@ export const isUserBoostedListingOld = (listing: Listing) => {
   const currentUserId = 'id7'; // TODO: Change to user from context
   return listing.boosts.includes(currentUserId);
 };
+
+export const capitalizeFirstLetter = (word: string): string => {
+  if (!word) return '';
+  return word.charAt(0).toUpperCase() + word.slice(1);
+};
