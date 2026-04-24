@@ -6,6 +6,7 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { useForm } from 'react-hook-form';
 import { useRegister, useLogin } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
+import { formatPhoneNumber, cleanPhoneNumber } from '../../utils/utilsFunctions';
 
 const inputSx = {
   backgroundColor: 'background.default',
@@ -119,13 +120,19 @@ const SignUp = () => {
       await registerMutation.mutateAsync(formData);
       toast.success('Registration successful!');
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
+      const errorMessage =
+        error.response?.data?.message || 'Registration failed. Please try again.';
       toast.error(errorMessage);
     }
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit, onInvalid)}
+      noValidate
+      sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+    >
       <Box sx={{ display: 'flex', gap: 2 }}>
         <Box sx={{ flex: 1, position: 'relative' }}>
           <InputLabel>First Name</InputLabel>
@@ -138,7 +145,16 @@ const SignUp = () => {
             />
           </Box>
           {errors.firstName && (
-            <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+            <Typography
+              sx={{
+                color: 'error.main',
+                fontSize: '0.7rem',
+                position: 'absolute',
+                bottom: '-1.125rem',
+                marginLeft: '0.25rem',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {errors.firstName.message as string}
             </Typography>
           )}
@@ -154,7 +170,16 @@ const SignUp = () => {
             />
           </Box>
           {errors.lastName && (
-            <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+            <Typography
+              sx={{
+                color: 'error.main',
+                fontSize: '0.7rem',
+                position: 'absolute',
+                bottom: '-1.125rem',
+                marginLeft: '0.25rem',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {errors.lastName.message as string}
             </Typography>
           )}
@@ -170,13 +195,22 @@ const SignUp = () => {
             type="email"
             {...register('email', {
               required: 'Email is required',
-              pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email' }
+              pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email' },
             })}
             sx={{ fontSize: '0.95rem', color: 'text.primary' }}
           />
         </Box>
         {errors.email && (
-          <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+          <Typography
+            sx={{
+              color: 'error.main',
+              fontSize: '0.7rem',
+              position: 'absolute',
+              bottom: '-1.125rem',
+              marginLeft: '0.25rem',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {errors.email.message as string}
           </Typography>
         )}
@@ -187,14 +221,23 @@ const SignUp = () => {
         <Box sx={errors.phone ? errorInputSx : inputSx}>
           <InputBase
             fullWidth
-            placeholder="+1 (555) 000-0000"
-            type="tel"
-            {...register('phone', { required: 'Phone Number is required' })}
+            placeholder="050-123-4567"
+            value={formatPhoneNumber(watch('phone'))}
+            onChange={(e) => setValue('phone', cleanPhoneNumber(e.target.value))}
             sx={{ fontSize: '0.95rem', color: 'text.primary' }}
           />
         </Box>
         {errors.phone && (
-          <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+          <Typography
+            sx={{
+              color: 'error.main',
+              fontSize: '0.7rem',
+              position: 'absolute',
+              bottom: '-1.125rem',
+              marginLeft: '0.25rem',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {errors.phone.message as string}
           </Typography>
         )}
@@ -209,13 +252,22 @@ const SignUp = () => {
             type="password"
             {...register('password', {
               required: 'Password is required',
-              minLength: { value: 5, message: 'Password must be at least 5 characters' }
+              minLength: { value: 5, message: 'Password must be at least 5 characters' },
             })}
             sx={{ fontSize: '0.95rem', color: 'text.primary' }}
           />
         </Box>
         {errors.password && (
-          <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+          <Typography
+            sx={{
+              color: 'error.main',
+              fontSize: '0.7rem',
+              position: 'absolute',
+              bottom: '-1.125rem',
+              marginLeft: '0.25rem',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {errors.password.message as string}
           </Typography>
         )}
@@ -240,7 +292,9 @@ const SignUp = () => {
             justifyContent: previewUrl ? 'space-between' : 'center',
             gap: 1,
             backgroundColor: theme.palette.background.default,
-            border: previewUrl ? `0.125rem solid ${theme.palette.primary.main}40` : `0.125rem dashed ${theme.palette.grey[400]}`,
+            border: previewUrl
+              ? `0.125rem solid ${theme.palette.primary.main}40`
+              : `0.125rem dashed ${theme.palette.grey[400]}`,
             borderRadius: '0.75rem',
             padding: previewUrl ? '0.375rem 0.625rem' : '0.625rem 0.875rem',
             cursor: 'pointer',
@@ -253,8 +307,12 @@ const SignUp = () => {
         >
           {!previewUrl ? (
             <>
-              <CloudUploadOutlinedIcon sx={{ color: theme.palette.text.secondary, fontSize: '1.2rem' }} />
-              <Typography sx={{ color: theme.palette.text.secondary, fontSize: '0.9rem', fontWeight: 500 }}>
+              <CloudUploadOutlinedIcon
+                sx={{ color: theme.palette.text.secondary, fontSize: '1.2rem' }}
+              />
+              <Typography
+                sx={{ color: theme.palette.text.secondary, fontSize: '0.9rem', fontWeight: 500 }}
+              >
                 Tap to upload your photo
               </Typography>
             </>

@@ -7,6 +7,8 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { useUser, useUpdateUser } from '../hooks/useUsers';
 import { toast } from 'react-toastify';
 import { SERVER_BASE_URL } from '../../utils/consts';
+import { formatPhoneNumber, cleanPhoneNumber } from '../../utils/utilsFunctions';
+
 
 const inputSx = {
   backgroundColor: 'background.default',
@@ -296,9 +298,9 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
             {isEditingProfile ? (
               <Box sx={{ ...inputSx, mt: '0.15rem', width: '11rem' }}>
                 <InputBase
-                  value={editForm.phoneNumber}
+                  value={formatPhoneNumber(editForm.phoneNumber)}
                   onChange={(event) =>
-                    setEditForm({ ...editForm, phoneNumber: event.target.value })
+                    setEditForm({ ...editForm, phoneNumber: cleanPhoneNumber(event.target.value) })
                   }
                   placeholder="Phone number"
                   sx={{ fontSize: '1rem', color: 'text.primary', width: '100%' }}
@@ -306,9 +308,10 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
               </Box>
             ) : (
               <Typography sx={{ fontSize: '1rem', color: 'text.primary' }}>
-                {user.phoneNumber}
+                {formatPhoneNumber(user.phoneNumber)}
               </Typography>
             )}
+
           </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: { xs: '2.5rem', sm: '5rem' }, alignItems: 'center' }}>

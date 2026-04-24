@@ -18,6 +18,8 @@ import { toast } from 'react-toastify';
 import { AnimalTypeEnum, LISTING_TYPES, ListingTypeEnum, type ListingType } from '../types/Listing';
 import { useSuggestDescription } from '../hooks/useAi';
 import { SERVER_BASE_URL } from '../../utils/consts';
+import { formatPhoneNumber } from '../../utils/utilsFunctions';
+
 
 export interface FormValues {
   listingType: ListingType;
@@ -287,7 +289,7 @@ const ListingForm = ({
             <Tooltip title={'To change contact number, please update your profile settings'} arrow>
               <InputBase
                 disabled
-                placeholder={defaultValues.contactNumber}
+                placeholder={formatPhoneNumber(defaultValues.contactNumber)}
                 fullWidth
                 sx={{
                   fontSize: '0.95rem',
@@ -296,6 +298,7 @@ const ListingForm = ({
                   },
                 }}
               />
+
             </Tooltip>
           </Box>
         </FormFieldBox>

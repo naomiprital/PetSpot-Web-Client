@@ -27,8 +27,8 @@ import { SERVER_BASE_URL } from '../../utils/consts';
 import useCreateComment from '../hooks/useComments';
 import type { Comment } from '../types/Comment';
 import { useToggleBoostListing } from '../hooks/useListings';
-import type { User } from '../types/User';
 import { useUser } from '../hooks/useUsers';
+import { formatPhoneNumber } from '../../utils/utilsFunctions';
 
 interface DetailRowProps {
   icon: React.ReactNode;
@@ -256,7 +256,9 @@ const ListingDetailsDialog = ({
             >
               <PhoneIcon sx={{ color: 'white' }} />
               <Typography sx={{ color: 'white', fontWeight: copied ? 'bold' : 'normal' }}>
-                {copied ? 'Number Copied!' : `Call Lister (${listing.author?.phoneNumber})`}
+                {copied
+                  ? 'Number Copied!'
+                  : `Call Lister (${formatPhoneNumber(listing.author?.phoneNumber)})`}
               </Typography>
             </Box>
 
