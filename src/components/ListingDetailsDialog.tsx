@@ -23,14 +23,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import UserDetailDialog from './UserDetailDialog';
 import { ListingTypeEnum, type NewListing } from '../types/Listing';
+import { SERVER_BASE_URL } from '../../utils/consts';
 
 interface DetailRowProps {
   icon: React.ReactNode;
   title: string;
   value: string;
 }
-
-const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL || 'http://localhost:8080';
 
 const DetailRow = ({ icon, title, value }: DetailRowProps) => {
   return (
