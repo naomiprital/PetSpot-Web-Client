@@ -1,4 +1,3 @@
-// 1. Remove BrowserRouter from the import
 import { Routes, Route, useLocation } from 'react-router-dom';
 import AuthPage from './pages/AuthPage';
 import ProtectedRoute from './api/routes/ProtectedRoute';

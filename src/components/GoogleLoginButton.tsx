@@ -53,7 +53,6 @@ const GoogleLoginButton = () => {
       setIsPhoneDialogOpen(false);
 
       if (tempGoogleResponse) {
-        // 🔥 3. Use mutateAsync and pass the single object!
         await googleLoginMutation.mutateAsync({
           credentials: tempGoogleResponse,
           phoneNumber: phoneNumber,
@@ -63,7 +62,6 @@ const GoogleLoginButton = () => {
       }
     } catch (error) {
       toast.error('Login failed. Please try again.');
-      // If it fails, you might want to re-open the dialog so they can try again
       setIsPhoneDialogOpen(true);
     } finally {
       setIsGoogleLoading(false);
