@@ -6,7 +6,6 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { useForm } from 'react-hook-form';
 import { useRegister, useLogin } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
-import { useUser } from '../context/UserContext';
 
 const inputSx = {
   backgroundColor: 'background.default',
@@ -36,7 +35,6 @@ const InputLabel = styled(Typography)(({ theme }) => ({
 
 const SignUp = () => {
   const theme = useTheme();
-  const { setUser } = useUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -113,46 +111,13 @@ const SignUp = () => {
       formData.append('email', data.email);
       formData.append('phoneNumber', data.phone);
       formData.append('password', data.password);
-      
+
       if (data.profileImage && data.profileImage.length > 0) {
         formData.append('image', data.profileImage[0]);
       }
 
-      const response: any = await registerMutation.mutateAsync(formData);
-
-      let loggedInUser = response.user || response;
-      let token = response.token || response.accessToken;
-      let refreshToken = response.refreshToken;
-      if (!token) {
-        try {
-          const loginResponse: any = await loginMutation.mutateAsync({
-            email: data.email,
-            password: data.password,
-          });
-          loggedInUser = loginResponse.user || loginResponse;
-          token = loginResponse.token || loginResponse.accessToken;
-          refreshToken = loginResponse.refreshToken;
-        } catch (loginError) {
-          toast.info('Registration successful! Please log in.');
-          return;
-        }
-      }
-
-      if (token) {
-        localStorage.setItem('token', token);
-      }
-      if (refreshToken) {
-        localStorage.setItem('refreshToken', refreshToken);
-      }
-
-      const userId = loggedInUser._id || loggedInUser.id;
-
-      setUser(loggedInUser);
+      await registerMutation.mutateAsync(formData);
       toast.success('Registration successful!');
-
-      if (userId) {
-        localStorage.setItem('userId', userId);
-      }
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
       toast.error(errorMessage);

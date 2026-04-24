@@ -39,7 +39,7 @@ const mockListings: Listing[] = [
       imageUrl:
         'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
       email: 'john@example.com',
-      phoneNumber: '1234567890',
+      phone: '1234567890',
     },
     isResolved: false,
     isDeleted: false,
@@ -103,7 +103,7 @@ const mockListings: Listing[] = [
       imageUrl:
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
       email: 'sarah@example.com',
-      phoneNumber: '1234567890',
+      phone: '1234567890',
     },
     isResolved: false,
     isDeleted: false,
@@ -126,7 +126,7 @@ const mockListings: Listing[] = [
       imageUrl:
         'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
       email: 'mike@example.com',
-      phoneNumber: '1234567890',
+      phone: '1234567890',
     },
     isResolved: false,
     isDeleted: false,
@@ -210,7 +210,7 @@ const mockListings: Listing[] = [
       imageUrl:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
       email: 'emma@example.com',
-      phoneNumber: '1234567890',
+      phone: '1234567890',
     },
     isResolved: false,
     isDeleted: false,
@@ -233,7 +233,7 @@ const mockListings: Listing[] = [
       imageUrl:
         'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=100&q=80',
       email: 'yael@example.com',
-      phoneNumber: '+972501234567',
+      phone: '+972501234567',
     },
     isResolved: false,
     isDeleted: false,
@@ -267,7 +267,7 @@ const mockListings: Listing[] = [
       imageUrl:
         'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80',
       email: 'noa@example.com',
-      phoneNumber: '+972509876543',
+      phone: '+972509876543',
     },
     isResolved: false,
     isDeleted: false,
@@ -290,7 +290,7 @@ const mockListings: Listing[] = [
       imageUrl:
         'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
       email: 'avi@example.com',
-      phoneNumber: '+972521112222',
+      phone: '+972521112222',
     },
     isResolved: false,
     isDeleted: false,
@@ -324,7 +324,7 @@ const mockListings: Listing[] = [
       imageUrl:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
       email: 'roni@example.com',
-      phoneNumber: '+972531231234',
+      phone: '+972531231234',
     },
     isResolved: false,
     isDeleted: false,
@@ -347,7 +347,7 @@ const mockListings: Listing[] = [
       imageUrl:
         'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=100&q=80',
       email: 'maya@example.com',
-      phoneNumber: '+972541234567',
+      phone: '+972541234567',
     },
     isResolved: false,
     isDeleted: false,
@@ -381,7 +381,7 @@ const mockListings: Listing[] = [
       imageUrl:
         'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80',
       email: 'shira@example.com',
-      phoneNumber: '+972551112233',
+      phone: '+972551112233',
     },
     isResolved: false,
     isDeleted: false,

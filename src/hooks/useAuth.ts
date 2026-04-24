@@ -6,8 +6,17 @@ export const useRegister = () => {
 
   return useMutation({
     mutationFn: register,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['auth'] });
+    onSuccess: (response: any) => {
+      const user = response.user || response;
+      const token = response.token || response.accessToken;
+      const refreshToken = response.refreshToken;
+      const userId = user._id || user.id;
+
+      if (token) localStorage.setItem('token', token);
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+      if (userId) localStorage.setItem('userId', userId);
+
+      queryClient.setQueryData(['auth'], user);
     },
   });
 };
@@ -17,8 +26,17 @@ export const useLogin = () => {
 
   return useMutation({
     mutationFn: login,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['auth'] });
+    onSuccess: (response: any) => {
+      const user = response.user || response;
+      const token = response.token || response.accessToken;
+      const refreshToken = response.refreshToken;
+      const userId = user._id || user.id;
+
+      if (token) localStorage.setItem('token', token);
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+      if (userId) localStorage.setItem('userId', userId);
+
+      queryClient.setQueryData(['auth'], user);
     },
   });
 };
@@ -29,7 +47,10 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['auth'] });
+      localStorage.removeItem('userId');
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      queryClient.setQueryData(['auth'], null);
     },
   });
 };
@@ -39,7 +60,9 @@ export const useRefreshToken = () => {
 
   return useMutation({
     mutationFn: refreshToken,
-    onSuccess: () => {
+    onSuccess: (response: any) => {
+      if (response.token) localStorage.setItem('token', response.token);
+      if (response.refreshToken) localStorage.setItem('refreshToken', response.refreshToken);
       queryClient.invalidateQueries({ queryKey: ['auth'] });
     },
   });
