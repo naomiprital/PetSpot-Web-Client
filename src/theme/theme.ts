@@ -4,14 +4,11 @@ import '@fontsource/heebo/600.css';
 import '@fontsource/heebo/700.css';
 import '@fontsource/heebo/800.css';
 
-export const GOOGLE_COLORS = {
+export const GOOGLE_AUTH_COLORS = {
   blue: '#4285F4',
   green: '#34A853',
   yellow: '#FBBC05',
   red: '#EA4335',
-} as const;
-
-export const GOOGLE_PHONE_DIALOG_COLORS = {
   orange: '#FF7A1F',
   orangeHover: '#E66A10',
   orangeDisabled: '#FFB885',

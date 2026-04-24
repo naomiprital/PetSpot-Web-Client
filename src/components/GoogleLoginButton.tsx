@@ -1,6 +1,6 @@
 import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
 import { useState } from 'react';
-import theme, { GOOGLE_COLORS, GOOGLE_PHONE_DIALOG_COLORS } from '../theme/theme';
+import theme, { GOOGLE_AUTH_COLORS } from '../theme/theme';
 import { Box, Button, Divider, Typography, Dialog, InputBase } from '@mui/material';
 import { useGoogleAuth } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
@@ -11,19 +11,19 @@ const GoogleLogo = () => (
     <g fill="none" fillRule="evenodd">
       <path
         d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
-        fill={GOOGLE_COLORS.blue}
+        fill={GOOGLE_AUTH_COLORS.blue}
       />
       <path
         d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"
-        fill={GOOGLE_COLORS.green}
+        fill={GOOGLE_AUTH_COLORS.green}
       />
       <path
         d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"
-        fill={GOOGLE_COLORS.yellow}
+        fill={GOOGLE_AUTH_COLORS.yellow}
       />
       <path
         d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
-        fill={GOOGLE_COLORS.red}
+        fill={GOOGLE_AUTH_COLORS.red}
       />
     </g>
   </svg>
@@ -161,7 +161,7 @@ const GoogleLoginButton = () => {
             width: 56,
             height: 56,
             borderRadius: '1.125rem',
-            backgroundColor: GOOGLE_PHONE_DIALOG_COLORS.lightOrange,
+            backgroundColor: GOOGLE_AUTH_COLORS.lightOrange,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -173,7 +173,7 @@ const GoogleLoginButton = () => {
           <Typography sx={{
             fontSize: '1.35rem',
             fontWeight: 700,
-            color: GOOGLE_PHONE_DIALOG_COLORS.darkText,
+            color: GOOGLE_AUTH_COLORS.darkText,
             mb: 0.75,
             textAlign: 'center'
           }}>
@@ -182,7 +182,7 @@ const GoogleLoginButton = () => {
 
           <Typography sx={{
             fontSize: '0.85rem',
-            color: GOOGLE_PHONE_DIALOG_COLORS.grayText,
+            color: GOOGLE_AUTH_COLORS.grayText,
             textAlign: 'center',
             mb: 3.5,
             fontWeight: 500
@@ -194,7 +194,7 @@ const GoogleLoginButton = () => {
             <Typography sx={{
               fontSize: '0.7rem',
               fontWeight: 800,
-              color: GOOGLE_PHONE_DIALOG_COLORS.lightGrayText,
+              color: GOOGLE_AUTH_COLORS.lightGrayText,
               mb: 1,
               letterSpacing: '0.05em'
             }}>
@@ -228,8 +228,8 @@ const GoogleLoginButton = () => {
                 flex: 1,
                 py: 1.5,
                 borderRadius: '1rem',
-                backgroundColor: GOOGLE_PHONE_DIALOG_COLORS.cancelBg,
-                color: GOOGLE_PHONE_DIALOG_COLORS.cancelText,
+                backgroundColor: GOOGLE_AUTH_COLORS.cancelBg,
+                color: GOOGLE_AUTH_COLORS.cancelText,
                 fontWeight: 700,
                 fontSize: '0.9rem',
                 textTransform: 'none',
@@ -248,18 +248,18 @@ const GoogleLoginButton = () => {
                 flex: 1.8,
                 py: 1.5,
                 borderRadius: '1rem',
-                backgroundColor: GOOGLE_PHONE_DIALOG_COLORS.orange,
+                backgroundColor: GOOGLE_AUTH_COLORS.orange,
                 color: 'white',
                 fontWeight: 700,
                 fontSize: '0.9rem',
                 textTransform: 'none',
                 boxShadow: 'none',
                 '&:hover': {
-                  backgroundColor: GOOGLE_PHONE_DIALOG_COLORS.orangeHover,
+                  backgroundColor: GOOGLE_AUTH_COLORS.orangeHover,
                   boxShadow: 'none',
                 },
                 '&.Mui-disabled': {
-                  backgroundColor: GOOGLE_PHONE_DIALOG_COLORS.orangeDisabled,
+                  backgroundColor: GOOGLE_AUTH_COLORS.orangeDisabled,
                   color: 'white'
                 }
               }}
