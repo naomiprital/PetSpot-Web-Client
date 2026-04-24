@@ -80,6 +80,7 @@ const HomePage = () => {
 
     return [...aiListings, ...uniqueStandardResults];
   }, [aiListings, filteredListings]);
+
   const visibleListings = activeDataSource?.slice(0, page * PAGE_SIZE);
   const hasMore = visibleListings?.length < activeDataSource?.length;
 

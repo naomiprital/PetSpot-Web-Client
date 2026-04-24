@@ -61,7 +61,7 @@ interface ListingDetailsDialogProps {
   open: boolean;
   onClose: () => void;
   listing: NewListing;
-  onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onBoost: () => void;
   isUserBoostedListing: (listing: NewListing) => boolean;
 }
 

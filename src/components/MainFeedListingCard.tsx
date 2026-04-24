@@ -17,8 +17,9 @@ import { useState } from 'react';
 import ListingDetailsDialog from './ListingDetailsDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
-import { onBoost, isUserBoostedListing } from '../../utils/utilsFunctions';
+import { isUserBoostedListing } from '../../utils/utilsFunctions';
 import { ListingTypeEnum, type NewListing } from '../types/Listing';
+import { useToggleBoostListing } from '../hooks/useListings';
 
 const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL || 'http://localhost:8080';
 
@@ -58,7 +59,12 @@ interface MainFeedListingCardProps {
 }
 
 const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
+  const { mutateAsync: boostListing } = useToggleBoostListing();
   const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);
+
+  const handleBoostToggle = () => {
+    boostListing(listing._id);
+  };
 
   return (
     <>
@@ -213,7 +219,7 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
                       }}
                       onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
                         event.stopPropagation();
-                        onBoost(event);
+                        boostListing(listing._id);
                       }}
                     >
                       <FontAwesomeIcon size="xs" icon={faPaw} />
@@ -237,7 +243,7 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
         onClose={() => setListingDetailsDialogOpen(false)}
         listing={listing}
         isUserBoostedListing={isUserBoostedListing}
-        onBoost={onBoost}
+        onBoost={handleBoostToggle}
       />
     </>
   );

@@ -13,12 +13,17 @@ export const getLocalDateTimeString = (timestamp?: number): string => {
   return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 };
 
-export const onBoost = (event: React.MouseEvent<HTMLButtonElement>) => {
-  event.stopPropagation();
-  // TODO: Implement boost functionality, remove user from boosts array if exists, add user to boosts array if not exists
-};
-
 export const isUserBoostedListing = (listing: NewListing) => {
-  const currentUserId = 'id7'; // TODO: Change to user from context
-  return listing.boosts.includes(currentUserId);
+  const mockCurrentUser = {
+    email: 'test@petspot.com',
+    firstName: 'EditTest',
+    lastName: 'User',
+    imageUrl: '/uploads/image-1776958285085-255795376.jpg',
+    phoneNumber: '0505555555',
+    createdAt: '2026-04-24T15:09:10.000Z',
+    updatedAt: '2026-04-24T15:09:10.000Z',
+    __v: 0,
+    _id: '69ea15caf50dc5ada02bc866',
+  }; // todo: change to real user
+  return listing.boosts.includes(mockCurrentUser._id);
 };

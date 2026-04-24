@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createListing, fetchAllListings } from '../services/listingService';
+import { toggleBoostListing, createListing, fetchAllListings } from '../services/listingService';
 
 export const useListings = () => {
   return useQuery({
@@ -13,6 +13,17 @@ export const useCreateListing = () => {
 
   return useMutation({
     mutationFn: createListing,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+    },
+  });
+};
+
+export const useToggleBoostListing = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: toggleBoostListing,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['listings'] });
     },
