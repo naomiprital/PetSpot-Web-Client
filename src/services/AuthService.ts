@@ -8,8 +8,8 @@ export const login = async (userData: Pick<User, 'email' | 'password'>) => {
   return data;
 };
 
-export const register = async (userData: User) => {
-  const { data } = await api.post<User>(`${AUTH_ROUTE}/register`, userData);
+export const register = async (userData: FormData) => {
+  const { data } = await api.post(`${AUTH_ROUTE}/register`, userData);
   return data;
 };
 

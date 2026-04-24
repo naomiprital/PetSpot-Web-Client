@@ -108,16 +108,18 @@ const SignUp = () => {
 
   const onSubmit = async (data: any) => {
     try {
-      const userData = {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phoneNumber: data.phone,
-        password: data.password,
-        imageUrl: data.profileImage ? data.profileImage[0] : '',
-      };
+      const formData = new FormData();
+      formData.append('firstName', data.firstName);
+      formData.append('lastName', data.lastName);
+      formData.append('email', data.email);
+      formData.append('phoneNumber', data.phone);
+      formData.append('password', data.password);
+      
+      if (data.profileImage && data.profileImage.length > 0) {
+        formData.append('image', data.profileImage[0]);
+      }
 
-      const response: any = await registerMutation.mutateAsync(userData);
+      const response: any = await registerMutation.mutateAsync(formData);
 
       let loggedInUser = response.user || response;
       let token = response.token || response.accessToken;
