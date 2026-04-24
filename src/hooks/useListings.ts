@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createListing, fetchAllListings } from '../services/listingService';
 
 export const useListings = () => {
@@ -9,7 +9,12 @@ export const useListings = () => {
 };
 
 export const useCreateListing = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: createListing,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+    },
   });
 };

@@ -6,6 +6,7 @@ import { getLocalDateTimeString } from '../../utils/utilsFunctions';
 import { ListingTypeEnum, type NewListing } from '../types/Listing';
 import { useCreateListing } from '../hooks/useListings';
 import moment from 'moment';
+import { useMemo } from 'react';
 // import { useAuthUser } from '../hooks/useAuthUser'; // TODO: Import your user state hook!
 
 interface PublishReportDialogProps {
@@ -14,19 +15,32 @@ interface PublishReportDialogProps {
 }
 
 const PublishReportDialog = ({ isOpen, onClose }: PublishReportDialogProps) => {
-  const { mutateAsync: createListing } = useCreateListing();
+  const { mutateAsync: createListing, isPending: isCreateListingPending } = useCreateListing();
 
   // const { data: currentUser } = useAuthUser(); // TODO for real phone number
+  const mockCurrentUser = {
+    email: 'test@petspot.com',
+    firstName: 'EditTest',
+    lastName: 'User',
+    imageUrl: '/uploads/image-1776958285085-255795376.jpg',
+    phoneNumber: '0505555555',
+    createdAt: '2026-04-24T15:09:10.000Z',
+    updatedAt: '2026-04-24T15:09:10.000Z',
+    __v: 0,
+    _id: '69ea15caf50dc5ada02bc866',
+  };
 
-  const emptyValues = {
-    listingType: ListingTypeEnum.LOST,
-    animalType: '',
-    location: '',
-    lastSeen: getLocalDateTimeString(),
-    image: null,
-    description: '',
-    contactNumber: '+972 50-000-0000', // TODO: currentUser?.phoneNumber
-  } as unknown as FormValues;
+  const emptyValues = useMemo(() => {
+    return {
+      listingType: ListingTypeEnum.LOST,
+      animalType: '',
+      contactNumber: mockCurrentUser.phoneNumber,
+      location: '',
+      lastSeen: getLocalDateTimeString(),
+      image: null,
+      description: '',
+    } as unknown as FormValues;
+  }, [isOpen, mockCurrentUser.phoneNumber]);
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -36,8 +50,7 @@ const PublishReportDialog = ({ isOpen, onClose }: PublishReportDialogProps) => {
       formData.append('animalType', data.animalType);
       formData.append('location', data.location);
       formData.append('description', data.description);
-      const lastSeenTimestamp = moment(data.lastSeen).valueOf();
-      formData.append('lastSeen', lastSeenTimestamp.toString());
+      formData.append('lastSeen', moment(data.lastSeen).valueOf().toString());
 
       if (data.image instanceof FileList && data.image.length > 0) {
         formData.append('image', data.image[0]);
@@ -88,6 +101,7 @@ const PublishReportDialog = ({ isOpen, onClose }: PublishReportDialogProps) => {
         defaultValues={emptyValues}
         submitButtonText="Publish Report"
         onSubmit={onSubmit}
+        isPending={isCreateListingPending}
       />
     </Dialog>
   );

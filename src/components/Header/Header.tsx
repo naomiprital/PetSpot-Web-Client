@@ -31,7 +31,18 @@ const MenuCard = ({ anchorEl, handleClose, onLogout }: MenuCardProps) => {
   const menuCardOpen = Boolean(anchorEl);
   const id = menuCardOpen ? 'simple-popper' : undefined;
   const navigate = useNavigate();
-  const { user } = useUser();
+  // const { user } = useUser();
+  const mockCurrentUser = {
+    email: 'test@petspot.com',
+    firstName: 'EditTest',
+    lastName: 'User',
+    imageUrl: '/uploads/image-1776958285085-255795376.jpg',
+    phoneNumber: '0505555555',
+    createdAt: '2026-04-24T15:09:10.000Z',
+    updatedAt: '2026-04-24T15:09:10.000Z',
+    __v: 0,
+    _id: '69ea15caf50dc5ada02bc866',
+  };
 
   return (
     <Popper
@@ -51,8 +62,12 @@ const MenuCard = ({ anchorEl, handleClose, onLogout }: MenuCardProps) => {
         }}
       >
         <Box sx={{ margin: '1rem' }}>
-          <Typography sx={{ fontSize: '1.1rem' }}>{user.firstName} {user.lastName}</Typography>
-          <Typography sx={{ fontSize: '0.9rem', color: 'text.secondary' }}>{user.email}</Typography>
+          <Typography sx={{ fontSize: '1.1rem' }}>
+            {mockCurrentUser.firstName} {mockCurrentUser.lastName}
+          </Typography>
+          <Typography sx={{ fontSize: '0.9rem', color: 'text.secondary' }}>
+            {mockCurrentUser.email}
+          </Typography>
         </Box>
         <Divider />
         <MenuList>

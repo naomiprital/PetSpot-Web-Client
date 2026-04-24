@@ -2,6 +2,7 @@ import {
   alpha,
   Avatar,
   Box,
+  Button,
   IconButton,
   InputBase,
   MenuItem,
@@ -14,8 +15,8 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { Controller, useForm } from 'react-hook-form';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getSuggestedDescription } from '../services/AiService';
 import { AnimalTypeEnum, LISTING_TYPES, ListingTypeEnum, type ListingType } from '../types/Listing';
+import { useSuggestDescription } from '../hooks/useAi';
 
 export interface FormValues {
   listingType: ListingType;
@@ -31,6 +32,7 @@ interface ListingFormProps {
   defaultValues: FormValues;
   submitButtonText: string;
   onSubmit: (data: FormValues) => void;
+  isPending?: boolean;
 }
 
 const inputSx = {
@@ -65,12 +67,15 @@ export const FormFieldBox = ({
   </Box>
 );
 
-const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormProps) => {
+const ListingForm = ({
+  defaultValues,
+  submitButtonText,
+  onSubmit,
+  isPending,
+}: ListingFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // --- AI State Additions ---
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [isAiAnalyzing, setIsAiAnalyzing] = useState(false);
+  const { mutateAsync: suggestDescription, isPending: isAiAnalyzing } = useSuggestDescription();
 
   const getPreviewAndName = (image: string | FileList | null) => {
     if (typeof image === 'string') {
@@ -81,7 +86,6 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
     }
     return { url: null, name: null };
   };
-
   const initialPreview = getPreviewAndName(defaultValues.image);
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialPreview.url);
   const [fileName, setFileName] = useState<string | null>(initialPreview.name);
@@ -104,7 +108,6 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
     setPreviewUrl(url);
     setFileName(name);
 
-    // Sync uploadedFile state if defaultValues.image is already a FileList
     if (defaultValues.image instanceof FileList && defaultValues.image.length > 0) {
       setUploadedFile(defaultValues.image[0]);
     } else {
@@ -118,7 +121,7 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
       setFileName(file.name);
       setPreviewUrl(URL.createObjectURL(file));
       setValue('image', event.target.files);
-      setUploadedFile(file); // Store file for AI analysis
+      setUploadedFile(file);
     }
   };
 
@@ -127,34 +130,29 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
     setPreviewUrl(null);
     setFileName(null);
     setValue('image', null);
-    setUploadedFile(null); // Clear file from AI state
+    setUploadedFile(null);
 
-    // Optional: Clear AI generated fields when image is removed (matching dev branch)
     setValue('description', '');
     setValue('animalType', '');
 
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  // --- AI Generation Logic ---
   const handleGenerateAiSuggestion = async () => {
     if (!uploadedFile) return;
 
-    setIsAiAnalyzing(true);
     try {
-      const suggestion = await getSuggestedDescription(uploadedFile);
+      const suggestion = await suggestDescription(uploadedFile);
+
       if (suggestion) {
-        // Added shouldValidate: true so react-hook-form clears any validation errors immediately
         setValue('description', suggestion.description, { shouldValidate: true });
         if (suggestion.animalType) {
-          setValue('animalType', suggestion.animalType, { shouldValidate: true });
+          setValue('animalType', suggestion.animalType.toLowerCase(), { shouldValidate: true });
         }
         toast.success('AI suggestion applied!');
       }
     } catch (error) {
       toast.error('Failed to generate suggestion.');
-    } finally {
-      setIsAiAnalyzing(false);
     }
   };
 
@@ -470,8 +468,8 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
         )}
       </FormFieldBox>
 
-      <Box
-        component="button"
+      <Button
+        disabled={isPending}
         type="submit"
         sx={(theme) => ({
           padding: '1rem',
@@ -485,10 +483,11 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
           cursor: 'pointer',
           fontFamily: 'inherit',
           '&:hover': { backgroundColor: alpha(theme.palette.primary.main, 0.85) },
+          textTransform: 'none',
         })}
       >
         {submitButtonText}
-      </Box>
+      </Button>
     </Box>
   );
 };
