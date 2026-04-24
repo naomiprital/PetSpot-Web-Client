@@ -42,7 +42,6 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
   const { data: user } = useUser();
 
   const onResolveListing = (listing: Listing) => {
-    // make sure a reunion is updated in the top profile section
     resolveListing(listing._id);
     setResolveDialogOpen(false);
   };
@@ -261,7 +260,6 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
         open={resolveDialogOpen}
         onClose={() => setResolveDialogOpen(false)}
         onConfirm={() => {
-          // TODO: handle resolve listing
           onResolveListing(listing);
           setResolveDialogOpen(false);
         }}
