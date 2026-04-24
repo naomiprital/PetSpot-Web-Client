@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form';
 import { useRegister, useLogin } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
 import { useUser } from '../context/UserContext';
-import { getUser } from '../services/UserService';
 
 const inputSx = {
   backgroundColor: 'background.default',
@@ -153,12 +152,6 @@ const SignUp = () => {
 
       if (userId) {
         localStorage.setItem('userId', userId);
-        try {
-          const fullUserData = await getUser(userId);
-          setUser(fullUserData);
-        } catch (fetchError) {
-          toast.error('Failed to load full user data.');
-        }
       }
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';

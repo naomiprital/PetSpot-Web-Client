@@ -6,7 +6,6 @@ import GoogleAuthButton from './GoogleAuthButton';
 import { useLogin } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
 import { useUser } from '../context/UserContext';
-import { getUser } from '../services/UserService';
 
 const inputSx = {
   backgroundColor: 'background.default',
@@ -78,12 +77,6 @@ const Login = ({ onForgotPassword }: LoginProps) => {
 
       if (userId) {
         localStorage.setItem('userId', userId);
-        try {
-          const fullUserData = await getUser(userId);
-          setUser(fullUserData);
-        } catch (fetchError) {
-          toast.error('Failed to fetch user data.');
-        }
       }
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
