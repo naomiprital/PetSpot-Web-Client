@@ -108,7 +108,7 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
             }}
           />
           <Chip
-            label={listing.animalType}
+            label={listing.animalType.toUpperCase()}
             sx={{
               position: 'absolute',
               top: '1rem',
