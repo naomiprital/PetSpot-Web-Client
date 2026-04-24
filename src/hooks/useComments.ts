@@ -25,8 +25,7 @@ const useCreateComment = () => {
       });
       toast.success('Comment added successfully!');
     },
-    onError: (error) => {
-      console.log(error);
+    onError: () => {
       toast.error('Failed to add comment');
     },
   });
