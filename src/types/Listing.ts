@@ -1,4 +1,4 @@
-import type { NewComment } from './Comment';
+import type { Comment } from './Comment';
 import type { User } from './User';
 
 export const ANIMAL_TYPES = ['dog', 'cat', 'bird', 'rabbit', 'hamster', 'horse', 'other'] as const;
@@ -20,7 +20,7 @@ export const AnimalTypeEnum = {
   OTHER: 'other',
 } as const;
 
-export interface NewListing {
+export interface Listing {
   _id?: string;
   listingType: ListingType;
   animalType: AnimalType;
@@ -28,7 +28,7 @@ export interface NewListing {
   location: string;
   lastSeen: number;
   description: string;
-  comments: NewComment[];
+  comments: Comment[];
   boosts: string[];
   author: User;
   aiVisualTags?: string;

@@ -7,7 +7,7 @@ import { ListingTypeEnum } from '../types/Listing';
 import { useCreateListing } from '../hooks/useListings';
 import moment from 'moment';
 import { useMemo } from 'react';
-// import { useAuthUser } from '../hooks/useAuthUser'; // TODO: Import your user state hook!
+import { useUser } from '../hooks/useUsers';
 
 interface PublishReportDialogProps {
   isOpen: boolean;
@@ -16,39 +16,19 @@ interface PublishReportDialogProps {
 
 const PublishReportDialog = ({ isOpen, onClose }: PublishReportDialogProps) => {
   const { mutateAsync: createListing, isPending: isCreateListingPending } = useCreateListing();
-
-  // const { data: currentUser } = useAuthUser(); // TODO for real phone number
-  const mockCurrentUser = {
-    email: 'picturesbynaomi@gmail.com',
-    password: '$2b$10$qXSa.P0jtlVI3mhmz9tWy.PeR8NV1CNetmSugHSrKDdk2zsfsYb1O',
-    firstName: 'Naomi2',
-    lastName: 'Prital2',
-    phoneNumber: '0533373387',
-    imageUrl: '/uploads/image-1776948682259-188875750.jpg',
-    refreshToken: [
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWViOWRhOGUwNmVjZDhlYzY0YjNmNzIiLCJpYXQiOjE3NzcwNDkwMDAsImV4cCI6MTc3NzEzNTQwMH0.n-9ohZDCzAdresy2BauX1vh6_U6LRQ0uD-Ydewhl5-U',
-    ],
-    createdAt: {
-      $date: '2026-04-24T16:43:20.433Z',
-    },
-    updatedAt: {
-      $date: '2026-04-24T16:43:20.494Z',
-    },
-    __v: 0,
-    _id: '69eb9da8e06ecd8ec64b3f72',
-  };
+  const { data: user } = useUser();
 
   const emptyValues = useMemo(() => {
     return {
       listingType: ListingTypeEnum.LOST,
       animalType: '',
-      contactNumber: mockCurrentUser.phoneNumber,
+      contactNumber: user?.phoneNumber,
       location: '',
       lastSeen: getLocalDateTimeString(),
       image: null,
       description: '',
     } as unknown as FormValues;
-  }, [isOpen, mockCurrentUser.phoneNumber]);
+  }, [isOpen, user?.phoneNumber]);
 
   const onSubmit = async (data: FormValues) => {
     try {

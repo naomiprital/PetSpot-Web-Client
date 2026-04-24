@@ -2,14 +2,13 @@ import { Box, Dialog, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
 import ListingForm, { type FormValues } from './ListingForm';
-import type { Listing } from './MainFeedListingCard';
 import { getLocalDateTimeString } from '../../utils/utilsFunctions';
-import type { ListingType, NewListing } from '../types/Listing';
+import type { ListingType, Listing } from '../types/Listing';
 
 interface EditListingDialogProps {
   open: boolean;
   onClose: () => void;
-  listing: NewListing;
+  listing: Listing;
 }
 
 const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) => {

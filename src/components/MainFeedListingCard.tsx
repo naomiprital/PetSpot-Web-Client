@@ -18,53 +18,19 @@ import ListingDetailsDialog from './ListingDetailsDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import { isUserBoostedListing } from '../../utils/utilsFunctions';
-import { ListingTypeEnum, type NewListing } from '../types/Listing';
+import { ListingTypeEnum, type Listing } from '../types/Listing';
 import { useToggleBoostListing } from '../hooks/useListings';
 import { SERVER_BASE_URL } from '../../utils/consts';
-
-export interface Comment {
-  id: string;
-  text: string;
-  createdAt: number;
-  user: {
-    name: string;
-    avatar: string;
-  };
-}
-
-export interface Listing {
-  _id: string;
-  listingType: string;
-  animalType: string;
-  imageUrl: string;
-  location: string;
-  lastSeen: number;
-  description: string;
-  comments: any[];
-  boosts: string[];
-  userId: string;
-  author: {
-    firstName: string;
-    lastName: string;
-    imageUrl: string;
-    email: string;
-    phone: string;
-  };
-  isResolved: boolean;
-  isDeleted: boolean;
-}
+import { useUser } from '../hooks/useUsers';
 
 interface MainFeedListingCardProps {
-  listing: NewListing;
+  listing: Listing;
 }
 
 const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
   const { mutateAsync: boostListing } = useToggleBoostListing();
+  const { data: user } = useUser();
   const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);
-
-  const handleBoostToggle = () => {
-    boostListing(listing._id);
-  };
 
   return (
     <>
@@ -206,14 +172,18 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
                 >
                   <Tooltip
                     title={
-                      isUserBoostedListing(listing) ? 'You boosted this listing' : 'Click to boost!'
+                      isUserBoostedListing(listing, user?._id)
+                        ? 'You boosted this listing'
+                        : 'Click to boost!'
                     }
                     placement="bottom"
                     arrow
                   >
                     <IconButton
                       sx={{
-                        color: isUserBoostedListing(listing) ? 'primary.main' : 'text.secondary',
+                        color: isUserBoostedListing(listing, user?._id)
+                          ? 'primary.main'
+                          : 'text.secondary',
                         '&:hover': { backgroundColor: 'transparent' },
                         padding: 0,
                       }}

@@ -19,9 +19,9 @@ import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../../context/UserContext';
-import { SERVER_BASE_URL } from '../../../utils/consts';
 import { useLogout } from '../../hooks/useAuth';
+import { useUser } from '../../hooks/useUsers';
+import { SERVER_BASE_URL } from '../../../utils/consts';
 import { toast } from 'react-toastify';
 
 interface MenuCardProps {
@@ -33,7 +33,7 @@ const MenuCard = ({ anchorEl, handleClose }: MenuCardProps) => {
   const menuCardOpen = Boolean(anchorEl);
   const id = menuCardOpen ? 'simple-popper' : undefined;
   const navigate = useNavigate();
-  const { user, setUser } = useUser();
+  const { data: user } = useUser();
   const logoutMutation = useLogout();
 
   const handleLogout = async () => {
@@ -45,11 +45,8 @@ const MenuCard = ({ anchorEl, handleClose }: MenuCardProps) => {
         toast.error('Failed to logout');
       }
     }
-    setUser(null);
-    localStorage.removeItem('userId');
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
     navigate('/auth');
+    handleClose();
   };
 
   return (
@@ -122,8 +119,8 @@ const MenuCard = ({ anchorEl, handleClose }: MenuCardProps) => {
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user } = useUser();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { data: user } = useUser();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);

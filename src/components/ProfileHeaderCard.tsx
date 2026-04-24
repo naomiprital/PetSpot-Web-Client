@@ -4,8 +4,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import { useUser } from '../context/UserContext';
-import { useUpdateUser } from '../hooks/useUsers';
+import { useUser, useUpdateUser } from '../hooks/useUsers';
 import { toast } from 'react-toastify';
 import { SERVER_BASE_URL } from '../../utils/consts';
 
@@ -27,8 +26,8 @@ interface ProfileHeaderCardProps {
 }
 
 const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardProps) => {
-  const { user, updateUser } = useUser();
-  const updateUserMutation = useUpdateUser();
+  const { data: user } = useUser();
+  const { mutateAsync: updateUserMutation } = useUpdateUser();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editForm, setEditForm] = useState({
     firstName: '',
@@ -75,12 +74,11 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
         formData.append('image', selectedFile);
       }
 
-      const updatedUser = await updateUserMutation.mutateAsync({
+      await updateUserMutation({
         userId: user._id,
         formData,
       });
 
-      updateUser(updatedUser);
       setIsEditingProfile(false);
       toast.success('Profile updated successfully!');
     } catch (error: any) {

@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import GoogleAuthButton from './GoogleAuthButton';
 import { useLogin } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
-import { useUser } from '../context/UserContext';
 
 const inputSx = {
   backgroundColor: 'background.default',
@@ -52,32 +51,12 @@ const Login = ({ onForgotPassword }: LoginProps) => {
     },
   });
 
-  const { setUser } = useUser();
   const loginMutation = useLogin();
 
   const onSubmit = async (data: any) => {
     try {
-      const response: any = await loginMutation.mutateAsync(data);
-      const loggedInUser = response.user || response;
-      const token = response.token || response.accessToken;
-      const refreshToken = response.refreshToken;
-
-      if (token) {
-        localStorage.setItem('token', token);
-      }
-
-      if (refreshToken) {
-        localStorage.setItem('refreshToken', refreshToken);
-      }
-
-      const userId = loggedInUser._id || loggedInUser.id;
-
-      setUser(loggedInUser);
+      await loginMutation.mutateAsync(data);
       toast.success('Welcome back!');
-
-      if (userId) {
-        localStorage.setItem('userId', userId);
-      }
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
       toast.error(errorMessage);

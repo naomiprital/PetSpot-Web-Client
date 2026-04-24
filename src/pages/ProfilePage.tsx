@@ -1,17 +1,14 @@
 import { useMemo } from 'react';
-import { Box, Typography, Chip } from '@mui/material';
-import { useUser } from '../context/UserContext';
-import { useListingsOld } from '../context/ListingsContext';
+import { Box, Chip, Typography } from '@mui/material';
+import { useUser } from '../hooks/useUsers';
 import UserListingCard from '../components/UserListingCard';
 import ProfileHeaderCard from '../components/ProfileHeaderCard';
-import type { Listing } from '../components/MainFeedListingCard';
 import { useListings } from '../hooks/useListings';
-import type { NewListing } from '../types/Listing';
+import type { Listing } from '../types/Listing';
 
 const ProfilePage = () => {
-  const { user } = useUser();
-  // const listings = useListingsOld();
   const { data: listings } = useListings();
+  const { data: user } = useUser();
 
   if (!user) {
     return (
@@ -22,7 +19,7 @@ const ProfilePage = () => {
   }
 
   const userListings = useMemo(
-    () => listings?.filter((listing: NewListing) => listing.author._id === user._id),
+    () => listings?.filter((listing: Listing) => listing.author._id === user._id),
     [listings, user._id]
   );
 

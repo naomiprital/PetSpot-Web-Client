@@ -11,7 +11,7 @@ import PublishReportDialog from '../components/PublishReportDialog';
 import { toast } from 'react-toastify';
 import { useListings } from '../hooks/useListings';
 import { useSmartSearch } from '../hooks/useAi';
-import type { NewListing } from '../types/Listing';
+import type { Listing } from '../types/Listing';
 
 const PAGE_SIZE = 3;
 
@@ -25,7 +25,7 @@ const HomePage = () => {
   const [sortOrder, setSortOrder] = useState<SortOrderFilter>('newest');
   const [page, setPage] = useState(1);
   const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
-  const [aiListings, setAiListings] = useState<NewListing[] | null>(null);
+  const [aiListings, setAiListings] = useState<Listing[] | null>(null);
 
   const handleAiSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -52,7 +52,7 @@ const HomePage = () => {
     if (!newListings?.length) return [];
 
     return newListings
-      .filter((listing: NewListing) => {
+      .filter((listing: Listing) => {
         const matchesSearch =
           listing.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
           listing.location.toLowerCase().includes(searchQuery.toLowerCase());
@@ -103,7 +103,9 @@ const HomePage = () => {
 
   if (isListingsLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -130,7 +132,7 @@ const HomePage = () => {
             onAiClear={handleAiClear}
           />
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '1.2rem', justifyContent: 'center' }}>
-            {visibleListings?.map((listing: NewListing) => (
+            {visibleListings?.map((listing: Listing) => (
               <MainFeedListingCard key={listing._id} listing={listing} />
             ))}
             {activeDataSource?.length === 0 && (

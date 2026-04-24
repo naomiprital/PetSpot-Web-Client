@@ -23,11 +23,12 @@ import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import { isUserBoostedListing } from '../../utils/utilsFunctions';
 import EditListingDialog from './EditListingDialog';
-import type { NewListing } from '../types/Listing';
+import type { Listing } from '../types/Listing';
 import { useDeleteListing, useResolveListing, useToggleBoostListing } from '../hooks/useListings';
+import { useUser } from '../hooks/useUsers';
 
 interface UserListingCardProps {
-  listing: NewListing;
+  listing: Listing;
 }
 
 const UserListingCard = ({ listing }: UserListingCardProps) => {
@@ -38,8 +39,9 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
   const { mutateAsync: toggleBoostListing } = useToggleBoostListing();
   const { mutateAsync: deleteListing } = useDeleteListing();
   const { mutateAsync: resolveListing } = useResolveListing();
+  const { data: user } = useUser();
 
-  const onResolveListing = (listing: NewListing) => {
+  const onResolveListing = (listing: Listing) => {
     // make sure a reunion is updated in the top profile section
     resolveListing(listing._id);
     setResolveDialogOpen(false);
@@ -141,7 +143,9 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
                 >
                   <IconButton
                     sx={{
-                      color: isUserBoostedListing(listing) ? 'primary.main' : 'text.secondary',
+                      color: isUserBoostedListing(listing, user?._id)
+                        ? 'primary.main'
+                        : 'text.secondary',
                       '&:hover': {
                         backgroundColor: 'transparent',
                       },

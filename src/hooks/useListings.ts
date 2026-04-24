@@ -7,10 +7,10 @@ import {
   updateListing,
   deleteListing,
 } from '../services/listingService';
-import type { NewListing } from '../types/Listing';
+import type { Listing } from '../types/Listing';
 
 export const useListings = () => {
-  return useQuery<NewListing[]>({
+  return useQuery<Listing[]>({
     queryKey: ['listings'],
     queryFn: fetchAllListings,
   });

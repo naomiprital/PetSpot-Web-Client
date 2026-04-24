@@ -22,11 +22,13 @@ import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import UserDetailDialog from './UserDetailDialog';
-import { ListingTypeEnum, type NewListing } from '../types/Listing';
+import { ListingTypeEnum, type Listing } from '../types/Listing';
 import { SERVER_BASE_URL } from '../../utils/consts';
 import useCreateComment from '../hooks/useComments';
-import type { NewComment } from '../types/Comment';
+import type { Comment } from '../types/Comment';
 import { useToggleBoostListing } from '../hooks/useListings';
+import type { User } from '../types/User';
+import { useUser } from '../hooks/useUsers';
 
 interface DetailRowProps {
   icon: React.ReactNode;
@@ -62,8 +64,8 @@ const DetailRow = ({ icon, title, value }: DetailRowProps) => {
 interface ListingDetailsDialogProps {
   open: boolean;
   onClose: () => void;
-  listing: NewListing;
-  isUserBoostedListing: (listing: NewListing) => boolean;
+  listing: Listing;
+  isUserBoostedListing: (listing: Listing, user: string) => boolean;
 }
 
 const ListingDetailsDialog = ({
@@ -77,6 +79,7 @@ const ListingDetailsDialog = ({
   const [newComment, setNewComment] = useState('');
   const { mutateAsync: addComment } = useCreateComment();
   const { mutateAsync: toggleBoostListing } = useToggleBoostListing();
+  const { data: user } = useUser();
 
   const handlePhoneClick = async () => {
     try {
@@ -266,14 +269,18 @@ const ListingDetailsDialog = ({
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <Tooltip
                   title={
-                    isUserBoostedListing(listing) ? 'You boosted this listing' : 'Click to boost!'
+                    isUserBoostedListing(listing, user?._id)
+                      ? 'You boosted this listing'
+                      : 'Click to boost!'
                   }
                   placement="left"
                   arrow
                 >
                   <IconButton
                     sx={{
-                      color: isUserBoostedListing(listing) ? 'primary.main' : 'text.secondary',
+                      color: isUserBoostedListing(listing, user?._id)
+                        ? 'primary.main'
+                        : 'text.secondary',
                       '&:hover': {
                         backgroundColor: 'transparent',
                       },
@@ -289,7 +296,7 @@ const ListingDetailsDialog = ({
               </Box>
             </Box>
 
-            {listing.comments.map((comment: NewComment) => (
+            {listing.comments.map((comment: Comment) => (
               <Box key={comment._id} sx={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
                 <Avatar
                   src={`${SERVER_BASE_URL}${comment.author?.imageUrl}`}
