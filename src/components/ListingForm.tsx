@@ -119,6 +119,14 @@ const ListingForm = ({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      const allowedTypes = /jpeg|jpg|png|webp/i;
+
+      if (!allowedTypes.test(file.type)) {
+        toast.error('Only JPG, PNG, and WEBP images are allowed.');
+
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
       setFileName(file.name);
       setPreviewUrl(URL.createObjectURL(file));
       setValue('image', event.target.files);
@@ -338,7 +346,7 @@ const ListingForm = ({
           <FormFieldLabel>IMAGE UPLOAD</FormFieldLabel>
           <input
             type="file"
-            accept="image/*"
+            accept="image/jpeg, image/png, image/webp"
             ref={fileInputRef}
             style={{ display: 'none' }}
             onChange={handleFileChange}
