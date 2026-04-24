@@ -8,6 +8,7 @@ import { ToastContainer } from 'react-toastify';
 import AuthPage from './pages/AuthPage';
 import ProfilePage from './pages/ProfilePage';
 import { Box, CircularProgress } from '@mui/material';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const AppContent = () => {
   const { data: user, isLoading } = useUser();
@@ -42,10 +43,14 @@ const AppContent = () => {
 };
 
 const App = () => {
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string;
+
   return (
-    <ListingsProvider>
-      <AppContent />
-    </ListingsProvider>
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <ListingsProvider>
+        <AppContent />
+      </ListingsProvider>
+    </GoogleOAuthProvider>
   );
 };
 

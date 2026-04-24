@@ -1,7 +1,9 @@
-import { useGoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
 import { useState } from 'react';
-import { GOOGLE_COLORS } from '../theme/theme';
-import { Box, Button, Divider, Typography } from '@mui/material';
+import { GOOGLE_COLORS, GOOGLE_PHONE_DIALOG_COLORS } from '../theme/theme';
+import { Box, Button, Divider, Typography, Dialog, InputBase } from '@mui/material';
+import { useGoogleAuth } from '../hooks/useAuth';
+import { toast } from 'react-toastify';
 
 const GoogleLogo = () => (
   <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
@@ -27,53 +29,49 @@ const GoogleLogo = () => (
 );
 
 const GoogleLoginButton = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isPhoneDialogOpen, setIsPhoneDialogOpen] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [tempGoogleResponse, setTempGoogleResponse] = useState<CredentialResponse | null>(null);
 
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        setIsLoading(true);
+  const { mutateAsync: googleLoginMutation } = useGoogleAuth();
 
-        // 1. Fetch the user's profile info directly from Google using the token
-        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+  const handleGoogleSuccess = (response: CredentialResponse) => {
+    setTempGoogleResponse(response);
+    setIsPhoneDialogOpen(true);
+  };
+
+  const handleCompleteLogin = async () => {
+    if (!phoneNumber || phoneNumber.length < 9) {
+      toast.error('Please enter a valid phone number');
+      return;
+    }
+
+    try {
+      setIsGoogleLoading(true);
+      setIsPhoneDialogOpen(false);
+
+      if (tempGoogleResponse) {
+        await googleLoginMutation({
+          credentials: tempGoogleResponse,
+          phoneNumber
         });
-        const googleUser = await userInfoResponse.json();
-
-        // 2. Package the data EXACTLY how your backend controller expects it
-        const backendPayload = {
-          email: googleUser.email,
-          firstName: googleUser.given_name,
-          lastName: googleUser.family_name || '', // Some users don't have last names on Google
-          imageUrl: googleUser.picture,
-        };
-
-        // 3. Mock the backend call (Ready for when your backend is live!)
-        console.log('Ready to send to backend:', backendPayload);
-
-        /* // LATER: Replace the console.log with your actual API call:
-        const response = await fetch('/api/auth/google', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(backendPayload)
-        });
-        const data = await response.json();
-        // Save data.accessToken to localStorage and redirect!
-        */
-      } catch (error) {
-        console.error('Failed to fetch Google user info', error);
-      } finally {
-        setIsLoading(false);
+        toast.success('Login successful!');
       }
-    },
-    onError: (error) => {
-      console.error('Google Login Failed:', error);
-    },
-  });
+    } catch {
+      toast.error('Login failed. Please try again.');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    toast.error('Google authentication failed.');
+  };
 
   return (
     <>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Divider sx={{ flex: 1 }} />
           <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary', whiteSpace: 'nowrap' }}>
@@ -82,32 +80,194 @@ const GoogleLoginButton = () => {
           <Divider sx={{ flex: 1 }} />
         </Box>
 
-        <Button
-          disabled={isLoading}
-          onClick={() => handleGoogleLogin()}
-          fullWidth
-          variant="outlined"
-          startIcon={<GoogleLogo />}
+        <Box
           sx={{
-            py: 1.1,
-            borderRadius: '0.75rem',
-            textTransform: 'none',
-            fontSize: '0.95rem',
-            fontWeight: 600,
-            borderColor: 'grey.300',
-            color: 'text.primary',
-            backgroundColor: 'background.paper',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-            '&:hover': {
+            position: 'relative',
+            width: '100%',
+            '&:hover .visual-button': {
               borderColor: 'grey.400',
               backgroundColor: 'grey.50',
               boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
             },
           }}
         >
-          {isLoading ? 'Connecting...' : 'Continue with Google'}
-        </Button>
+          <Button
+            className="visual-button"
+            disabled={isGoogleLoading}
+            fullWidth
+            variant="outlined"
+            startIcon={<GoogleLogo />}
+            sx={{
+              py: 1.1,
+              borderRadius: '0.75rem',
+              textTransform: 'none',
+              fontSize: '0.95rem',
+              fontWeight: 600,
+              borderColor: 'grey.300',
+              color: 'text.primary',
+              backgroundColor: 'background.paper',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+              transition: 'all 0.2s ease',
+              pointerEvents: 'none',
+            }}
+          >
+            {isGoogleLoading ? 'Connecting...' : 'Continue with Google'}
+          </Button>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              opacity: 0.01,
+              zIndex: 10,
+              cursor: 'pointer',
+              overflow: 'hidden',
+              '& .S67S5ce-oZ7hBy': {
+                width: '100% !important',
+                height: '100% !important',
+              },
+            }}
+          >
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              width="400"
+              theme="outline"
+              size="large"
+              shape="rectangular"
+            />
+          </Box>
+        </Box>
       </Box>
+
+      <Dialog
+        open={isPhoneDialogOpen}
+        onClose={() => !isGoogleLoading && setIsPhoneDialogOpen(false)}
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '2rem',
+            padding: '2.5rem 2rem',
+            width: '100%',
+            maxWidth: 'min(90vw, 24rem)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)'
+          }
+        }}
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Box sx={{
+            width: 56,
+            height: 56,
+            borderRadius: '1.125rem',
+            backgroundColor: GOOGLE_PHONE_DIALOG_COLORS.lightOrange,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            mb: 2.5
+          }}>
+            <GoogleLogo />
+          </Box>
+
+          <Typography sx={{
+            fontSize: '1.35rem',
+            fontWeight: 700,
+            color: GOOGLE_PHONE_DIALOG_COLORS.darkText,
+            mb: 0.75,
+            textAlign: 'center'
+          }}>
+            Verify your phone
+          </Typography>
+
+          <Typography sx={{
+            fontSize: '0.85rem',
+            color: GOOGLE_PHONE_DIALOG_COLORS.grayText,
+            textAlign: 'center',
+            mb: 3.5,
+            fontWeight: 500
+          }}>
+            To continue, we need your phone number.
+          </Typography>
+
+          <Box sx={{ width: '100%', mb: 4 }}>
+            <Typography sx={{
+              fontSize: '0.7rem',
+              fontWeight: 800,
+              color: GOOGLE_PHONE_DIALOG_COLORS.lightGrayText,
+              mb: 1,
+              letterSpacing: '0.05em'
+            }}>
+              PHONE NUMBER
+            </Typography>
+            <Box sx={{
+              backgroundColor: 'background.default',
+              borderRadius: '1rem',
+              padding: '1rem 1.25rem',
+              display: 'flex',
+              alignItems: 'center'
+            }}>
+              <InputBase
+                fullWidth
+                placeholder="+1 (555) 000-0000"
+                value={phoneNumber}
+                onChange={(event) => setPhoneNumber(event.target.value)}
+                sx={{
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  color: 'text.secondary',
+                }}
+              />
+            </Box>
+          </Box>
+
+          <Box sx={{ display: 'flex', gap: 1.5, width: '100%' }}>
+            <Button
+              onClick={() => setIsPhoneDialogOpen(false)}
+              sx={{
+                flex: 1,
+                py: 1.5,
+                borderRadius: '1rem',
+                backgroundColor: GOOGLE_PHONE_DIALOG_COLORS.cancelBg,
+                color: GOOGLE_PHONE_DIALOG_COLORS.cancelText,
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                textTransform: 'none',
+                '&:hover': {
+                  backgroundColor: GOOGLE_PHONE_DIALOG_COLORS.cancelHover,
+                }
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCompleteLogin}
+              variant="contained"
+              disabled={isGoogleLoading}
+              sx={{
+                flex: 1.8,
+                py: 1.5,
+                borderRadius: '1rem',
+                backgroundColor: GOOGLE_PHONE_DIALOG_COLORS.orange,
+                color: 'white',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                textTransform: 'none',
+                boxShadow: 'none',
+                '&:hover': {
+                  backgroundColor: GOOGLE_PHONE_DIALOG_COLORS.orangeHover,
+                  boxShadow: 'none',
+                },
+                '&.Mui-disabled': {
+                  backgroundColor: GOOGLE_PHONE_DIALOG_COLORS.orangeDisabled,
+                  color: 'white'
+                }
+              }}
+            >
+              {isGoogleLoading ? 'Connecting...' : 'Complete Setup'}
+            </Button>
+          </Box>
+        </Box>
+      </Dialog>
     </>
   );
 };

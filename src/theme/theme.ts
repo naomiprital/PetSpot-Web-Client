@@ -11,6 +11,20 @@ export const GOOGLE_COLORS = {
   red: '#EA4335',
 } as const;
 
+export const GOOGLE_PHONE_DIALOG_COLORS = {
+  orange: '#FF7A1F',
+  orangeHover: '#E66A10',
+  orangeDisabled: '#FFB885',
+  lightOrange: '#FFF8F1',
+  darkText: '#1A202C',
+  grayText: '#718096',
+  lightGrayText: '#A0AEC0',
+  cancelBg: '#EDF2F7',
+  cancelHover: '#E2E8F0',
+  cancelText: '#4A5568',
+  bgDefault: '#F8FAFC',
+} as const;
+
 const theme = createTheme({
   palette: {
     primary: {

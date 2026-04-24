@@ -3,7 +3,7 @@ import { useTheme } from '@mui/material/styles';
 import { useForm } from 'react-hook-form';
 import { useLogin } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
-import { GoogleLogin } from '@react-oauth/google';
+import GoogleLoginButton from './GoogleLoginButton';
 
 const inputSx = {
   backgroundColor: 'background.default',
@@ -168,12 +168,7 @@ const Login = ({ onForgotPassword }: LoginProps) => {
       >
         {loginMutation.isPending ? 'Logging in...' : 'Welcome Back!'}
       </Button>
-
-      <GoogleLogin
-        onSuccess={(tokenResponse) => {
-          console.log(tokenResponse);
-        }}
-      />
+      <GoogleLoginButton />
     </Box>
   );
 };
