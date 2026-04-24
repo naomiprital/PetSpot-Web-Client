@@ -101,6 +101,14 @@ const HomePage = () => {
     return () => observer.disconnect();
   }, [hasMore]);
 
+  if (isListingsLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <>
       {isListingsLoading ? (

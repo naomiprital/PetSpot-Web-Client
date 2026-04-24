@@ -6,11 +6,7 @@ import Login from '../components/Login';
 import SignUp from '../components/SignUp';
 import ForgotPassword from '../components/ForgotPassword';
 
-interface AuthPageProps {
-  onLogin?: () => void;
-}
-
-const AuthPage = ({ onLogin }: AuthPageProps) => {
+const AuthPage = () => {
   const theme = useTheme();
   const [authMode, setAuthMode] = useState<'login' | 'signup' | 'forgotPassword'>('login');
   const [resetEmail, setResetEmail] = useState('');
@@ -134,8 +130,8 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
             </Button>
           </Box>
         )}
-        {authMode === 'login' && <Login onLogin={onLogin} onForgotPassword={(email) => { setResetEmail(email); setAuthMode('forgotPassword'); }} />}
-        {authMode === 'signup' && <SignUp onLogin={onLogin} />}
+        {authMode === 'login' && <Login onForgotPassword={(email) => { setResetEmail(email); setAuthMode('forgotPassword'); }} />}
+        {authMode === 'signup' && <SignUp />}
         {authMode === 'forgotPassword' && <ForgotPassword initialEmail={resetEmail} onBackToLogin={() => setAuthMode('login')} />}
       </Card>
     </Box>

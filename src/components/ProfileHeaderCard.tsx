@@ -4,8 +4,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import { useUser } from '../context/UserContext';
+import { useUser, useUpdateUser } from '../hooks/useUsers';
 import { toast } from 'react-toastify';
+import { SERVER_BASE_URL } from '../../utils/consts';
 
 const inputSx = {
   backgroundColor: 'background.default',
@@ -25,24 +26,28 @@ interface ProfileHeaderCardProps {
 }
 
 const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardProps) => {
-  const { user, updateUser } = useUser();
+  const { data: user } = useUser();
+  const updateUserMutation = useUpdateUser();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editForm, setEditForm] = useState({
     firstName: '',
     lastName: '',
-    phone: '',
-    avatarUrl: '',
+    phoneNumber: '',
+    imageUrl: '',
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const memberSinceYear = new Date(user.createdAt).getFullYear();
+  const memberSinceYear = user?.createdAt ? new Date(user.createdAt).getFullYear() : new Date().getFullYear();
 
   const handleEditClick = () => {
+    if (!user) return;
     setEditForm({
       firstName: user.firstName,
       lastName: user.lastName,
-      phone: user.phone,
-      avatarUrl: user.avatarUrl,
+      phoneNumber: user.phoneNumber,
+      imageUrl: user.imageUrl || '',
     });
+    setSelectedFile(null);
     setIsEditingProfile(true);
   };
 
@@ -50,31 +55,50 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
     setIsEditingProfile(false);
   };
 
-  const handleSave = () => {
-    if (!editForm.firstName.trim() || !editForm.lastName.trim() || !editForm.phone.trim()) {
+  const handleSave = async () => {
+    if (!user) return;
+    if (!editForm.firstName.trim() || !editForm.lastName.trim() || !editForm.phoneNumber.trim()) {
       toast.error('All fields are required.');
       return;
     }
 
-    updateUser({
-      firstName: editForm.firstName,
-      lastName: editForm.lastName,
-      phone: editForm.phone,
-      avatarUrl: editForm.avatarUrl,
-    });
-    setIsEditingProfile(false);
-    toast.success('Profile updated successfully!');
+    try {
+      const formData = new FormData();
+      formData.append('firstName', editForm.firstName);
+      formData.append('lastName', editForm.lastName);
+      formData.append('phoneNumber', editForm.phoneNumber);
+      
+      if (selectedFile) {
+        formData.append('image', selectedFile);
+      }
+
+      await updateUserMutation.mutateAsync({ 
+        userId: user._id, 
+        formData 
+      });
+
+      setIsEditingProfile(false);
+      toast.success('Profile updated successfully!');
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Failed to update profile.';
+      toast.error(errorMessage);
+    }
   };
 
   const handleAvatarFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    
+    setSelectedFile(file);
     const url = URL.createObjectURL(file);
-    setEditForm((prev) => ({ ...prev, avatarUrl: url }));
+    setEditForm((prev) => ({ ...prev, imageUrl: url }));
   };
 
-  const displayAvatarUrl = isEditingProfile ? editForm.avatarUrl : user.avatarUrl;
-  const displayName = `${user.firstName} ${user.lastName}`;
+  const displayAvatarUrl = isEditingProfile 
+    ? (selectedFile ? editForm.imageUrl : `${SERVER_BASE_URL}${user?.imageUrl}`)
+    : `${SERVER_BASE_URL}${user?.imageUrl}`;
+  
+  const displayName = user ? `${user.firstName} ${user.lastName}` : '';
 
   return (
     <Box
@@ -257,7 +281,9 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
                 EMAIL ADDRESS
               </Typography>
             </Box>
-            <Typography sx={{ fontSize: '1rem', color: 'text.primary' }}>{user.email}</Typography>
+            <Typography sx={{ fontSize: '1rem', color: 'text.primary' }}>
+              {user.email}
+            </Typography>
           </Box>
           <Box>
             <Box sx={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
@@ -269,14 +295,16 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
             {isEditingProfile ? (
               <Box sx={{ ...inputSx, mt: '0.15rem', width: '11rem' }}>
                 <InputBase
-                  value={editForm.phone}
-                  onChange={(event) => setEditForm({ ...editForm, phone: event.target.value })}
+                  value={editForm.phoneNumber}
+                  onChange={(event) => setEditForm({ ...editForm, phoneNumber: event.target.value })}
                   placeholder="Phone number"
                   sx={{ fontSize: '1rem', color: 'text.primary', width: '100%' }}
                 />
               </Box>
             ) : (
-              <Typography sx={{ fontSize: '1rem', color: 'text.primary' }}>{user.phone}</Typography>
+              <Typography sx={{ fontSize: '1rem', color: 'text.primary' }}>
+                {user.phoneNumber}
+              </Typography>
             )}
           </Box>
         </Box>

@@ -13,7 +13,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
-import { StatusEnum } from '../../utils/consts';
+import { ListingTypeEnum } from '../../utils/consts';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import moment from 'moment';
 import AreYouSureDialog from './AreYouSureDialog';
@@ -22,7 +22,7 @@ import ListingDetailsDialog from './ListingDetailsDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import { onBoost, isUserBoostedListing, isUserBoostedListingOld } from '../../utils/utilsFunctions';
+import { onBoost, isUserBoostedListingOld } from '../../utils/utilsFunctions';
 import EditListingDialog from './EditListingDialog';
 
 interface UserListingCardProps {
@@ -80,17 +80,17 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
               }}
             >
               <Chip
-                label={listing.status.toUpperCase()}
+                label={listing.listingType.toUpperCase()}
                 sx={{
                   backgroundColor:
-                    listing.status === StatusEnum.LOST ? 'error.main' : 'success.main',
+                    listing.listingType === ListingTypeEnum.LOST ? 'error.main' : 'success.main',
                   color: 'white',
                   fontWeight: 'bold',
                   fontSize: '0.8rem',
                 }}
               />
               <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
-                {moment(listing.date).format('DD/MM/YYYY')}
+                {moment(listing.lastSeen).format('DD/MM/YYYY')}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -257,14 +257,13 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
         }}
         action="resolve"
       />
-      {/*  TODO : un-comment !! */}
-      {/* <ListingDetailsDialog
+      <ListingDetailsDialog
         open={listingDetailsDialogOpen}
         onClose={() => setListingDetailsDialogOpen(false)}
-        listing={listing}
+        listing={listing as any}
         onBoostToggle={onBoost}
-        isUserBoostedListing={isUserBoostedListing}
-      /> */}
+        isUserBoostedListing={isUserBoostedListingOld}
+      />
       {listing && (
         <EditListingDialog
           open={editDialogOpen}

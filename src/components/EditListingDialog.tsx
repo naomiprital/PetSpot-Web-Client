@@ -16,11 +16,11 @@ const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) =
   if (!listing) return null;
 
   const currentValues: FormValues = {
-    listingType: listing.status as ListingType,
-    animalType: listing.animal,
-    contactNumber: listing.user.phone,
+    listingType: listing.listingType as ListingType,
+    animalType: listing.animalType,
+    contactNumber: listing.author.phone,
     location: listing.location,
-    lastSeen: getLocalDateTimeString(listing.date),
+    lastSeen: getLocalDateTimeString(listing.lastSeen),
     image: listing.imageUrl,
     description: listing.description,
   };

@@ -41,6 +41,7 @@ const GoogleAuthButton = ({ label = 'Continue with Google', onClick }: GoogleAut
 
     <Button
       fullWidth
+      type="button"
       variant="outlined"
       onClick={onClick}
       startIcon={<GoogleLogo />}

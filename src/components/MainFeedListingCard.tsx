@@ -20,8 +20,7 @@ import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import { isUserBoostedListing } from '../../utils/utilsFunctions';
 import { ListingTypeEnum, type NewListing } from '../types/Listing';
 import { useToggleBoostListing } from '../hooks/useListings';
-
-const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL || 'http://localhost:8080';
+import { SERVER_BASE_URL } from '../../utils/consts';
 
 export interface Comment {
   id: string;
@@ -34,19 +33,20 @@ export interface Comment {
 }
 
 export interface Listing {
-  id: string;
-  status: string;
-  animal: string;
+  _id: string;
+  listingType: string;
+  animalType: string;
   imageUrl: string;
   location: string;
-  date: number;
+  lastSeen: number;
   description: string;
-  comments: Comment[];
+  comments: any[];
   boosts: string[];
   userId: string;
-  user: {
-    name: string;
-    avatar: string;
+  author: {
+    firstName: string;
+    lastName: string;
+    imageUrl: string;
     email: string;
     phone: string;
   };
@@ -229,9 +229,12 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
                 </Box>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Avatar src={listing.author.imageUrl} sx={{ width: '1.5rem', height: '1.5rem' }} />
+                <Avatar
+                  src={`${SERVER_BASE_URL}${listing.author?.imageUrl}`}
+                  sx={{ width: '1.5rem', height: '1.5rem' }}
+                />
                 <Typography variant="body2" sx={{ color: 'text.primary' }}>
-                  {listing.author.firstName + ' ' + listing.author.lastName}
+                  {listing.author?.firstName + ' ' + listing.author?.lastName}
                 </Typography>
               </Box>
             </Box>

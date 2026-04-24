@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toggleBoostListing, createListing, fetchAllListings } from '../services/listingService';
+import type { NewListing } from '../types/Listing';
 
 export const useListings = () => {
-  return useQuery({
+  return useQuery<NewListing[]>({
     queryKey: ['listings'],
     queryFn: fetchAllListings,
   });
