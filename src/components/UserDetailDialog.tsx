@@ -3,9 +3,11 @@ import { Avatar, Box, Dialog, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
-import { useListingsOld } from '../context/ListingsContext';
 import type { User } from '../types/User';
 import { SERVER_BASE_URL } from '../../utils/consts';
+import { useListings } from '../hooks/useListings';
+import { formatPhoneNumber } from '../../utils/utilsFunctions';
+
 
 interface UserDetailDialogProps {
   open: boolean;
@@ -14,8 +16,7 @@ interface UserDetailDialogProps {
 }
 
 const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
-  // TODO: Replace with API call
-  const listings = useListingsOld();
+  const { data: listings } = useListings();
 
   const { reportsCount, reunionsCount } = useMemo(() => {
     const userListings = listings.filter((listing) => listing.author.email === user?.email);
@@ -153,8 +154,9 @@ const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <PhoneIcon sx={{ color: 'text.secondary', fontSize: '1.2rem' }} />
               <Typography sx={{ fontSize: '0.95rem', color: 'text.primary' }}>
-                {user?.phoneNumber}
+                {formatPhoneNumber(user?.phoneNumber)}
               </Typography>
+
             </Box>
           </Box>
         </Box>

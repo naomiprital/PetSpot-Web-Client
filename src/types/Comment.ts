@@ -1,6 +1,6 @@
 import type { User } from './User';
 
-export interface NewComment {
+export interface Comment {
   _id?: string;
   listingId: string;
   commentText: string;

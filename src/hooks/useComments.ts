@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addComment } from '../services/commentService';
 import { toast } from 'react-toastify';
-import type { NewListing } from '../types/Listing';
+import type { Listing } from '../types/Listing';
 
 const useCreateComment = () => {
   const queryClient = useQueryClient();
@@ -10,7 +10,7 @@ const useCreateComment = () => {
     mutationFn: ({ listingId, commentText }: { listingId: string; commentText: string }) =>
       addComment(listingId, commentText),
     onSuccess: (newComment, variables) => {
-      queryClient.setQueryData(['listings'], (oldListings: NewListing[] | undefined) => {
+      queryClient.setQueryData(['listings'], (oldListings: Listing[] | undefined) => {
         if (!oldListings) return [];
 
         return oldListings.map((listing) => {

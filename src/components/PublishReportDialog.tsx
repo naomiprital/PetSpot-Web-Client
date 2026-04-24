@@ -7,7 +7,7 @@ import { ListingTypeEnum } from '../types/Listing';
 import { useCreateListing } from '../hooks/useListings';
 import moment from 'moment';
 import { useMemo } from 'react';
-// import { useAuthUser } from '../hooks/useAuthUser'; // TODO: Import your user state hook!
+import { useUser } from '../hooks/useUsers';
 
 interface PublishReportDialogProps {
   isOpen: boolean;
@@ -16,31 +16,19 @@ interface PublishReportDialogProps {
 
 const PublishReportDialog = ({ isOpen, onClose }: PublishReportDialogProps) => {
   const { mutateAsync: createListing, isPending: isCreateListingPending } = useCreateListing();
-
-  // const { data: currentUser } = useAuthUser(); // TODO for real phone number
-  const mockCurrentUser = {
-    email: 'test@petspot.com',
-    firstName: 'EditTest',
-    lastName: 'User',
-    imageUrl: '/uploads/image-1776958285085-255795376.jpg',
-    phoneNumber: '0505555555',
-    createdAt: '2026-04-24T15:09:10.000Z',
-    updatedAt: '2026-04-24T15:09:10.000Z',
-    __v: 0,
-    _id: '69ea15caf50dc5ada02bc866',
-  };
+  const { data: user } = useUser();
 
   const emptyValues = useMemo(() => {
     return {
       listingType: ListingTypeEnum.LOST,
       animalType: '',
-      contactNumber: mockCurrentUser.phoneNumber,
+      contactNumber: user?.phoneNumber,
       location: '',
       lastSeen: getLocalDateTimeString(),
       image: null,
       description: '',
     } as unknown as FormValues;
-  }, [isOpen, mockCurrentUser.phoneNumber]);
+  }, [isOpen, user?.phoneNumber]);
 
   const onSubmit = async (data: FormValues) => {
     try {

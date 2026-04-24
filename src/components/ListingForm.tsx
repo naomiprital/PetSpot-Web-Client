@@ -17,6 +17,9 @@ import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { AnimalTypeEnum, LISTING_TYPES, ListingTypeEnum, type ListingType } from '../types/Listing';
 import { useSuggestDescription } from '../hooks/useAi';
+import { SERVER_BASE_URL } from '../../utils/consts';
+import { formatPhoneNumber } from '../../utils/utilsFunctions';
+
 
 export interface FormValues {
   listingType: ListingType;
@@ -79,6 +82,9 @@ const ListingForm = ({
 
   const getPreviewAndName = (image: string | FileList | null) => {
     if (typeof image === 'string') {
+      if (image === '/images/default-listing-image.jpg') {
+        return { url: null, name: null };
+      }
       return { url: image, name: 'Current Image' };
     }
     if (image instanceof FileList && image.length > 0) {
@@ -86,6 +92,7 @@ const ListingForm = ({
     }
     return { url: null, name: null };
   };
+
   const initialPreview = getPreviewAndName(defaultValues.image);
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialPreview.url);
   const [fileName, setFileName] = useState<string | null>(initialPreview.name);
@@ -118,6 +125,14 @@ const ListingForm = ({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      const allowedTypes = /jpeg|jpg|png|webp/i;
+
+      if (!allowedTypes.test(file.type)) {
+        toast.error('Only JPG, PNG, and WEBP images are allowed.');
+
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
       setFileName(file.name);
       setPreviewUrl(URL.createObjectURL(file));
       setValue('image', event.target.files);
@@ -129,11 +144,10 @@ const ListingForm = ({
     event.stopPropagation();
     setPreviewUrl(null);
     setFileName(null);
-    setValue('image', null);
-    setUploadedFile(null);
 
-    setValue('description', '');
-    setValue('animalType', '');
+    setValue('image', '/images/default-listing-image.jpg');
+
+    setUploadedFile(null);
 
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -154,6 +168,10 @@ const ListingForm = ({
     } catch (error) {
       toast.error('Failed to generate suggestion.');
     }
+  };
+
+  const isImageFromServer = (image: string) => {
+    return !image.startsWith('blob:');
   };
 
   return (
@@ -271,7 +289,7 @@ const ListingForm = ({
             <Tooltip title={'To change contact number, please update your profile settings'} arrow>
               <InputBase
                 disabled
-                placeholder={defaultValues.contactNumber}
+                placeholder={formatPhoneNumber(defaultValues.contactNumber)}
                 fullWidth
                 sx={{
                   fontSize: '0.95rem',
@@ -280,6 +298,7 @@ const ListingForm = ({
                   },
                 }}
               />
+
             </Tooltip>
           </Box>
         </FormFieldBox>
@@ -304,7 +323,7 @@ const ListingForm = ({
 
       <Box sx={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
         <FormFieldBox>
-          <FormFieldLabel>DATE & TIME</FormFieldLabel>
+          <FormFieldLabel>LAST SEEN DATE & TIME</FormFieldLabel>
           <Box
             sx={{
               ...(errors.lastSeen ? errorInputSx : inputSx),
@@ -336,7 +355,7 @@ const ListingForm = ({
           <FormFieldLabel>IMAGE UPLOAD</FormFieldLabel>
           <input
             type="file"
-            accept="image/*"
+            accept="image/jpeg, image/png, image/webp"
             ref={fileInputRef}
             style={{ display: 'none' }}
             onChange={handleFileChange}
@@ -364,7 +383,9 @@ const ListingForm = ({
                   sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}
                 >
                   <Avatar
-                    src={previewUrl}
+                    src={
+                      isImageFromServer(previewUrl) ? `${SERVER_BASE_URL}${previewUrl}` : previewUrl
+                    }
                     variant="rounded"
                     sx={{ width: '2rem', height: '2rem', flexShrink: 0 }}
                   />
