@@ -1,42 +1,54 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
-
-export interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  avatarUrl: string;
-  createdAt: number;
-}
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import type { User } from '../types/User';
+import { getUser } from '../services/UserService';
 
 interface UserContextType {
-  user: User;
-  updateUser: (updates: Partial<Omit<User, 'id' | 'email' | 'createdAt'>>) => void;
+  user: User | null;
+  isLoading: boolean;
+  setUser: (user: User | null) => void;
+  updateUser: (updates: Partial<User>) => void;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
 
-// TODO: Replace with real user data
-const MOCK_USER: User = {
-  id: 'user-1',
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'john@example.com',
-  phone: '+972 501234567',
-  avatarUrl: '/basicProfilePicture.png',
-  createdAt: new Date('2024-03-15').getTime(),
-};
-
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User>(MOCK_USER);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const updateUser = (updates: Partial<Omit<User, 'id' | 'email' | 'createdAt'>>) => {
-    // TODO: Replace with api call.
-    setUser((prev) => ({ ...prev, ...updates }));
+  useEffect(() => {
+    const initUser = async () => {
+      const storedUserId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      if (storedUserId && (token || refreshToken)) {
+        try {
+          const data = await getUser(storedUserId);
+          setUser(data);
+        } catch (error: any) {
+          setUser(null);
+          localStorage.removeItem('userId');
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+        }
+      } else {
+        setUser(null);
+      }
+      setIsLoading(false);
+    };
+
+    initUser();
+  }, []);
+
+  const updateUser = (updates: Partial<User>) => {
+    setUser((prev) => (prev ? { ...prev, ...updates } : null));
   };
 
-  return <UserContext.Provider value={{ user, updateUser }}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={{ user, isLoading, setUser, updateUser }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
 
 export const useUser = (): UserContextType => {

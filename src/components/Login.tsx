@@ -3,6 +3,10 @@ import { Box, Button, Link, InputBase, Typography, styled } from '@mui/material'
 import { useTheme } from '@mui/material/styles';
 import { useForm } from 'react-hook-form';
 import GoogleAuthButton from './GoogleAuthButton';
+import { useLogin } from '../hooks/useAuth';
+import { toast } from 'react-toastify';
+import { useUser } from '../context/UserContext';
+import { getUser } from '../services/UserService';
 
 const inputSx = {
   backgroundColor: 'background.default',
@@ -31,11 +35,10 @@ const InputLabel = styled(Typography)(({ theme }) => ({
 }));
 
 interface LoginProps {
-  onLogin?: () => void;
   onForgotPassword?: (email: string) => void;
 }
 
-const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
+const Login = ({ onForgotPassword }: LoginProps) => {
   const theme = useTheme();
   const {
     register,
@@ -50,9 +53,41 @@ const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
     },
   });
 
-  const onSubmit = () => {
-    if (onLogin) {
-      onLogin();
+  const { setUser } = useUser();
+  const loginMutation = useLogin();
+
+  const onSubmit = async (data: any) => {
+    try {
+      const response: any = await loginMutation.mutateAsync(data);
+      const loggedInUser = response.user || response;
+      const token = response.token || response.accessToken;
+      const refreshToken = response.refreshToken;
+
+      if (token) {
+        localStorage.setItem('token', token);
+      }
+
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+
+      const userId = loggedInUser._id || loggedInUser.id;
+
+      setUser(loggedInUser);
+      toast.success('Welcome back!');
+
+      if (userId) {
+        localStorage.setItem('userId', userId);
+        try {
+          const fullUserData = await getUser(userId);
+          setUser(fullUserData);
+        } catch (fetchError) {
+          toast.error('Failed to fetch user data.');
+        }
+      }
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
+      toast.error(errorMessage);
     }
   };
 
@@ -122,6 +157,7 @@ const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
         fullWidth
         type="submit"
         variant="contained"
+        disabled={loginMutation.isPending}
         sx={{
           mt: 0.5,
           py: 1.2,
@@ -136,14 +172,13 @@ const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
           },
         }}
       >
-        Welcome Back!
+        {loginMutation.isPending ? 'Logging in...' : 'Welcome Back!'}
       </Button>
 
       <GoogleAuthButton
         label="Continue with Google"
         onClick={() => {
           // TODO: Trigger real Google OAuth flow
-          if (onLogin) onLogin();
         }}
       />
     </Box>

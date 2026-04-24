@@ -4,6 +4,10 @@ import { useTheme } from '@mui/material/styles';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { useForm } from 'react-hook-form';
+import { useRegister, useLogin } from '../hooks/useAuth';
+import { toast } from 'react-toastify';
+import { useUser } from '../context/UserContext';
+import { getUser } from '../services/UserService';
 
 const inputSx = {
   backgroundColor: 'background.default',
@@ -31,12 +35,9 @@ const InputLabel = styled(Typography)(({ theme }) => ({
   letterSpacing: '0.03125rem',
 }));
 
-interface SignUpProps {
-  onLogin?: () => void;
-}
-
-const SignUp = ({ onLogin }: SignUpProps) => {
+const SignUp = () => {
   const theme = useTheme();
+  const { setUser } = useUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -57,12 +58,14 @@ const SignUp = ({ onLogin }: SignUpProps) => {
     },
   });
 
+  const registerMutation = useRegister();
+  const loginMutation = useLogin();
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const profileImageFiles = watch('profileImage');
 
   const handleFile = (file: File, fileList?: FileList) => {
     if (!file.type.startsWith('image/')) return;
-    
+
     if (fileList) {
       setValue('profileImage', fileList);
     } else {
@@ -99,14 +102,70 @@ const SignUp = ({ onLogin }: SignUpProps) => {
     }
   };
 
-  const onSubmit = () => {
-    if (onLogin) {
-      onLogin(); // We call onLogin for now to let them enter the app
+  const onInvalid = () => {
+    toast.error('Please check the form for errors.');
+  };
+
+  const onSubmit = async (data: any) => {
+    try {
+      const userData = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phoneNumber: data.phone,
+        password: data.password,
+        imageUrl: data.profileImage ? data.profileImage[0] : '',
+      };
+
+      const response: any = await registerMutation.mutateAsync(userData);
+
+      let loggedInUser = response.user || response;
+      let token = response.token || response.accessToken;
+      let refreshToken = response.refreshToken;
+      if (!token) {
+        try {
+          const loginResponse: any = await loginMutation.mutateAsync({
+            email: data.email,
+            password: data.password,
+          });
+          loggedInUser = loginResponse.user || loginResponse;
+          token = loginResponse.token || loginResponse.accessToken;
+          refreshToken = loginResponse.refreshToken;
+        } catch (loginError) {
+          toast.info('Registration successful! Please log in.');
+          return;
+        }
+      }
+
+      if (token) {
+        localStorage.setItem('token', token);
+      }
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+
+      const userId = loggedInUser._id || loggedInUser.id;
+
+      setUser(loggedInUser);
+      toast.success('Registration successful!');
+
+      if (userId) {
+        localStorage.setItem('userId', userId);
+        try {
+          const fullUserData = await getUser(userId);
+          setUser(fullUserData);
+        } catch (fetchError) {
+          toast.error('Failed to load full user data.');
+        }
+      }
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
+      toast.error(errorMessage);
     }
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box component="form" onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Box sx={{ display: 'flex', gap: 2 }}>
         <Box sx={{ flex: 1, position: 'relative' }}>
           <InputLabel>First Name</InputLabel>
@@ -145,61 +204,61 @@ const SignUp = ({ onLogin }: SignUpProps) => {
       <Box sx={{ position: 'relative' }}>
         <InputLabel>Email Address</InputLabel>
         <Box sx={errors.email ? errorInputSx : inputSx}>
-            <InputBase
-              fullWidth
-              placeholder="name@example.com"
-              type="email"
-              {...register('email', { 
-                required: 'Email is required',
-                pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email' }
-              })}
-              sx={{ fontSize: '0.95rem', color: 'text.primary' }}
-            />
-          </Box>
-          {errors.email && (
-            <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
-              {errors.email.message as string}
-            </Typography>
-          )}
+          <InputBase
+            fullWidth
+            placeholder="name@example.com"
+            type="email"
+            {...register('email', {
+              required: 'Email is required',
+              pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email' }
+            })}
+            sx={{ fontSize: '0.95rem', color: 'text.primary' }}
+          />
+        </Box>
+        {errors.email && (
+          <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+            {errors.email.message as string}
+          </Typography>
+        )}
       </Box>
 
       <Box sx={{ position: 'relative' }}>
         <InputLabel>Phone Number</InputLabel>
         <Box sx={errors.phone ? errorInputSx : inputSx}>
-            <InputBase
-              fullWidth
-              placeholder="+1 (555) 000-0000"
-              type="tel"
-              {...register('phone', { required: 'Phone Number is required' })}
-              sx={{ fontSize: '0.95rem', color: 'text.primary' }}
-            />
-          </Box>
-          {errors.phone && (
-            <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
-              {errors.phone.message as string}
-            </Typography>
-          )}
+          <InputBase
+            fullWidth
+            placeholder="+1 (555) 000-0000"
+            type="tel"
+            {...register('phone', { required: 'Phone Number is required' })}
+            sx={{ fontSize: '0.95rem', color: 'text.primary' }}
+          />
+        </Box>
+        {errors.phone && (
+          <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+            {errors.phone.message as string}
+          </Typography>
+        )}
       </Box>
 
       <Box sx={{ position: 'relative' }}>
         <InputLabel>Password</InputLabel>
         <Box sx={errors.password ? errorInputSx : inputSx}>
-            <InputBase
-              fullWidth
-              placeholder="••••••••"
-              type="password"
-              {...register('password', {
-                required: 'Password is required',
-                minLength: { value: 5, message: 'Password must be at least 5 characters' }
-              })}
-              sx={{ fontSize: '0.95rem', color: 'text.primary' }}
-            />
-          </Box>
-          {errors.password && (
-            <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
-              {errors.password.message as string}
-            </Typography>
-          )}
+          <InputBase
+            fullWidth
+            placeholder="••••••••"
+            type="password"
+            {...register('password', {
+              required: 'Password is required',
+              minLength: { value: 5, message: 'Password must be at least 5 characters' }
+            })}
+            sx={{ fontSize: '0.95rem', color: 'text.primary' }}
+          />
+        </Box>
+        {errors.password && (
+          <Typography sx={{ color: 'error.main', fontSize: '0.7rem', position: 'absolute', bottom: '-1.125rem', marginLeft: '0.25rem', whiteSpace: 'nowrap' }}>
+            {errors.password.message as string}
+          </Typography>
+        )}
       </Box>
 
       <Box>
@@ -282,6 +341,7 @@ const SignUp = ({ onLogin }: SignUpProps) => {
         fullWidth
         type="submit"
         variant="contained"
+        disabled={registerMutation.isPending}
         sx={{
           mt: 0.5,
           py: 1.2,
@@ -296,7 +356,7 @@ const SignUp = ({ onLogin }: SignUpProps) => {
           },
         }}
       >
-        Join the Community
+        {registerMutation.isPending ? 'Joining...' : 'Join the Community'}
       </Button>
     </Box>
   );

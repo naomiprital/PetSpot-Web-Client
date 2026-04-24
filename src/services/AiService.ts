@@ -6,7 +6,7 @@ const AI_MODEL = 'command-a-vision-07-2025';
 const MAX_AI_LISTINGS = 50;
 
 function getNewestListings(listings: Listing[], limit: number): Listing[] {
-  return [...listings].sort((a, b) => b.date - a.date).slice(0, limit);
+  return [...listings].sort((a, b) => b.lastSeen - a.lastSeen).slice(0, limit);
 }
 
 function buildPrompt(query: string): string {
@@ -31,7 +31,7 @@ function buildContentArray(query: string, listings: Listing[]): any[] {
   listings.forEach((listing) => {
     content.push({
       type: 'text',
-      text: `Listing ID: ${listing.id} | Animal: ${listing.animal} | Description: ${listing.description}`,
+      text: `Listing ID: ${listing._id} | Animal: ${listing.animalType} | Description: ${listing.description}`,
     });
     if (listing.imageUrl) {
       content.push({

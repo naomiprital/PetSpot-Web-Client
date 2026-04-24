@@ -14,7 +14,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
-import { StatusEnum, AnimalsEnum } from '../../utils/consts';
+import { StatusEnum, AnimalsEnum, ListingTypeEnum } from '../../utils/consts';
 
 export type StatusFilter = (typeof StatusEnum)[keyof typeof StatusEnum] | 'all';
 export type AnimalFilter = (typeof AnimalsEnum)[keyof typeof AnimalsEnum] | 'all';
@@ -186,8 +186,8 @@ const FilterBar = ({
           })}
         >
           <MenuItem value="all">All Types</MenuItem>
-          <MenuItem value={StatusEnum.LOST}>{StatusEnum.LOST}</MenuItem>
-          <MenuItem value={StatusEnum.FOUND}>{StatusEnum.FOUND}</MenuItem>
+          <MenuItem value={ListingTypeEnum.LOST}>Lost</MenuItem>
+          <MenuItem value={ListingTypeEnum.FOUND}>Found</MenuItem>
         </Select>
         <Select
           value={animal}
@@ -208,11 +208,11 @@ const FilterBar = ({
           })}
         >
           <MenuItem value="all">All Animals</MenuItem>
-          <MenuItem value={AnimalsEnum.DOG}>{AnimalsEnum.DOG}</MenuItem>
-          <MenuItem value={AnimalsEnum.CAT}>{AnimalsEnum.CAT}</MenuItem>
-          <MenuItem value={AnimalsEnum.BIRD}>{AnimalsEnum.BIRD}</MenuItem>
-          <MenuItem value={AnimalsEnum.RABBIT}>{AnimalsEnum.RABBIT}</MenuItem>
-          <MenuItem value={AnimalsEnum.OTHER}>{AnimalsEnum.OTHER}</MenuItem>
+          <MenuItem value={AnimalsEnum.DOG}>Dog</MenuItem>
+          <MenuItem value={AnimalsEnum.CAT}>Cat</MenuItem>
+          <MenuItem value={AnimalsEnum.BIRD}>Bird</MenuItem>
+          <MenuItem value={AnimalsEnum.RABBIT}>Rabbit</MenuItem>
+          <MenuItem value={AnimalsEnum.OTHER}>Other</MenuItem>
         </Select>
         <Select
           value={sortOrder}

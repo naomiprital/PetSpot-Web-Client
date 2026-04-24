@@ -1,7 +1,7 @@
 import { Box, Dialog, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
-import { StatusEnum } from '../../utils/consts';
+import { ListingTypeEnum } from '../../utils/consts';
 import ListingForm, { type FormValues } from './ListingForm';
 import { getLocalDateTimeString } from '../../utils/utilsFunctions';
 
@@ -12,7 +12,7 @@ interface PublishReportDialogProps {
 
 const PublishReportDialog = ({ isOpen, onClose }: PublishReportDialogProps) => {
   const emptyValues: FormValues = {
-    status: StatusEnum.LOST,
+    status: ListingTypeEnum.LOST,
     animalType: '',
     contactNumber: '',
     lastSeenLocation: '',

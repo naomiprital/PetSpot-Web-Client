@@ -12,7 +12,6 @@ import {
   Typography,
 } from '@mui/material';
 import type { Listing } from './MainFeedListingCard';
-import { StatusEnum } from '../../utils/consts';
 import moment from 'moment';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
@@ -76,7 +75,8 @@ const ListingDetailsDialog = ({
 
   const handlePhoneClick = async () => {
     try {
-      await navigator.clipboard.writeText(listing.user.phone);
+      const phone = listing.author?.phoneNumber || '';
+      await navigator.clipboard.writeText(phone);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
@@ -152,22 +152,22 @@ const ListingDetailsDialog = ({
           >
             <Box sx={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <Chip
-                label={listing.status
+                label={(listing.listingType || 'unknown')
                   .toUpperCase()
                   .concat(' ')
-                  .concat(listing.animal.toUpperCase())}
+                  .concat((listing.animalType || 'unknown').toUpperCase())}
                 sx={(theme) => ({
                   backgroundColor:
-                    listing.status === StatusEnum.LOST
+                    listing.listingType?.toLowerCase() === 'lost'
                       ? alpha(theme.palette.error.main, 0.2)
                       : alpha(theme.palette.success.main, 0.2),
-                  color: listing.status === StatusEnum.LOST ? 'error.main' : 'success.main',
+                  color: listing.listingType?.toLowerCase() === 'lost' ? 'error.main' : 'success.main',
                   fontWeight: 'bold',
                   borderRadius: '1rem',
                 })}
               />
               <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
-                Posted {moment(listing.date).format('DD/MM/YYYY HH:mm')}
+                Posted {moment(listing.lastSeen).format('DD/MM/YYYY HH:mm')}
               </Typography>
             </Box>
 
@@ -185,9 +185,11 @@ const ListingDetailsDialog = ({
               }}
               onClick={() => setUserDetailDialogOpen(true)}
             >
-              <Avatar src={listing.user.avatar} sx={{ width: '3rem', height: '3rem' }} />
+              <Avatar src={listing.author?.imageUrl} sx={{ width: '3rem', height: '3rem' }} />
               <Box>
-                <Typography sx={{ fontWeight: 'bold' }}>{listing.user.name}</Typography>
+                <Typography sx={{ fontWeight: 'bold' }}>
+                  {listing.author ? `${listing.author.firstName} ${listing.author.lastName}` : 'Anonymous'}
+                </Typography>
                 <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                   Lister Information
                 </Typography>
@@ -203,7 +205,7 @@ const ListingDetailsDialog = ({
             <DetailRow
               icon={<CalendarTodayIcon color="primary" />}
               title="SEEN ON"
-              value={moment(listing.date).format('DD/MM/YYYY HH:mm')}
+              value={moment(listing.lastSeen).format('DD/MM/YYYY HH:mm')}
             />
 
             <Box sx={{ backgroundColor: 'grey.100', borderRadius: '0.6rem', padding: '0.5rem' }}>
@@ -215,7 +217,7 @@ const ListingDetailsDialog = ({
 
             <Box
               component="a"
-              href={`tel:${listing.user.phone}`}
+              href={`tel:${listing.author?.phoneNumber}`}
               onClick={handlePhoneClick}
               sx={(theme) => ({
                 backgroundColor: alpha(theme.palette.primary.main, 0.8),
@@ -235,7 +237,7 @@ const ListingDetailsDialog = ({
             >
               <PhoneIcon sx={{ color: 'white' }} />
               <Typography sx={{ color: 'white', fontWeight: copied ? 'bold' : 'normal' }}>
-                {copied ? 'Number Copied!' : `Call Lister (${listing.user.phone})`}
+                {copied ? 'Number Copied!' : `Call Lister (${listing.author?.phoneNumber || 'N/A'})`}
               </Typography>
             </Box>
 
@@ -271,15 +273,17 @@ const ListingDetailsDialog = ({
               </Box>
             </Box>
 
-            {listing.comments.map((comment) => (
-              <Box key={comment.id} sx={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
-                <Avatar src={comment.user.avatar} sx={{ width: '2.2rem', height: '2.2rem' }} />
+            {(listing.comments || []).map((comment) => (
+              <Box key={comment._id} sx={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+                <Avatar src={comment.author?.imageUrl} sx={{ width: '2.2rem', height: '2.2rem' }} />
                 <Box>
                   <Box
                     sx={{ backgroundColor: 'grey.100', borderRadius: '0.6rem', padding: '0.5rem' }}
                   >
-                    <Typography sx={{ fontWeight: 'bold' }}>{comment.user.name}</Typography>
-                    <Typography>{comment.text}</Typography>
+                    <Typography sx={{ fontWeight: 'bold' }}>
+                      {comment.author ? `${comment.author.firstName} ${comment.author.lastName}` : 'Anonymous'}
+                    </Typography>
+                    <Typography>{comment.commentText}</Typography>
                   </Box>
                   <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
                     {moment(comment.createdAt).format('HH:mm')}
@@ -320,10 +324,10 @@ const ListingDetailsDialog = ({
         open={userDetailDialogOpen}
         onClose={() => setUserDetailDialogOpen(false)}
         user={{
-          name: listing.user.name,
-          avatar: listing.user.avatar,
-          email: listing.user.email,
-          phone: listing.user.phone,
+          name: listing.author ? `${listing.author.firstName} ${listing.author.lastName}` : 'Anonymous',
+          avatar: listing.author?.imageUrl || '',
+          email: listing.author?.email || '',
+          phone: listing.author?.phoneNumber || '',
         }}
       />
     </>

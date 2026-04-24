@@ -11,13 +11,13 @@ import {
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { Controller, useForm } from 'react-hook-form';
-import { AnimalsEnum, StatusEnum } from '../../utils/consts';
+import { AnimalsEnum, ListingTypeEnum } from '../../utils/consts';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { getSuggestedDescription } from '../services/AiService';
 
 export interface FormValues {
-  status: (typeof StatusEnum)[keyof typeof StatusEnum];
+  status: (typeof ListingTypeEnum)[keyof typeof ListingTypeEnum];
   animalType: string;
   contactNumber: string;
   lastSeenLocation: string;
@@ -180,7 +180,7 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
               <Box
                 sx={{ display: 'flex', borderRadius: '0.6rem', padding: '0.2rem', gap: '0.2rem' }}
               >
-                {Object.values(StatusEnum).map((status) => (
+                {Object.values(ListingTypeEnum).map((status) => (
                   <Box
                     key={status}
                     onClick={() => field.onChange(status)}
@@ -198,17 +198,17 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
                       justifyContent: 'center',
                       border:
                         field.value === status
-                          ? `1.5px solid ${status === StatusEnum.LOST ? theme.palette.error.main : theme.palette.success.main}`
+                          ? `1.5px solid ${status === ListingTypeEnum.LOST ? theme.palette.error.main : theme.palette.success.main}`
                           : `1.5px solid ${theme.palette.grey[400]}`,
                       color:
                         field.value === status
-                          ? status === StatusEnum.LOST
+                          ? status === ListingTypeEnum.LOST
                             ? 'error.main'
                             : 'success.main'
                           : 'text.secondary',
                       backgroundColor:
                         field.value === status
-                          ? status === StatusEnum.LOST
+                          ? status === ListingTypeEnum.LOST
                             ? alpha(theme.palette.error.main, 0.06)
                             : alpha(theme.palette.success.main, 0.06)
                           : 'background.default',

@@ -13,7 +13,6 @@ import {
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import moment from 'moment';
-import { StatusEnum } from '../../utils/consts';
 import { useState } from 'react';
 import ListingDetailsDialog from './ListingDetailsDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -31,21 +30,22 @@ export interface Comment {
 }
 
 export interface Listing {
-  id: string;
-  status: string;
-  animal: string;
+  _id: string;
+  listingType: string;
+  animalType: string;
   imageUrl: string;
   location: string;
-  date: number;
+  lastSeen: number;
   description: string;
-  comments: Comment[];
+  comments: any[];
   boosts: string[];
   userId: string;
-  user: {
-    name: string;
-    avatar: string;
+  author: {
+    firstName: string;
+    lastName: string;
+    imageUrl: string;
     email: string;
-    phone: string; // TODO: Switch to real user interface
+    phoneNumber: string;
   };
   isResolved: boolean;
   isDeleted: boolean;
@@ -84,19 +84,19 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
             }}
           />
           <Chip
-            label={listing.status.toUpperCase()}
+            label={(listing.listingType).toUpperCase()}
             sx={{
               position: 'absolute',
               top: '1rem',
               left: '1rem',
-              backgroundColor: listing.status === StatusEnum.LOST ? 'error.main' : 'success.main',
+              backgroundColor: listing.listingType.toLowerCase() === 'lost' ? 'error.main' : 'success.main',
               color: 'white',
               fontWeight: 'bold',
               borderRadius: '1rem',
             }}
           />
           <Chip
-            label={listing.animal}
+            label={listing.animalType}
             sx={{
               position: 'absolute',
               top: '1rem',
@@ -131,7 +131,7 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
               </Typography>
             </Box>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              {moment(listing.date).format('MMM D')}
+              {moment(listing.lastSeen).format('MMM D')}
             </Typography>
           </Box>
           <Typography
@@ -200,13 +200,13 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
                     <FontAwesomeIcon size="xs" icon={faPaw} />
                   </IconButton>
                 </Tooltip>
-                <Typography variant="body2">{listing.boosts.length}</Typography>
+                <Typography variant="body2">{listing.boosts.length || 0}</Typography>
               </Box>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Avatar src={listing.user.avatar} sx={{ width: '1.5rem', height: '1.5rem' }} />
+              <Avatar src={listing.author?.imageUrl} sx={{ width: '1.5rem', height: '1.5rem' }} />
               <Typography variant="body2" sx={{ color: 'text.primary' }}>
-                {listing.user.name}
+                {listing.author ? `${listing.author.firstName} ${listing.author.lastName}` : 'Anonymous'}
               </Typography>
             </Box>
           </Box>

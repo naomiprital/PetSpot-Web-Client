@@ -1,46 +1,51 @@
-import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header/Header';
 import HomePage from './pages/HomePage';
-import { UserProvider } from './context/UserContext';
+import { UserProvider, useUser } from './context/UserContext';
 import { ListingsProvider } from './context/ListingsContext';
 import { ToastContainer } from 'react-toastify';
 import AuthPage from './pages/AuthPage';
 import ProfilePage from './pages/ProfilePage';
+import { Box, CircularProgress } from '@mui/material';
+
+const AppContent = () => {
+  const { user, isLoading } = useUser();
+  const appLocation = useLocation();
+  const isAuthPage = appLocation.pathname === '/auth';
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  return (
+    <>
+      {!isAuthPage && <Header />}
+      <Routes>
+        <Route path="/" element={user ? <HomePage /> : <Navigate to="/auth" />} />
+        <Route
+          path="/auth"
+          element={!user ? <AuthPage /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/profile"
+          element={user ? <ProfilePage /> : <Navigate to="/auth" />}
+        />
+      </Routes>
+      <ToastContainer position="bottom-left" />
+    </>
+  );
+};
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const isAuthPage = location.pathname === '/auth';
-
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-    navigate('/');
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    navigate('/auth');
-  };
-
   return (
     <UserProvider>
       <ListingsProvider>
-        {!isAuthPage && <Header onLogout={handleLogout} />}
-        <Routes>
-          <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to="/auth" />} />
-          <Route
-            path="/auth"
-            element={!isAuthenticated ? <AuthPage onLogin={handleLogin} /> : <Navigate to="/" />}
-          />
-          <Route
-            path="/profile"
-            element={isAuthenticated ? <ProfilePage /> : <Navigate to="/auth" />}
-          />
-        </Routes>
-        <ToastContainer position="bottom-left" />
+        <AppContent />
       </ListingsProvider>
     </UserProvider>
   );
