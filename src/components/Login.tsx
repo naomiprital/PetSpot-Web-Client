@@ -1,7 +1,9 @@
 import { Box, Button, Link, InputBase, Typography, styled } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useForm } from 'react-hook-form';
-import GoogleLoginButton from './GoogleLoginButton';
+import { useLogin } from '../hooks/useAuth';
+import { toast } from 'react-toastify';
+import { GoogleLogin } from '@react-oauth/google';
 
 const inputSx = {
   backgroundColor: 'background.default',
@@ -30,11 +32,10 @@ const InputLabel = styled(Typography)(({ theme }) => ({
 }));
 
 interface LoginProps {
-  onLogin?: () => void;
   onForgotPassword?: (email: string) => void;
 }
 
-const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
+const Login = ({ onForgotPassword }: LoginProps) => {
   const theme = useTheme();
   const {
     register,
@@ -49,9 +50,15 @@ const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
     },
   });
 
-  const onSubmit = () => {
-    if (onLogin) {
-      onLogin();
+  const loginMutation = useLogin();
+
+  const onSubmit = async (data: any) => {
+    try {
+      await loginMutation.mutateAsync(data);
+      toast.success('Welcome back!');
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
+      toast.error(errorMessage);
     }
   };
 
@@ -144,6 +151,7 @@ const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
         fullWidth
         type="submit"
         variant="contained"
+        disabled={loginMutation.isPending}
         sx={{
           mt: 0.5,
           py: 1.2,
@@ -158,10 +166,14 @@ const Login = ({ onLogin, onForgotPassword }: LoginProps) => {
           },
         }}
       >
-        Welcome Back!
+        {loginMutation.isPending ? 'Logging in...' : 'Welcome Back!'}
       </Button>
 
-      <GoogleLoginButton />
+      <GoogleLogin
+        onSuccess={(tokenResponse) => {
+          console.log(tokenResponse);
+        }}
+      />
     </Box>
   );
 };

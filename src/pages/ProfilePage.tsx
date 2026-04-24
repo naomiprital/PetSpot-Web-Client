@@ -1,23 +1,31 @@
 import { useMemo } from 'react';
-import { Box, Typography, Chip } from '@mui/material';
-import { useUser } from '../context/UserContext';
+import { Box, Chip, Typography } from '@mui/material';
+import { useUser } from '../hooks/useUsers';
 import { useListingsOld } from '../context/ListingsContext';
-import { StatusEnum } from '../../utils/consts';
 import UserListingCard from '../components/UserListingCard';
 import ProfileHeaderCard from '../components/ProfileHeaderCard';
+import type { Listing } from '../components/MainFeedListingCard';
 
 const ProfilePage = () => {
-  const { user } = useUser();
+  const { data: user } = useUser();
   const listings = useListingsOld();
 
+  if (!user) {
+    return (
+      <Box sx={{ p: 4, textAlign: 'center' }}>
+        <Typography>Please log in to view your profile.</Typography>
+      </Box>
+    );
+  }
+
   const userListings = useMemo(
-    () => listings.filter((listing) => listing.userId === user.id),
-    [listings, user.id]
+    () => listings.filter((listing: Listing) => listing.userId === user._id),
+    [listings, user._id]
   );
 
   const reportsCount = userListings.length;
   const reunionsCount = useMemo(
-    () => userListings.filter((listing) => listing.status === StatusEnum.FOUND).length,
+    () => userListings.filter((listing) => listing.listingType === 'found' && listing.isResolved).length,
     [userListings]
   );
 
@@ -65,7 +73,7 @@ const ProfilePage = () => {
             }}
           >
             {userListings.map((listing) => (
-              <UserListingCard key={listing.id} listing={listing} />
+              <UserListingCard key={listing._id} listing={listing} />
             ))}
           </Box>
         )}

@@ -3,7 +3,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
 import ListingForm, { type FormValues } from './ListingForm';
 import { getLocalDateTimeString } from '../../utils/utilsFunctions';
-import { ListingTypeEnum, type NewListing } from '../types/Listing';
+import { ListingTypeEnum } from '../types/Listing';
 import { useCreateListing } from '../hooks/useListings';
 import moment from 'moment';
 import { useMemo } from 'react';

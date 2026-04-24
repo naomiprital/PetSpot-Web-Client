@@ -5,6 +5,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import { useListingsOld } from '../context/ListingsContext';
 import type { User } from '../types/User';
+import { SERVER_BASE_URL } from '../../utils/consts';
 
 interface UserDetailDialogProps {
   open: boolean;
@@ -17,12 +18,12 @@ const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
   const listings = useListingsOld();
 
   const { reportsCount, reunionsCount } = useMemo(() => {
-    const userListings = listings.filter((listing) => listing.user.email === user.email);
+    const userListings = listings.filter((listing) => listing.author.email === user?.email);
     return {
       reportsCount: userListings.length,
       reunionsCount: userListings.filter((listing) => listing.isResolved).length,
     };
-  }, [listings, user.email]);
+  }, [listings, user?.email]);
 
   return (
     <Dialog
@@ -62,7 +63,7 @@ const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
         >
           <Box sx={{ position: 'relative' }}>
             <Avatar
-              src={user.imageUrl}
+              src={`${SERVER_BASE_URL}${user?.imageUrl}`}
               sx={{
                 width: '6rem',
                 height: '6rem',
@@ -73,10 +74,10 @@ const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
           </Box>
           <Box sx={{ textAlign: 'center' }}>
             <Typography sx={{ fontWeight: 800, fontSize: '1.5rem', color: 'text.primary' }}>
-              {user.firstName + ' ' + user.lastName}
+              {user?.firstName + ' ' + user?.lastName}
             </Typography>
             <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
-              {user.email}
+              {user?.email}
             </Typography>
           </Box>
         </Box>
@@ -146,13 +147,13 @@ const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <EmailIcon sx={{ color: 'text.secondary', fontSize: '1.2rem' }} />
               <Typography sx={{ fontSize: '0.95rem', color: 'text.primary' }}>
-                {user.email}
+                {user?.email}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <PhoneIcon sx={{ color: 'text.secondary', fontSize: '1.2rem' }} />
               <Typography sx={{ fontSize: '0.95rem', color: 'text.primary' }}>
-                {user.phoneNumber}
+                {user?.phoneNumber}
               </Typography>
             </Box>
           </Box>

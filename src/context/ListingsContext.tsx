@@ -1,6 +1,6 @@
 import { createContext, useContext, type ReactNode } from 'react';
 import type { Listing } from '../components/MainFeedListingCard';
-import { StatusEnum, AnimalsEnum } from '../../utils/consts';
+import { AnimalsEnum, ListingTypeEnum } from '../../utils/consts';
 
 interface ListingsContextType {
   listings: Listing[];
@@ -10,13 +10,13 @@ const ListingsContext = createContext<ListingsContextType | null>(null);
 
 const mockListings: Listing[] = [
   {
-    id: '1',
-    status: StatusEnum.LOST,
-    animal: AnimalsEnum.DOG,
+    _id: '1',
+    listingType: ListingTypeEnum.LOST,
+    animalType: AnimalsEnum.DOG,
     imageUrl:
       'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80',
     location: 'Central Park, NY',
-    date: Date.now() - 100000000,
+    lastSeen: Date.now() - 100000000,
     description:
       'Buster is a friendly golden retriever. Wearing a blue collar. Last seen near the park',
     boosts: ['id1', 'id2', 'id3'],
@@ -33,9 +33,10 @@ const mockListings: Listing[] = [
       },
     ],
     userId: 'user-1',
-    user: {
-      name: 'John',
-      avatar:
+    author: {
+      firstName: 'John',
+      lastName: 'Doe',
+      imageUrl:
         'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
       email: 'john@example.com',
       phone: '1234567890',
@@ -44,13 +45,13 @@ const mockListings: Listing[] = [
     isDeleted: false,
   },
   {
-    id: '2',
-    status: StatusEnum.FOUND,
-    animal: AnimalsEnum.CAT,
+    _id: '2',
+    listingType: ListingTypeEnum.FOUND,
+    animalType: AnimalsEnum.CAT,
     imageUrl:
       'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80',
     location: 'Brooklyn, NY',
-    date: Date.now() - 200000000,
+    lastSeen: Date.now() - 200000000,
     description: 'Found a small black cat near the subway station. Very vocal and friendly.',
     boosts: ['id1', 'id2'],
     comments: [
@@ -96,9 +97,10 @@ const mockListings: Listing[] = [
       },
     ],
     userId: 'user-2',
-    user: {
-      name: 'Sarah',
-      avatar:
+    author: {
+      firstName: 'Sarah',
+      lastName: 'Doe',
+      imageUrl:
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
       email: 'sarah@example.com',
       phone: '1234567890',
@@ -107,20 +109,21 @@ const mockListings: Listing[] = [
     isDeleted: false,
   },
   {
-    id: '3',
-    status: StatusEnum.LOST,
-    animal: AnimalsEnum.BIRD,
+    _id: '3',
+    listingType: ListingTypeEnum.LOST,
+    animalType: AnimalsEnum.BIRD,
     imageUrl:
       'https://us1.discourse-cdn.com/flex016/uploads/inaturalist/optimized/3X/e/a/eaa730a3a558b159061c738eb3ab961739294c66_2_387x500.jpeg',
     location: 'Queens, NY',
-    date: Date.now() - 50000000,
+    lastSeen: Date.now() - 50000000,
     description: 'Green parakeet flew out the window. Answers to "Kiwi".',
     boosts: ['id1', 'id2', 'id3', 'id4', 'id5', 'id6'],
     comments: [],
     userId: 'user-3',
-    user: {
-      name: 'Mike',
-      avatar:
+    author: {
+      firstName: 'Mike',
+      lastName: 'Doe',
+      imageUrl:
         'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
       email: 'mike@example.com',
       phone: '1234567890',
@@ -129,13 +132,13 @@ const mockListings: Listing[] = [
     isDeleted: false,
   },
   {
-    id: '4',
-    status: StatusEnum.FOUND,
-    animal: AnimalsEnum.DOG,
+    _id: '4',
+    listingType: ListingTypeEnum.FOUND,
+    animalType: AnimalsEnum.DOG,
     imageUrl:
       'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=600&q=80',
     location: 'Manhattan, NY',
-    date: Date.now() - 300000000,
+    lastSeen: Date.now() - 300000000,
     description: 'Found a stray husky wandering around. No collar, very energetic.',
     boosts: ['id1', 'id2', 'id3', 'id4', 'id5'],
     comments: [
@@ -201,9 +204,10 @@ const mockListings: Listing[] = [
       },
     ],
     userId: 'user-4',
-    user: {
-      name: 'Emma',
-      avatar:
+    author: {
+      firstName: 'Emma',
+      lastName: 'Doe',
+      imageUrl:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
       email: 'emma@example.com',
       phone: '1234567890',
@@ -212,20 +216,21 @@ const mockListings: Listing[] = [
     isDeleted: false,
   },
   {
-    id: '5',
-    status: StatusEnum.LOST,
-    animal: AnimalsEnum.CAT,
+    _id: '5',
+    listingType: ListingTypeEnum.LOST,
+    animalType: AnimalsEnum.CAT,
     imageUrl:
       'https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=600&q=80',
     location: 'Haifa, Israel',
-    date: Date.now() - 80000000,
+    lastSeen: Date.now() - 80000000,
     description: 'Orange tabby cat named Mango, very friendly. Missing since Tuesday morning.',
     boosts: ['id1', 'id2', 'id3', 'id4', 'id5', 'id6'],
     comments: [],
     userId: 'user-6',
-    user: {
-      name: 'Yael',
-      avatar:
+    author: {
+      firstName: 'Yael',
+      lastName: 'Doe',
+      imageUrl:
         'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=100&q=80',
       email: 'yael@example.com',
       phone: '+972501234567',
@@ -234,13 +239,13 @@ const mockListings: Listing[] = [
     isDeleted: false,
   },
   {
-    id: '6',
-    status: StatusEnum.FOUND,
-    animal: AnimalsEnum.RABBIT,
+    _id: '6',
+    listingType: ListingTypeEnum.FOUND,
+    animalType: AnimalsEnum.RABBIT,
     imageUrl:
       'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=600&q=80',
     location: 'Tel Aviv, Israel',
-    date: Date.now() - 150000000,
+    lastSeen: Date.now() - 150000000,
     description: 'Found a white rabbit near Rothschild Blvd. Has a red tag on its ear.',
     boosts: ['id1', 'id2'],
     comments: [
@@ -256,9 +261,10 @@ const mockListings: Listing[] = [
       },
     ],
     userId: 'user-7',
-    user: {
-      name: 'Noa',
-      avatar:
+    author: {
+      firstName: 'Noa',
+      lastName: 'Doe',
+      imageUrl:
         'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80',
       email: 'noa@example.com',
       phone: '+972509876543',
@@ -267,20 +273,21 @@ const mockListings: Listing[] = [
     isDeleted: false,
   },
   {
-    id: '7',
-    status: StatusEnum.LOST,
-    animal: AnimalsEnum.DOG,
+    _id: '7',
+    listingType: ListingTypeEnum.LOST,
+    animalType: AnimalsEnum.DOG,
     imageUrl:
       'https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=600&q=80',
     location: 'Jerusalem, Israel',
-    date: Date.now() - 30000000,
+    lastSeen: Date.now() - 30000000,
     description: 'Black Labrador named Shadow. Escaped through an open gate. Very gentle.',
     boosts: ['id1', 'id2', 'id3', 'id4', 'id5', 'id6', 'id7'],
     comments: [],
     userId: 'user-8',
-    user: {
-      name: 'Avi',
-      avatar:
+    author: {
+      firstName: 'Avi',
+      lastName: 'Doe',
+      imageUrl:
         'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
       email: 'avi@example.com',
       phone: '+972521112222',
@@ -289,13 +296,13 @@ const mockListings: Listing[] = [
     isDeleted: false,
   },
   {
-    id: '8',
-    status: StatusEnum.FOUND,
-    animal: AnimalsEnum.DOG,
+    _id: '8',
+    listingType: ListingTypeEnum.FOUND,
+    animalType: AnimalsEnum.DOG,
     imageUrl:
       'https://images.unsplash.com/photo-1561037404-61cd46aa615b?auto=format&fit=crop&w=600&q=80',
     location: 'Beer Sheva, Israel',
-    date: Date.now() - 420000000,
+    lastSeen: Date.now() - 420000000,
     description: 'Small white dog, possibly a Bichon Frise. No collar. Found near the park.',
     boosts: ['id1'],
     comments: [
@@ -311,9 +318,10 @@ const mockListings: Listing[] = [
       },
     ],
     userId: 'user-9',
-    user: {
-      name: 'Roni',
-      avatar:
+    author: {
+      firstName: 'Roni',
+      lastName: 'Doe',
+      imageUrl:
         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80',
       email: 'roni@example.com',
       phone: '+972531231234',
@@ -322,20 +330,21 @@ const mockListings: Listing[] = [
     isDeleted: false,
   },
   {
-    id: '9',
-    status: StatusEnum.LOST,
-    animal: AnimalsEnum.BIRD,
+    _id: '9',
+    listingType: ListingTypeEnum.LOST,
+    animalType: AnimalsEnum.BIRD,
     imageUrl:
       'https://images.unsplash.com/photo-1452570053594-1b985d6ea890?auto=format&fit=crop&w=600&q=80',
     location: 'Netanya, Israel',
-    date: Date.now() - 60000000,
+    lastSeen: Date.now() - 60000000,
     description: 'Blue and yellow budgie named Sunny. Flew out of an open window on Thursday.',
     boosts: ['id1', 'id2', 'id3', 'id4', 'id5', 'id6', 'id7'],
     comments: [],
     userId: 'user-10',
-    user: {
-      name: 'Maya',
-      avatar:
+    author: {
+      firstName: 'Maya',
+      lastName: 'Doe',
+      imageUrl:
         'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=100&q=80',
       email: 'maya@example.com',
       phone: '+972541234567',
@@ -344,13 +353,13 @@ const mockListings: Listing[] = [
     isDeleted: false,
   },
   {
-    id: '10',
-    status: StatusEnum.FOUND,
-    animal: AnimalsEnum.CAT,
+    _id: '10',
+    listingType: ListingTypeEnum.FOUND,
+    animalType: AnimalsEnum.CAT,
     imageUrl:
       'https://images.unsplash.com/photo-1592194996308-7b43878e84a6?auto=format&fit=crop&w=600&q=80',
     location: 'Rishon LeZion, Israel',
-    date: Date.now() - 520000000,
+    lastSeen: Date.now() - 520000000,
     description: 'Grey cat with green eyes found sheltering under a car. Seems well-groomed.',
     boosts: ['id1', 'id2', 'id3'],
     comments: [
@@ -366,9 +375,10 @@ const mockListings: Listing[] = [
       },
     ],
     userId: 'user-11',
-    user: {
-      name: 'Shira',
-      avatar:
+    author: {
+      firstName: 'Shira',
+      lastName: 'Doe',
+      imageUrl:
         'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80',
       email: 'shira@example.com',
       phone: '+972551112233',

@@ -62,8 +62,8 @@ interface ListingDetailsDialogProps {
   open: boolean;
   onClose: () => void;
   listing: NewListing;
-  onBoostToggle: () => void;
-  isUserBoostedListing: (listing: NewListing) => boolean;
+  onBoostToggle: (event?: React.MouseEvent<HTMLButtonElement>) => Promise<void> | void;
+  isUserBoostedListing: (listing: any) => boolean;
 }
 
 const ListingDetailsDialog = ({
@@ -199,12 +199,12 @@ const ListingDetailsDialog = ({
               onClick={() => setUserDetailDialogOpen(true)}
             >
               <Avatar
-                src={`${SERVER_BASE_URL}${listing.author.imageUrl}`}
+                src={`${SERVER_BASE_URL}${listing.author?.imageUrl}`}
                 sx={{ width: '3rem', height: '3rem' }}
               />
               <Box>
                 <Typography sx={{ fontWeight: 'bold' }}>
-                  {listing.author.firstName + ' ' + listing.author.lastName}
+                  {listing.author?.firstName + ' ' + listing.author?.lastName}
                 </Typography>
                 <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                   Lister Information
@@ -233,7 +233,7 @@ const ListingDetailsDialog = ({
 
             <Box
               component="a"
-              href={`tel:${listing.author.phoneNumber}`}
+              href={`tel:${listing.author?.phoneNumber}`}
               onClick={handlePhoneClick}
               sx={(theme) => ({
                 backgroundColor: alpha(theme.palette.primary.main, 0.8),
@@ -253,7 +253,7 @@ const ListingDetailsDialog = ({
             >
               <PhoneIcon sx={{ color: 'white' }} />
               <Typography sx={{ color: 'white', fontWeight: copied ? 'bold' : 'normal' }}>
-                {copied ? 'Number Copied!' : `Call Lister (${listing.author.phoneNumber})`}
+                {copied ? 'Number Copied!' : `Call Lister (${listing.author?.phoneNumber})`}
               </Typography>
             </Box>
 
@@ -292,7 +292,7 @@ const ListingDetailsDialog = ({
             {listing.comments.map((comment: NewComment) => (
               <Box key={comment._id} sx={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
                 <Avatar
-                  src={`${SERVER_BASE_URL}${comment.author.imageUrl}`}
+                  src={`${SERVER_BASE_URL}${comment.author?.imageUrl}`}
                   sx={{ width: '2.2rem', height: '2.2rem' }}
                 />
                 <Box>
@@ -300,7 +300,7 @@ const ListingDetailsDialog = ({
                     sx={{ backgroundColor: 'grey.100', borderRadius: '0.6rem', padding: '0.5rem' }}
                   >
                     <Typography sx={{ fontWeight: 'bold' }}>
-                      {comment.author.firstName + ' ' + comment.author.lastName}
+                      {comment.author?.firstName + ' ' + comment.author?.lastName}
                     </Typography>
                     <Typography>{comment.commentText}</Typography>
                   </Box>
