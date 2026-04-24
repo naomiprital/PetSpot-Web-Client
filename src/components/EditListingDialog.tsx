@@ -14,7 +14,7 @@ interface EditListingDialogProps {
 }
 
 const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) => {
-  const { mutateAsync: updateListing } = useUpdateListing();
+  const { mutateAsync: updateListing, isPending: isUpdatePending } = useUpdateListing();
 
   if (!listing) return null;
 
@@ -87,6 +87,7 @@ const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) =
         defaultValues={currentValues}
         submitButtonText="Save Changes"
         onSubmit={onSubmit}
+        isPending={isUpdatePending}
       />
     </Dialog>
   );

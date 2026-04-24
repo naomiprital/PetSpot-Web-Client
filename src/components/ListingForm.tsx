@@ -80,6 +80,9 @@ const ListingForm = ({
 
   const getPreviewAndName = (image: string | FileList | null) => {
     if (typeof image === 'string') {
+      if (image === '/images/default-listing-image.jpg') {
+        return { url: null, name: null };
+      }
       return { url: image, name: 'Current Image' };
     }
     if (image instanceof FileList && image.length > 0) {
@@ -87,6 +90,7 @@ const ListingForm = ({
     }
     return { url: null, name: null };
   };
+
   const initialPreview = getPreviewAndName(defaultValues.image);
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialPreview.url);
   const [fileName, setFileName] = useState<string | null>(initialPreview.name);
@@ -138,7 +142,9 @@ const ListingForm = ({
     event.stopPropagation();
     setPreviewUrl(null);
     setFileName(null);
-    setValue('image', null);
+
+    setValue('image', '/images/default-listing-image.jpg');
+
     setUploadedFile(null);
 
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -314,7 +320,7 @@ const ListingForm = ({
 
       <Box sx={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
         <FormFieldBox>
-          <FormFieldLabel>DATE & TIME</FormFieldLabel>
+          <FormFieldLabel>LAST SEEN DATE & TIME</FormFieldLabel>
           <Box
             sx={{
               ...(errors.lastSeen ? errorInputSx : inputSx),
