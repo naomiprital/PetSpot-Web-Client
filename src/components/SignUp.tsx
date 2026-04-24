@@ -223,7 +223,7 @@ const SignUp = () => {
             fullWidth
             placeholder="050-123-4567"
             value={formatPhoneNumber(watch('phone'))}
-            onChange={(e) => setValue('phone', cleanPhoneNumber(e.target.value))}
+            onChange={(event) => setValue('phone', cleanPhoneNumber(event.target.value))}
             sx={{ fontSize: '0.95rem', color: 'text.primary' }}
           />
         </Box>
