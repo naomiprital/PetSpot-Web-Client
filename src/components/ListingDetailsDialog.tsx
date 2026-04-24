@@ -199,7 +199,7 @@ const ListingDetailsDialog = ({
               onClick={() => setUserDetailDialogOpen(true)}
             >
               <Avatar
-                src={`${SERVER_BASE_URL}${listing.author.imageUrl}`}
+                src={`${SERVER_BASE_URL}${listing.author?.imageUrl}`}
                 sx={{ width: '3rem', height: '3rem' }}
               />
               <Box>
@@ -292,7 +292,7 @@ const ListingDetailsDialog = ({
             {listing.comments.map((comment: NewComment) => (
               <Box key={comment._id} sx={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
                 <Avatar
-                  src={`${SERVER_BASE_URL}${comment.author.imageUrl}`}
+                  src={`${SERVER_BASE_URL}${comment.author?.imageUrl}`}
                   sx={{ width: '2.2rem', height: '2.2rem' }}
                 />
                 <Box>
