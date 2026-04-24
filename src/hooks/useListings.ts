@@ -44,7 +44,7 @@ export const useResolveListing = () => {
   return useMutation({
     mutationFn: (listingId: string) => resolveListing(listingId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['listings'] }); // todo: invalidate user query
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
     },
   });
 };

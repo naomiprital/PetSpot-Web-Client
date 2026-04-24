@@ -1,9 +1,11 @@
 import { Box, Dialog, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
+import moment from 'moment';
 import ListingForm, { type FormValues } from './ListingForm';
 import { getLocalDateTimeString } from '../../utils/utilsFunctions';
 import type { ListingType, Listing } from '../types/Listing';
+import { useUpdateListing } from '../hooks/useListings';
 
 interface EditListingDialogProps {
   open: boolean;
@@ -12,6 +14,8 @@ interface EditListingDialogProps {
 }
 
 const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) => {
+  const { mutateAsync: updateListing } = useUpdateListing();
+
   if (!listing) return null;
 
   const currentValues: FormValues = {
@@ -26,7 +30,20 @@ const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) =
 
   const onSubmit = async (data: FormValues) => {
     try {
-      // TODO: replace with API call
+      const formData = new FormData();
+      formData.append('listingType', data.listingType);
+      formData.append('animalType', data.animalType);
+      formData.append('location', data.location);
+      formData.append('description', data.description);
+      formData.append('lastSeen', moment(data.lastSeen).valueOf().toString());
+
+      if (data.image instanceof FileList && data.image.length > 0) {
+        formData.append('image', data.image[0]);
+      } else if (typeof data.image === 'string') {
+        formData.append('imageUrl', data.image);
+      }
+
+      await updateListing({ listingId: listing._id, formData });
       toast.success('Listing updated successfully!');
       onClose();
     } catch (error) {

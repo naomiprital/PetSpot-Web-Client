@@ -24,6 +24,7 @@ const ProfilePage = () => {
   );
 
   const reportsCount = userListings?.length;
+
   const reunionsCount = useMemo(
     () =>
       userListings?.filter((listing) => listing.listingType === 'found' && listing.isResolved)

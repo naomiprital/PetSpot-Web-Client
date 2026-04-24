@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { AnimalTypeEnum, LISTING_TYPES, ListingTypeEnum, type ListingType } from '../types/Listing';
 import { useSuggestDescription } from '../hooks/useAi';
+import { SERVER_BASE_URL } from '../../utils/consts';
 
 export interface FormValues {
   listingType: ListingType;
@@ -132,9 +133,6 @@ const ListingForm = ({
     setValue('image', null);
     setUploadedFile(null);
 
-    setValue('description', '');
-    setValue('animalType', '');
-
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -154,6 +152,10 @@ const ListingForm = ({
     } catch (error) {
       toast.error('Failed to generate suggestion.');
     }
+  };
+
+  const isImageFromServer = (image: string) => {
+    return !image.startsWith('blob:');
   };
 
   return (
@@ -364,7 +366,9 @@ const ListingForm = ({
                   sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}
                 >
                   <Avatar
-                    src={previewUrl}
+                    src={
+                      isImageFromServer(previewUrl) ? `${SERVER_BASE_URL}${previewUrl}` : previewUrl
+                    }
                     variant="rounded"
                     sx={{ width: '2rem', height: '2rem', flexShrink: 0 }}
                   />
