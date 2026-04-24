@@ -13,9 +13,8 @@ export const register = async (userData: FormData) => {
   const { data } = await api.post(`${AUTH_ROUTE}/register`, userData);
   return data;
 };
-
-export const logout = async (refreshToken: string) => {
-  await api.post(`${AUTH_ROUTE}/logout`, { refreshToken });
+export const logout = async () => {
+  await api.post(`${AUTH_ROUTE}/logout`);
 };
 
 export const refreshToken = async (refreshToken: string) => {

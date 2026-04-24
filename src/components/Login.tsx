@@ -50,14 +50,14 @@ const Login = ({ onForgotPassword }: LoginProps) => {
     },
   });
 
-  const loginMutation = useLogin();
-
+  const { mutateAsync: loginMutation, isPending: isPendingLogin } = useLogin();
   const onSubmit = async (data: any) => {
     try {
-      await loginMutation.mutateAsync(data);
+      await loginMutation(data);
       toast.success('Welcome back!');
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
+      const errorMessage =
+        error.response?.data?.message || 'Login failed. Please check your credentials.';
       toast.error(errorMessage);
     }
   };
@@ -151,7 +151,7 @@ const Login = ({ onForgotPassword }: LoginProps) => {
         fullWidth
         type="submit"
         variant="contained"
-        disabled={loginMutation.isPending}
+        disabled={isPendingLogin}
         sx={{
           mt: 0.5,
           py: 1.2,
@@ -166,7 +166,7 @@ const Login = ({ onForgotPassword }: LoginProps) => {
           },
         }}
       >
-        {loginMutation.isPending ? 'Logging in...' : 'Welcome Back!'}
+        {isPendingLogin ? 'Logging in...' : 'Welcome Back!'}
       </Button>
       <GoogleLoginButton />
     </Box>

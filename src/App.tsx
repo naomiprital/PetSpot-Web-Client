@@ -1,38 +1,28 @@
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import './App.css';
-import Header from './components/Header/Header';
-import HomePage from './pages/HomePage';
-import { useUser } from './hooks/useUsers';
-import { ToastContainer } from 'react-toastify';
+// 1. Remove BrowserRouter from the import
+import { Routes, Route, useLocation } from 'react-router-dom';
 import AuthPage from './pages/AuthPage';
+import ProtectedRoute from './api/routes/ProtectedRoute';
+import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
-import { Box, CircularProgress } from '@mui/material';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ToastContainer } from 'react-toastify';
+import Header from './components/Header/Header';
 
 const App = () => {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string;
-
-  const { data: user, isLoading } = useUser();
   const appLocation = useLocation();
   const isAuthPage = appLocation.pathname === '/auth';
-
-  if (isLoading) {
-    return (
-      <Box
-        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
       {!isAuthPage && <Header />}
       <Routes>
-        <Route path="/" element={user ? <HomePage /> : <Navigate to="/auth" />} />
-        <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/" />} />
-        <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/auth" />} />
+        <Route path="/auth" element={<AuthPage />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
       </Routes>
       <ToastContainer position="bottom-left" />
     </GoogleOAuthProvider>

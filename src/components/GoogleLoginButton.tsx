@@ -1,9 +1,10 @@
 import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
 import { useState } from 'react';
-import { GOOGLE_COLORS, GOOGLE_PHONE_DIALOG_COLORS } from '../theme/theme';
+import theme, { GOOGLE_COLORS, GOOGLE_PHONE_DIALOG_COLORS } from '../theme/theme';
 import { Box, Button, Divider, Typography, Dialog, InputBase } from '@mui/material';
 import { useGoogleAuth } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
+import { formatPhoneNumber } from '../../utils/utilsFunctions';
 
 const GoogleLogo = () => (
   <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
@@ -208,9 +209,9 @@ const GoogleLoginButton = () => {
             }}>
               <InputBase
                 fullWidth
-                placeholder="+1 (555) 000-0000"
-                value={phoneNumber}
-                onChange={(event) => setPhoneNumber(event.target.value)}
+                placeholder="050-1234567"
+                value={formatPhoneNumber(phoneNumber)}
+                onChange={(event) => setPhoneNumber(formatPhoneNumber(event.target.value))}
                 sx={{
                   fontSize: '1rem',
                   fontWeight: 600,
@@ -233,7 +234,7 @@ const GoogleLoginButton = () => {
                 fontSize: '0.9rem',
                 textTransform: 'none',
                 '&:hover': {
-                  backgroundColor: GOOGLE_PHONE_DIALOG_COLORS.cancelHover,
+                  backgroundColor: theme.palette.grey[400],
                 }
               }}
             >

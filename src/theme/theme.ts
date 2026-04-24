@@ -20,9 +20,7 @@ export const GOOGLE_PHONE_DIALOG_COLORS = {
   grayText: '#718096',
   lightGrayText: '#A0AEC0',
   cancelBg: '#EDF2F7',
-  cancelHover: '#E2E8F0',
   cancelText: '#4A5568',
-  bgDefault: '#F8FAFC',
 } as const;
 
 const theme = createTheme({
