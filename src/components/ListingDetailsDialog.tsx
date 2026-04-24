@@ -24,6 +24,9 @@ import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import UserDetailDialog from './UserDetailDialog';
 import { ListingTypeEnum, type NewListing } from '../types/Listing';
 import { SERVER_BASE_URL } from '../../utils/consts';
+import useCreateComment from '../hooks/useComments';
+import type { NewComment } from '../types/Comment';
+import { useToggleBoostListing } from '../hooks/useListings';
 
 interface DetailRowProps {
   icon: React.ReactNode;
@@ -60,7 +63,6 @@ interface ListingDetailsDialogProps {
   open: boolean;
   onClose: () => void;
   listing: NewListing;
-  onBoostToggle: () => void;
   isUserBoostedListing: (listing: NewListing) => boolean;
 }
 
@@ -68,11 +70,13 @@ const ListingDetailsDialog = ({
   open,
   onClose,
   listing,
-  onBoostToggle,
   isUserBoostedListing,
 }: ListingDetailsDialogProps) => {
   const [copied, setCopied] = useState(false);
   const [userDetailDialogOpen, setUserDetailDialogOpen] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const { mutateAsync: addComment } = useCreateComment();
+  const { mutateAsync: toggleBoostListing } = useToggleBoostListing();
 
   const handlePhoneClick = async () => {
     try {
@@ -82,6 +86,14 @@ const ListingDetailsDialog = ({
     } catch (error) {
       toast.error('Failed to copy text');
     }
+  };
+
+  const handleAddComment = async () => {
+    await addComment({
+      listingId: listing._id,
+      commentText: newComment,
+    });
+    setNewComment('');
   };
 
   return (
@@ -186,7 +198,10 @@ const ListingDetailsDialog = ({
               }}
               onClick={() => setUserDetailDialogOpen(true)}
             >
-              <Avatar src={`${SERVER_BASE_URL}${listing.author?.imageUrl}`} sx={{ width: '3rem', height: '3rem' }} />
+              <Avatar
+                src={`${SERVER_BASE_URL}${listing.author?.imageUrl}`}
+                sx={{ width: '3rem', height: '3rem' }}
+              />
               <Box>
                 <Typography sx={{ fontWeight: 'bold' }}>
                   {listing.author?.firstName + ' ' + listing.author?.lastName}
@@ -264,7 +279,7 @@ const ListingDetailsDialog = ({
                       },
                       padding: 0,
                     }}
-                    onClick={onBoostToggle}
+                    onClick={() => toggleBoostListing(listing._id)}
                   >
                     <FontAwesomeIcon size="xs" icon={faPaw} />
                   </IconButton>
@@ -274,9 +289,12 @@ const ListingDetailsDialog = ({
               </Box>
             </Box>
 
-            {listing.comments.map((comment) => (
+            {listing.comments.map((comment: NewComment) => (
               <Box key={comment._id} sx={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
-                <Avatar src={`${SERVER_BASE_URL}${comment.author?.imageUrl}`} sx={{ width: '2.2rem', height: '2.2rem' }} />
+                <Avatar
+                  src={`${SERVER_BASE_URL}${comment.author?.imageUrl}`}
+                  sx={{ width: '2.2rem', height: '2.2rem' }}
+                />
                 <Box>
                   <Box
                     sx={{ backgroundColor: 'grey.100', borderRadius: '0.6rem', padding: '0.5rem' }}
@@ -307,6 +325,10 @@ const ListingDetailsDialog = ({
               }}
             >
               <InputBase
+                value={newComment}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  setNewComment(event.target.value)
+                }
                 placeholder="Write a helpful comment..."
                 sx={{
                   flex: 1,
@@ -314,7 +336,7 @@ const ListingDetailsDialog = ({
                   fontSize: '0.95rem',
                 }}
               />
-              <IconButton color="primary">
+              <IconButton color="primary" onClick={handleAddComment}>
                 <SendIcon />
               </IconButton>
             </Box>

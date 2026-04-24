@@ -4,12 +4,12 @@ import { toast } from 'react-toastify';
 import ListingForm, { type FormValues } from './ListingForm';
 import type { Listing } from './MainFeedListingCard';
 import { getLocalDateTimeString } from '../../utils/utilsFunctions';
-import type { ListingType } from '../types/Listing';
+import type { ListingType, NewListing } from '../types/Listing';
 
 interface EditListingDialogProps {
   open: boolean;
   onClose: () => void;
-  listing: Listing;
+  listing: NewListing;
 }
 
 const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) => {
@@ -18,7 +18,7 @@ const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) =
   const currentValues: FormValues = {
     listingType: listing.listingType as ListingType,
     animalType: listing.animalType,
-    contactNumber: listing.author.phone,
+    contactNumber: listing.author.phoneNumber,
     location: listing.location,
     lastSeen: getLocalDateTimeString(listing.lastSeen),
     image: listing.imageUrl,

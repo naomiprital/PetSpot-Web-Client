@@ -21,6 +21,7 @@ import {
   ListingTypeEnum,
   AnimalTypeEnum,
 } from '../types/Listing';
+import { capitalizeFirstLetter } from '../../utils/utilsFunctions';
 
 export type StatusFilter = ListingType | 'all';
 export type AnimalFilter = AnimalType | 'all';
@@ -182,8 +183,12 @@ const FilterBar = ({
           sx={selectSx(type !== 'all')}
         >
           <MenuItem value="all">All Types</MenuItem>
-          <MenuItem value={ListingTypeEnum.LOST}>{ListingTypeEnum.LOST}</MenuItem>
-          <MenuItem value={ListingTypeEnum.FOUND}>{ListingTypeEnum.FOUND}</MenuItem>
+          <MenuItem value={ListingTypeEnum.LOST}>
+            {capitalizeFirstLetter(ListingTypeEnum.LOST)}
+          </MenuItem>
+          <MenuItem value={ListingTypeEnum.FOUND}>
+            {capitalizeFirstLetter(ListingTypeEnum.FOUND)}
+          </MenuItem>
         </Select>
 
         <Select
@@ -193,11 +198,21 @@ const FilterBar = ({
           sx={selectSx(animal !== 'all')}
         >
           <MenuItem value="all">All Animals</MenuItem>
-          <MenuItem value={AnimalTypeEnum.DOG}>{AnimalTypeEnum.DOG}</MenuItem>
-          <MenuItem value={AnimalTypeEnum.CAT}>{AnimalTypeEnum.CAT}</MenuItem>
-          <MenuItem value={AnimalTypeEnum.BIRD}>{AnimalTypeEnum.BIRD}</MenuItem>
-          <MenuItem value={AnimalTypeEnum.RABBIT}>{AnimalTypeEnum.RABBIT}</MenuItem>
-          <MenuItem value={AnimalTypeEnum.OTHER}>{AnimalTypeEnum.OTHER}</MenuItem>
+          <MenuItem value={AnimalTypeEnum.DOG}>
+            {capitalizeFirstLetter(AnimalTypeEnum.DOG)}
+          </MenuItem>
+          <MenuItem value={AnimalTypeEnum.CAT}>
+            {capitalizeFirstLetter(AnimalTypeEnum.CAT)}
+          </MenuItem>
+          <MenuItem value={AnimalTypeEnum.BIRD}>
+            {capitalizeFirstLetter(AnimalTypeEnum.BIRD)}
+          </MenuItem>
+          <MenuItem value={AnimalTypeEnum.RABBIT}>
+            {capitalizeFirstLetter(AnimalTypeEnum.RABBIT)}
+          </MenuItem>
+          <MenuItem value={AnimalTypeEnum.OTHER}>
+            {capitalizeFirstLetter(AnimalTypeEnum.OTHER)}
+          </MenuItem>
         </Select>
 
         <Select

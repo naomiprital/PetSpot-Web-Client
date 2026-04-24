@@ -108,7 +108,7 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
             }}
           />
           <Chip
-            label={listing.animalType}
+            label={listing.animalType.toUpperCase()}
             sx={{
               position: 'absolute',
               top: '1rem',
@@ -246,7 +246,6 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
         onClose={() => setListingDetailsDialogOpen(false)}
         listing={listing}
         isUserBoostedListing={isUserBoostedListing}
-        onBoostToggle={handleBoostToggle}
       />
     </>
   );

@@ -38,7 +38,9 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const memberSinceYear = user?.createdAt ? new Date(user.createdAt).getFullYear() : new Date().getFullYear();
+  const memberSinceYear = user?.createdAt
+    ? new Date(user.createdAt).getFullYear()
+    : new Date().getFullYear();
 
   const handleEditClick = () => {
     if (!user) return;
@@ -68,14 +70,14 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
       formData.append('firstName', editForm.firstName);
       formData.append('lastName', editForm.lastName);
       formData.append('phoneNumber', editForm.phoneNumber);
-      
+
       if (selectedFile) {
         formData.append('image', selectedFile);
       }
 
-      const updatedUser = await updateUserMutation.mutateAsync({ 
-        userId: user._id, 
-        formData 
+      const updatedUser = await updateUserMutation.mutateAsync({
+        userId: user._id,
+        formData,
       });
 
       updateUser(updatedUser);
@@ -90,16 +92,18 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
   const handleAvatarFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    
+
     setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setEditForm((prev) => ({ ...prev, imageUrl: url }));
   };
 
-  const displayAvatarUrl = isEditingProfile 
-    ? (selectedFile ? editForm.imageUrl : `${SERVER_BASE_URL}${user?.imageUrl}`)
+  const displayAvatarUrl = isEditingProfile
+    ? selectedFile
+      ? editForm.imageUrl
+      : `${SERVER_BASE_URL}${user?.imageUrl}`
     : `${SERVER_BASE_URL}${user?.imageUrl}`;
-  
+
   const displayName = user ? `${user.firstName} ${user.lastName}` : '';
 
   return (
@@ -109,7 +113,6 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
         boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
         backgroundColor: 'background.paper',
         position: 'relative',
-        width: { xs: '100%', sm: '90%' },
       }}
     >
       <Box
@@ -283,9 +286,7 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
                 EMAIL ADDRESS
               </Typography>
             </Box>
-            <Typography sx={{ fontSize: '1rem', color: 'text.primary' }}>
-              {user.email}
-            </Typography>
+            <Typography sx={{ fontSize: '1rem', color: 'text.primary' }}>{user.email}</Typography>
           </Box>
           <Box>
             <Box sx={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
@@ -298,7 +299,9 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
               <Box sx={{ ...inputSx, mt: '0.15rem', width: '11rem' }}>
                 <InputBase
                   value={editForm.phoneNumber}
-                  onChange={(event) => setEditForm({ ...editForm, phoneNumber: event.target.value })}
+                  onChange={(event) =>
+                    setEditForm({ ...editForm, phoneNumber: event.target.value })
+                  }
                   placeholder="Phone number"
                   sx={{ fontSize: '1rem', color: 'text.primary', width: '100%' }}
                 />

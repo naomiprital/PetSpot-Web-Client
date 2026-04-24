@@ -13,20 +13,21 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
-import { ListingTypeEnum } from '../../utils/consts';
+import { ListingTypeEnum, SERVER_BASE_URL } from '../../utils/consts';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import moment from 'moment';
 import AreYouSureDialog from './AreYouSureDialog';
-import type { Listing } from './MainFeedListingCard';
 import ListingDetailsDialog from './ListingDetailsDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import { onBoost, isUserBoostedListing, isUserBoostedListingOld } from '../../utils/utilsFunctions';
+import { isUserBoostedListing } from '../../utils/utilsFunctions';
 import EditListingDialog from './EditListingDialog';
+import type { NewListing } from '../types/Listing';
+import { useDeleteListing, useResolveListing, useToggleBoostListing } from '../hooks/useListings';
 
 interface UserListingCardProps {
-  listing: Listing;
+  listing: NewListing;
 }
 
 const UserListingCard = ({ listing }: UserListingCardProps) => {
@@ -34,11 +35,13 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
   const [resolveDialogOpen, setResolveDialogOpen] = useState(false);
   const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const { mutateAsync: toggleBoostListing } = useToggleBoostListing();
+  const { mutateAsync: deleteListing } = useDeleteListing();
+  const { mutateAsync: resolveListing } = useResolveListing();
 
-  const onResolveListing = (listing: Listing) => {
-    // TODO: API call
+  const onResolveListing = (listing: NewListing) => {
     // make sure a reunion is updated in the top profile section
-
+    resolveListing(listing._id);
     setResolveDialogOpen(false);
   };
 
@@ -62,7 +65,7 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
           <Box sx={{ position: 'relative', height: '14rem' }}>
             <CardMedia
               component="img"
-              image={listing.imageUrl}
+              image={`${SERVER_BASE_URL}${listing.imageUrl}`}
               alt="Listing image"
               sx={{
                 height: '14rem',
@@ -138,13 +141,16 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
                 >
                   <IconButton
                     sx={{
-                      color: isUserBoostedListingOld(listing) ? 'primary.main' : 'text.secondary',
+                      color: isUserBoostedListing(listing) ? 'primary.main' : 'text.secondary',
                       '&:hover': {
                         backgroundColor: 'transparent',
                       },
                       padding: 0,
                     }}
-                    onClick={onBoost}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      toggleBoostListing(listing._id);
+                    }}
                   >
                     <FontAwesomeIcon size="xs" icon={faPaw} />
                   </IconButton>
@@ -242,7 +248,7 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         onConfirm={() => {
-          // TODO: handle delete listing
+          deleteListing(listing._id);
           setDeleteDialogOpen(false);
         }}
         action="delete"
@@ -257,14 +263,12 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
         }}
         action="resolve"
       />
-      {/*  TODO : un-comment !! */}
-      {/* <ListingDetailsDialog
+      <ListingDetailsDialog
         open={listingDetailsDialogOpen}
         onClose={() => setListingDetailsDialogOpen(false)}
         listing={listing}
-        onBoostToggle={onBoost}
         isUserBoostedListing={isUserBoostedListing}
-      /> */}
+      />
       {listing && (
         <EditListingDialog
           open={editDialogOpen}
