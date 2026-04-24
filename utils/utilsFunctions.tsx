@@ -1,5 +1,4 @@
-import type { Listing } from '../src/components/MainFeedListingCard';
-import type { NewListing } from '../src/types/Listing';
+import type { Listing } from '../src/types/Listing';
 
 export const getLocalDateTimeString = (timestamp?: number): string => {
   let date: Date;
@@ -14,32 +13,26 @@ export const getLocalDateTimeString = (timestamp?: number): string => {
   return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 };
 
-export const onBoost = async (event: React.MouseEvent<HTMLButtonElement>) => {
-  event.stopPropagation();
-  // TODO: Implement boost functionality, remove user from boosts array if exists, add user to boosts array if not exists
-};
-
-export const isUserBoostedListing = (listing: NewListing) => {
-  const mockCurrentUser = {
-    email: 'test@petspot.com',
-    firstName: 'EditTest',
-    lastName: 'User',
-    imageUrl: '/uploads/image-1776958285085-255795376.jpg',
-    phoneNumber: '0505555555',
-    createdAt: '2026-04-24T15:09:10.000Z',
-    updatedAt: '2026-04-24T15:09:10.000Z',
-    __v: 0,
-    _id: '69ea15caf50dc5ada02bc866',
-  }; // todo: change to real user
-  return listing.boosts.includes(mockCurrentUser._id);
-};
-
-export const isUserBoostedListingOld = (listing: Listing) => {
-  const currentUserId = 'id7'; // TODO: Change to user from context
-  return listing.boosts.includes(currentUserId);
+export const isUserBoostedListing = (listing: Listing, userId: string) => {
+  return listing.boosts.includes(userId);
 };
 
 export const capitalizeFirstLetter = (word: string): string => {
   if (!word) return '';
   return word.charAt(0).toUpperCase() + word.slice(1);
 };
+
+export const formatPhoneNumber = (phoneNumber: string): string => {
+  if (!phoneNumber) return '';
+  const cleaned = phoneNumber.replace(/\D/g, '');
+
+  if (cleaned.length <= 3) return cleaned;
+  if (cleaned.length <= 6) return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
+  return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`;
+};
+
+
+export const cleanPhoneNumber = (phoneNumber: string): string => {
+  return phoneNumber.replace(/\D/g, '');
+};
+
