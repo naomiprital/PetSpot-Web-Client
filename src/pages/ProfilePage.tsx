@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
 import { Box, Typography, Chip } from '@mui/material';
 import { useUser } from '../context/UserContext';
-import { useListings } from '../context/ListingsContext';
+import { useListingsOld } from '../context/ListingsContext';
 import { StatusEnum } from '../../utils/consts';
 import UserListingCard from '../components/UserListingCard';
 import ProfileHeaderCard from '../components/ProfileHeaderCard';
 
 const ProfilePage = () => {
   const { user } = useUser();
-  const listings = useListings();
+  const listings = useListingsOld();
 
   const userListings = useMemo(
     () => listings.filter((listing) => listing.userId === user.id),
