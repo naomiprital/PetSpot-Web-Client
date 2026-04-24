@@ -22,7 +22,7 @@ import ListingDetailsDialog from './ListingDetailsDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import { onBoost, isUserBoostedListing } from '../../utils/utilsFunctions';
+import { onBoost, isUserBoostedListing, isUserBoostedListingOld } from '../../utils/utilsFunctions';
 import EditListingDialog from './EditListingDialog';
 
 interface UserListingCardProps {
@@ -138,7 +138,7 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
                 >
                   <IconButton
                     sx={{
-                      color: isUserBoostedListing(listing) ? 'primary.main' : 'text.secondary',
+                      color: isUserBoostedListingOld(listing) ? 'primary.main' : 'text.secondary',
                       '&:hover': {
                         backgroundColor: 'transparent',
                       },
@@ -257,13 +257,14 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
         }}
         action="resolve"
       />
-      <ListingDetailsDialog
+      {/*  TODO : un-comment !! */}
+      {/* <ListingDetailsDialog
         open={listingDetailsDialogOpen}
         onClose={() => setListingDetailsDialogOpen(false)}
         listing={listing}
-        onBoost={onBoost}
+        onBoostToggle={onBoost}
         isUserBoostedListing={isUserBoostedListing}
-      />
+      /> */}
       {listing && (
         <EditListingDialog
           open={editDialogOpen}

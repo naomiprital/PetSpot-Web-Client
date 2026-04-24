@@ -1,3 +1,4 @@
+import type { Listing } from '../src/components/MainFeedListingCard';
 import type { NewListing } from '../src/types/Listing';
 
 export const getLocalDateTimeString = (timestamp?: number): string => {
@@ -13,6 +14,11 @@ export const getLocalDateTimeString = (timestamp?: number): string => {
   return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 };
 
+export const onBoost = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  event.stopPropagation();
+  // TODO: Implement boost functionality, remove user from boosts array if exists, add user to boosts array if not exists
+};
+
 export const isUserBoostedListing = (listing: NewListing) => {
   const mockCurrentUser = {
     email: 'test@petspot.com',
@@ -26,4 +32,9 @@ export const isUserBoostedListing = (listing: NewListing) => {
     _id: '69ea15caf50dc5ada02bc866',
   }; // todo: change to real user
   return listing.boosts.includes(mockCurrentUser._id);
+};
+
+export const isUserBoostedListingOld = (listing: Listing) => {
+  const currentUserId = 'id7'; // TODO: Change to user from context
+  return listing.boosts.includes(currentUserId);
 };

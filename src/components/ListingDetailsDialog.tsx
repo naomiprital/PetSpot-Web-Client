@@ -61,7 +61,7 @@ interface ListingDetailsDialogProps {
   open: boolean;
   onClose: () => void;
   listing: NewListing;
-  onBoost: () => void;
+  onBoostToggle: () => void;
   isUserBoostedListing: (listing: NewListing) => boolean;
 }
 
@@ -69,7 +69,7 @@ const ListingDetailsDialog = ({
   open,
   onClose,
   listing,
-  onBoost,
+  onBoostToggle,
   isUserBoostedListing,
 }: ListingDetailsDialogProps) => {
   const [copied, setCopied] = useState(false);
@@ -265,7 +265,7 @@ const ListingDetailsDialog = ({
                       },
                       padding: 0,
                     }}
-                    onClick={onBoost}
+                    onClick={onBoostToggle}
                   >
                     <FontAwesomeIcon size="xs" icon={faPaw} />
                   </IconButton>

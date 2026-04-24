@@ -243,7 +243,7 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
         onClose={() => setListingDetailsDialogOpen(false)}
         listing={listing}
         isUserBoostedListing={isUserBoostedListing}
-        onBoost={handleBoostToggle}
+        onBoostToggle={handleBoostToggle}
       />
     </>
   );
