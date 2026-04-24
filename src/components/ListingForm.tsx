@@ -2,26 +2,28 @@ import {
   alpha,
   Avatar,
   Box,
+  Button,
   IconButton,
   InputBase,
   MenuItem,
   Select,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { Controller, useForm } from 'react-hook-form';
-import { AnimalsEnum, StatusEnum } from '../../utils/consts';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getSuggestedDescription } from '../services/AiService';
+import { AnimalTypeEnum, LISTING_TYPES, ListingTypeEnum, type ListingType } from '../types/Listing';
+import { useSuggestDescription } from '../hooks/useAi';
 
 export interface FormValues {
-  status: (typeof StatusEnum)[keyof typeof StatusEnum];
+  listingType: ListingType;
   animalType: string;
   contactNumber: string;
-  lastSeenLocation: string;
-  dateTime: string;
+  location: string;
+  lastSeen: string;
   image: string | FileList | null;
   description: string;
 }
@@ -30,6 +32,7 @@ interface ListingFormProps {
   defaultValues: FormValues;
   submitButtonText: string;
   onSubmit: (data: FormValues) => void;
+  isPending?: boolean;
 }
 
 const inputSx = {
@@ -64,12 +67,15 @@ export const FormFieldBox = ({
   </Box>
 );
 
-const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormProps) => {
+const ListingForm = ({
+  defaultValues,
+  submitButtonText,
+  onSubmit,
+  isPending,
+}: ListingFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // --- AI State Additions ---
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [isAiAnalyzing, setIsAiAnalyzing] = useState(false);
+  const { mutateAsync: suggestDescription, isPending: isAiAnalyzing } = useSuggestDescription();
 
   const getPreviewAndName = (image: string | FileList | null) => {
     if (typeof image === 'string') {
@@ -80,7 +86,6 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
     }
     return { url: null, name: null };
   };
-
   const initialPreview = getPreviewAndName(defaultValues.image);
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialPreview.url);
   const [fileName, setFileName] = useState<string | null>(initialPreview.name);
@@ -103,7 +108,6 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
     setPreviewUrl(url);
     setFileName(name);
 
-    // Sync uploadedFile state if defaultValues.image is already a FileList
     if (defaultValues.image instanceof FileList && defaultValues.image.length > 0) {
       setUploadedFile(defaultValues.image[0]);
     } else {
@@ -117,7 +121,7 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
       setFileName(file.name);
       setPreviewUrl(URL.createObjectURL(file));
       setValue('image', event.target.files);
-      setUploadedFile(file); // Store file for AI analysis
+      setUploadedFile(file);
     }
   };
 
@@ -126,34 +130,29 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
     setPreviewUrl(null);
     setFileName(null);
     setValue('image', null);
-    setUploadedFile(null); // Clear file from AI state
+    setUploadedFile(null);
 
-    // Optional: Clear AI generated fields when image is removed (matching dev branch)
     setValue('description', '');
     setValue('animalType', '');
 
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  // --- AI Generation Logic ---
   const handleGenerateAiSuggestion = async () => {
     if (!uploadedFile) return;
 
-    setIsAiAnalyzing(true);
     try {
-      const suggestion = await getSuggestedDescription(uploadedFile);
+      const suggestion = await suggestDescription(uploadedFile);
+
       if (suggestion) {
-        // Added shouldValidate: true so react-hook-form clears any validation errors immediately
         setValue('description', suggestion.description, { shouldValidate: true });
         if (suggestion.animalType) {
-          setValue('animalType', suggestion.animalType, { shouldValidate: true });
+          setValue('animalType', suggestion.animalType.toLowerCase(), { shouldValidate: true });
         }
         toast.success('AI suggestion applied!');
       }
     } catch (error) {
       toast.error('Failed to generate suggestion.');
-    } finally {
-      setIsAiAnalyzing(false);
     }
   };
 
@@ -174,16 +173,16 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
         <FormFieldBox>
           <FormFieldLabel>LISTING TYPE</FormFieldLabel>
           <Controller
-            name="status"
+            name="listingType"
             control={control}
             render={({ field }) => (
               <Box
                 sx={{ display: 'flex', borderRadius: '0.6rem', padding: '0.2rem', gap: '0.2rem' }}
               >
-                {Object.values(StatusEnum).map((status) => (
+                {Object.values(LISTING_TYPES).map((listingType) => (
                   <Box
-                    key={status}
-                    onClick={() => field.onChange(status)}
+                    key={listingType}
+                    onClick={() => field.onChange(listingType)}
                     sx={(theme) => ({
                       flex: 1,
                       textAlign: 'center',
@@ -197,24 +196,24 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
                       alignItems: 'center',
                       justifyContent: 'center',
                       border:
-                        field.value === status
-                          ? `1.5px solid ${status === StatusEnum.LOST ? theme.palette.error.main : theme.palette.success.main}`
+                        field.value === listingType
+                          ? `1.5px solid ${listingType === ListingTypeEnum.LOST ? theme.palette.error.main : theme.palette.success.main}`
                           : `1.5px solid ${theme.palette.grey[400]}`,
                       color:
-                        field.value === status
-                          ? status === StatusEnum.LOST
+                        field.value === listingType
+                          ? listingType === ListingTypeEnum.LOST
                             ? 'error.main'
                             : 'success.main'
                           : 'text.secondary',
                       backgroundColor:
-                        field.value === status
-                          ? status === StatusEnum.LOST
+                        field.value === listingType
+                          ? listingType === ListingTypeEnum.LOST
                             ? alpha(theme.palette.error.main, 0.06)
                             : alpha(theme.palette.success.main, 0.06)
                           : 'background.default',
                     })}
                   >
-                    {status.toUpperCase()}
+                    {listingType.toUpperCase()}
                   </Box>
                 ))}
               </Box>
@@ -245,7 +244,7 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
                 <MenuItem value="" disabled>
                   <Typography sx={{ color: 'text.secondary' }}>Select animal...</Typography>
                 </MenuItem>
-                {Object.values(AnimalsEnum).map((animalType) => (
+                {Object.values(AnimalTypeEnum).map((animalType) => (
                   <MenuItem key={animalType} value={animalType}>
                     {animalType}
                   </MenuItem>
@@ -264,37 +263,40 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
       <Box sx={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
         <FormFieldBox>
           <FormFieldLabel>CONTACT NUMBER</FormFieldLabel>
-          <Box sx={errors.contactNumber ? errorInputSx : inputSx}>
-            <InputBase
-              placeholder="+972 50-123-4567"
-              fullWidth
-              {...register('contactNumber', {
-                required: 'Contact number is required',
-                pattern: { value: /^[+\d\s\-().]{7,20}$/, message: 'Enter a valid phone number' },
-              })}
-              sx={{ fontSize: '0.95rem', color: 'text.primary' }}
-            />
+          <Box
+            sx={{
+              ...inputSx,
+            }}
+          >
+            <Tooltip title={'To change contact number, please update your profile settings'} arrow>
+              <InputBase
+                disabled
+                placeholder={defaultValues.contactNumber}
+                fullWidth
+                sx={{
+                  fontSize: '0.95rem',
+                  '& .MuiInputBase-input.Mui-disabled': {
+                    WebkitTextFillColor: (theme) => theme.palette.text.primary,
+                  },
+                }}
+              />
+            </Tooltip>
           </Box>
-          {errors.contactNumber && (
-            <Typography sx={{ color: 'error.main', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-              {errors.contactNumber.message}
-            </Typography>
-          )}
         </FormFieldBox>
 
         <FormFieldBox>
           <FormFieldLabel>LAST SEEN LOCATION</FormFieldLabel>
-          <Box sx={errors.lastSeenLocation ? errorInputSx : inputSx}>
+          <Box sx={errors.location ? errorInputSx : inputSx}>
             <InputBase
               placeholder="Central Park West..."
               fullWidth
-              {...register('lastSeenLocation', { required: 'Location is required' })}
+              {...register('location', { required: 'Location is required' })}
               sx={{ fontSize: '0.95rem', color: 'text.primary' }}
             />
           </Box>
-          {errors.lastSeenLocation && (
+          {errors.location && (
             <Typography sx={{ color: 'error.main', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-              {errors.lastSeenLocation.message}
+              {errors.location.message}
             </Typography>
           )}
         </FormFieldBox>
@@ -305,7 +307,7 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
           <FormFieldLabel>DATE & TIME</FormFieldLabel>
           <Box
             sx={{
-              ...(errors.dateTime ? errorInputSx : inputSx),
+              ...(errors.lastSeen ? errorInputSx : inputSx),
               '& input': {
                 width: '100%',
                 border: 'none',
@@ -320,12 +322,12 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
           >
             <input
               type="datetime-local"
-              {...register('dateTime', { required: 'Date and time is required' })}
+              {...register('lastSeen', { required: 'Date and time is required' })}
             />
           </Box>
-          {errors.dateTime && (
+          {errors.lastSeen && (
             <Typography sx={{ color: 'error.main', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-              {errors.dateTime.message}
+              {errors.lastSeen.message}
             </Typography>
           )}
         </FormFieldBox>
@@ -466,8 +468,8 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
         )}
       </FormFieldBox>
 
-      <Box
-        component="button"
+      <Button
+        disabled={isPending}
         type="submit"
         sx={(theme) => ({
           padding: '1rem',
@@ -481,10 +483,11 @@ const ListingForm = ({ defaultValues, submitButtonText, onSubmit }: ListingFormP
           cursor: 'pointer',
           fontFamily: 'inherit',
           '&:hover': { backgroundColor: alpha(theme.palette.primary.main, 0.85) },
+          textTransform: 'none',
         })}
       >
         {submitButtonText}
-      </Box>
+      </Button>
     </Box>
   );
 };

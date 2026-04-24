@@ -3,22 +3,18 @@ import { Avatar, Box, Dialog, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
-import { useListings } from '../context/ListingsContext';
+import { useListingsOld } from '../context/ListingsContext';
+import type { User } from '../types/User';
 
 interface UserDetailDialogProps {
   open: boolean;
   onClose: () => void;
-  user: {
-    name: string;
-    avatar: string;
-    email: string;
-    phone: string;
-  };
+  user: User;
 }
 
 const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
   // TODO: Replace with API call
-  const listings = useListings();
+  const listings = useListingsOld();
 
   const { reportsCount, reunionsCount } = useMemo(() => {
     const userListings = listings.filter((listing) => listing.user.email === user.email);
@@ -61,10 +57,12 @@ const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
           <CloseIcon fontSize="small" />
         </IconButton>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+        <Box
+          sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}
+        >
           <Box sx={{ position: 'relative' }}>
             <Avatar
-              src={user.avatar}
+              src={user.imageUrl}
               sx={{
                 width: '6rem',
                 height: '6rem',
@@ -75,7 +73,7 @@ const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
           </Box>
           <Box sx={{ textAlign: 'center' }}>
             <Typography sx={{ fontWeight: 800, fontSize: '1.5rem', color: 'text.primary' }}>
-              {user.name}
+              {user.firstName + ' ' + user.lastName}
             </Typography>
             <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
               {user.email}
@@ -154,7 +152,7 @@ const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <PhoneIcon sx={{ color: 'text.secondary', fontSize: '1.2rem' }} />
               <Typography sx={{ fontSize: '0.95rem', color: 'text.primary' }}>
-                {user.phone}
+                {user.phoneNumber}
               </Typography>
             </Box>
           </Box>
