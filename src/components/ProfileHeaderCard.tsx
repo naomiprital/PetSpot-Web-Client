@@ -5,6 +5,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { useUser } from '../context/UserContext';
+import { useUpdateUser } from '../hooks/useUsers';
 import { toast } from 'react-toastify';
 import { SERVER_BASE_URL } from '../../utils/consts';
 
@@ -27,6 +28,7 @@ interface ProfileHeaderCardProps {
 
 const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardProps) => {
   const { user, updateUser } = useUser();
+  const updateUserMutation = useUpdateUser();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editForm, setEditForm] = useState({
     firstName: '',
@@ -34,6 +36,7 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
     phoneNumber: '',
     imageUrl: '',
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const memberSinceYear = user?.createdAt ? new Date(user.createdAt).getFullYear() : new Date().getFullYear();
 
@@ -45,6 +48,7 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
       phoneNumber: user.phoneNumber,
       imageUrl: user.imageUrl || '',
     });
+    setSelectedFile(null);
     setIsEditingProfile(true);
   };
 
@@ -52,31 +56,51 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
     setIsEditingProfile(false);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!user) return;
     if (!editForm.firstName.trim() || !editForm.lastName.trim() || !editForm.phoneNumber.trim()) {
       toast.error('All fields are required.');
       return;
     }
 
-    updateUser({
-      firstName: editForm.firstName,
-      lastName: editForm.lastName,
-      phoneNumber: editForm.phoneNumber,
-      imageUrl: editForm.imageUrl,
-    });
-    setIsEditingProfile(false);
-    toast.success('Profile updated successfully!');
+    try {
+      const formData = new FormData();
+      formData.append('firstName', editForm.firstName);
+      formData.append('lastName', editForm.lastName);
+      formData.append('phoneNumber', editForm.phoneNumber);
+      
+      if (selectedFile) {
+        formData.append('image', selectedFile);
+      }
+
+      const updatedUser = await updateUserMutation.mutateAsync({ 
+        userId: user._id, 
+        formData 
+      });
+
+      updateUser(updatedUser);
+      setIsEditingProfile(false);
+      toast.success('Profile updated successfully!');
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Failed to update profile.';
+      toast.error(errorMessage);
+    }
   };
 
   const handleAvatarFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    
+    setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setEditForm((prev) => ({ ...prev, imageUrl: url }));
   };
 
-  const displayAvatarUrl = isEditingProfile ? editForm.imageUrl : `${SERVER_BASE_URL}${user?.imageUrl}`;
-  const displayName = `${user.firstName} ${user.lastName}`;
+  const displayAvatarUrl = isEditingProfile 
+    ? (selectedFile ? editForm.imageUrl : `${SERVER_BASE_URL}${user?.imageUrl}`)
+    : `${SERVER_BASE_URL}${user?.imageUrl}`;
+  
+  const displayName = user ? `${user.firstName} ${user.lastName}` : '';
 
   return (
     <Box
