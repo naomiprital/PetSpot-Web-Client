@@ -127,7 +127,7 @@ const FilterBar = ({
                 : 'Search or describe an animal…'
             }
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(event) => setSearchQuery(event.target.value)}
             onKeyDown={handleKeyDown}
             disabled={isAiSearching}
             sx={{ flex: 1, fontSize: '0.95rem', color: 'text.primary' }}
@@ -177,7 +177,7 @@ const FilterBar = ({
 
         <Select
           value={type}
-          onChange={(e) => setType(e.target.value as StatusFilter)}
+          onChange={(event) => setType(event.target.value as StatusFilter)}
           displayEmpty
           sx={selectSx(type !== 'all')}
         >
@@ -188,7 +188,7 @@ const FilterBar = ({
 
         <Select
           value={animal}
-          onChange={(e) => setAnimal(e.target.value as AnimalFilter)}
+          onChange={(event) => setAnimal(event.target.value as AnimalFilter)}
           displayEmpty
           sx={selectSx(animal !== 'all')}
         >
@@ -202,7 +202,7 @@ const FilterBar = ({
 
         <Select
           value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value as SortOrderFilter)}
+          onChange={(event) => setSortOrder(event.target.value as SortOrderFilter)}
           displayEmpty
           disabled={isAiActive}
           sx={(theme) => ({
