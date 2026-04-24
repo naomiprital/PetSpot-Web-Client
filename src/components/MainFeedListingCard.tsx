@@ -17,7 +17,10 @@ import { useState } from 'react';
 import ListingDetailsDialog from './ListingDetailsDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
-import { onBoost, isUserBoostedListing } from '../../utils/utilsFunctions';
+import { isUserBoostedListing } from '../../utils/utilsFunctions';
+import { ListingTypeEnum, type NewListing } from '../types/Listing';
+import { useToggleBoostListing } from '../hooks/useListings';
+import { SERVER_BASE_URL } from '../../utils/consts';
 
 export interface Comment {
   id: string;
@@ -25,7 +28,7 @@ export interface Comment {
   createdAt: number;
   user: {
     name: string;
-    avatar: string; // TODO: Switch to real user interface
+    avatar: string;
   };
 }
 
@@ -45,18 +48,23 @@ export interface Listing {
     lastName: string;
     imageUrl: string;
     email: string;
-    phoneNumber: string;
+    phone: string;
   };
   isResolved: boolean;
   isDeleted: boolean;
 }
 
 interface MainFeedListingCardProps {
-  listing: Listing;
+  listing: NewListing;
 }
 
 const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
+  const { mutateAsync: boostListing } = useToggleBoostListing();
   const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);
+
+  const handleBoostToggle = () => {
+    boostListing(listing._id);
+  };
 
   return (
     <>
@@ -65,6 +73,9 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
         sx={{
           width: '100%',
           maxWidth: '24rem',
+          height: '25rem',
+          display: 'flex',
+          flexDirection: 'column',
           borderRadius: '1rem',
           boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
           cursor: 'pointer',
@@ -76,7 +87,7 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
         <Box sx={{ position: 'relative', overflow: 'hidden' }}>
           <CardMedia
             component="img"
-            image={listing.imageUrl}
+            image={`${SERVER_BASE_URL}${listing.imageUrl}`}
             alt="Listing image"
             sx={{
               height: '13.75rem',
@@ -84,12 +95,13 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
             }}
           />
           <Chip
-            label={(listing.listingType).toUpperCase()}
+            label={listing.listingType.toUpperCase()}
             sx={{
               position: 'absolute',
               top: '1rem',
               left: '1rem',
-              backgroundColor: listing.listingType.toLowerCase() === 'lost' ? 'error.main' : 'success.main',
+              backgroundColor:
+                listing.listingType === ListingTypeEnum.LOST ? 'error.main' : 'success.main',
               color: 'white',
               fontWeight: 'bold',
               borderRadius: '1rem',
@@ -108,106 +120,123 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
             }}
           />
         </Box>
-        <CardContent>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '0.8rem',
-            }}
-          >
+        <CardContent
+          sx={{
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Box>
             <Box
               sx={{
                 display: 'flex',
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                gap: '0.25rem',
-                color: 'text.secondary',
+                marginBottom: '0.8rem',
               }}
             >
-              <LocationOnIcon sx={{ color: 'primary.main', fontSize: '1.25rem' }} />
-              <Typography variant="body2" sx={{ color: 'text.primary' }}>
-                {listing.location}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.25rem',
+                  color: 'text.secondary',
+                }}
+              >
+                <LocationOnIcon sx={{ color: 'primary.main', fontSize: '1.25rem' }} />
+                <Typography variant="body2" sx={{ color: 'text.primary' }}>
+                  {listing.location}
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                {moment(listing.lastSeen).format('MMM D')}
               </Typography>
             </Box>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              {moment(listing.lastSeen).format('MMM D')}
+
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'text.primary',
+                marginBottom: '1rem',
+                lineHeight: 1.5,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {listing.description}
             </Typography>
           </Box>
-          <Typography
-            variant="body1"
-            sx={{
-              color: 'text.primary',
-              marginBottom: '1rem',
-              lineHeight: 1.5,
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            {listing.description}
-          </Typography>
-          <Divider sx={{ marginBottom: '0.8rem', borderColor: 'grey.200' }} />
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '0.6rem',
-              }}
-            >
+          <Box>
+            <Divider sx={{ marginBottom: '0.8rem', borderColor: 'grey.200' }} />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box
                 sx={{
                   display: 'flex',
                   flexDirection: 'row',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  gap: '0.2rem',
+                  gap: '0.6rem',
                 }}
               >
-                <ChatBubbleIcon sx={{ fontSize: '1.1rem', color: 'text.secondary' }} />
-                <Typography variant="body2">{listing.comments.length}</Typography>
-              </Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '0.2rem',
-                }}
-              >
-                <Tooltip
-                  title={
-                    isUserBoostedListing(listing) ? 'You boosted this listing' : 'Click to boost!'
-                  }
-                  placement="bottom"
-                  arrow
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '0.2rem',
+                  }}
                 >
-                  <IconButton
-                    sx={{
-                      color: isUserBoostedListing(listing) ? 'primary.main' : 'text.secondary',
-                      '&:hover': {
-                        backgroundColor: 'transparent',
-                      },
-                      padding: 0,
-                    }}
-                    onClick={onBoost}
+                  <ChatBubbleIcon sx={{ fontSize: '1.1rem', color: 'text.secondary' }} />
+                  <Typography variant="body2">{listing.comments.length}</Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '0.2rem',
+                  }}
+                >
+                  <Tooltip
+                    title={
+                      isUserBoostedListing(listing) ? 'You boosted this listing' : 'Click to boost!'
+                    }
+                    placement="bottom"
+                    arrow
                   >
-                    <FontAwesomeIcon size="xs" icon={faPaw} />
-                  </IconButton>
-                </Tooltip>
-                <Typography variant="body2">{listing.boosts.length || 0}</Typography>
+                    <IconButton
+                      sx={{
+                        color: isUserBoostedListing(listing) ? 'primary.main' : 'text.secondary',
+                        '&:hover': { backgroundColor: 'transparent' },
+                        padding: 0,
+                      }}
+                      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+                        event.stopPropagation();
+                        boostListing(listing._id);
+                      }}
+                    >
+                      <FontAwesomeIcon size="xs" icon={faPaw} />
+                    </IconButton>
+                  </Tooltip>
+                  <Typography variant="body2">{listing.boosts.length}</Typography>
+                </Box>
               </Box>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Avatar src={listing.author?.imageUrl} sx={{ width: '1.5rem', height: '1.5rem' }} />
-              <Typography variant="body2" sx={{ color: 'text.primary' }}>
-                {listing.author ? `${listing.author.firstName} ${listing.author.lastName}` : 'Anonymous'}
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Avatar
+                  src={`${SERVER_BASE_URL}${listing.author?.imageUrl}`}
+                  sx={{ width: '1.5rem', height: '1.5rem' }}
+                />
+                <Typography variant="body2" sx={{ color: 'text.primary' }}>
+                  {listing.author?.firstName + ' ' + listing.author?.lastName}
+                </Typography>
+              </Box>
             </Box>
           </Box>
         </CardContent>
@@ -217,7 +246,7 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
         onClose={() => setListingDetailsDialogOpen(false)}
         listing={listing}
         isUserBoostedListing={isUserBoostedListing}
-        onBoost={onBoost}
+        onBoostToggle={handleBoostToggle}
       />
     </>
   );

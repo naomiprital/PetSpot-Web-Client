@@ -11,7 +11,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import type { Listing } from './MainFeedListingCard';
 import moment from 'moment';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
@@ -23,6 +22,8 @@ import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import UserDetailDialog from './UserDetailDialog';
+import { ListingTypeEnum, type NewListing } from '../types/Listing';
+import { SERVER_BASE_URL } from '../../utils/consts';
 
 interface DetailRowProps {
   icon: React.ReactNode;
@@ -58,16 +59,16 @@ const DetailRow = ({ icon, title, value }: DetailRowProps) => {
 interface ListingDetailsDialogProps {
   open: boolean;
   onClose: () => void;
-  listing: Listing;
-  onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  isUserBoostedListing: (listing: Listing) => boolean;
+  listing: NewListing;
+  onBoostToggle: () => void;
+  isUserBoostedListing: (listing: NewListing) => boolean;
 }
 
 const ListingDetailsDialog = ({
   open,
   onClose,
   listing,
-  onBoost,
+  onBoostToggle,
   isUserBoostedListing,
 }: ListingDetailsDialogProps) => {
   const [copied, setCopied] = useState(false);
@@ -75,8 +76,7 @@ const ListingDetailsDialog = ({
 
   const handlePhoneClick = async () => {
     try {
-      const phone = listing.author?.phoneNumber || '';
-      await navigator.clipboard.writeText(phone);
+      await navigator.clipboard.writeText(listing.author.phoneNumber);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
@@ -129,7 +129,7 @@ const ListingDetailsDialog = ({
           </IconButton>
           <CardMedia
             component="img"
-            image={listing.imageUrl}
+            image={`${SERVER_BASE_URL}${listing.imageUrl}`}
             alt="Listing image"
             sx={{
               height: '100%',
@@ -152,22 +152,23 @@ const ListingDetailsDialog = ({
           >
             <Box sx={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <Chip
-                label={(listing.listingType || 'unknown')
+                label={listing.listingType
                   .toUpperCase()
                   .concat(' ')
-                  .concat((listing.animalType || 'unknown').toUpperCase())}
+                  .concat(listing.animalType.toUpperCase())}
                 sx={(theme) => ({
                   backgroundColor:
-                    listing.listingType?.toLowerCase() === 'lost'
+                    listing.listingType === ListingTypeEnum.LOST
                       ? alpha(theme.palette.error.main, 0.2)
                       : alpha(theme.palette.success.main, 0.2),
-                  color: listing.listingType?.toLowerCase() === 'lost' ? 'error.main' : 'success.main',
+                  color:
+                    listing.listingType === ListingTypeEnum.LOST ? 'error.main' : 'success.main',
                   fontWeight: 'bold',
                   borderRadius: '1rem',
                 })}
               />
               <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
-                Posted {moment(listing.lastSeen).format('DD/MM/YYYY HH:mm')}
+                Posted {moment(listing.createdAt).format('DD/MM/YYYY HH:mm')}
               </Typography>
             </Box>
 
@@ -185,10 +186,10 @@ const ListingDetailsDialog = ({
               }}
               onClick={() => setUserDetailDialogOpen(true)}
             >
-              <Avatar src={listing.author?.imageUrl} sx={{ width: '3rem', height: '3rem' }} />
+              <Avatar src={`${SERVER_BASE_URL}${listing.author?.imageUrl}`} sx={{ width: '3rem', height: '3rem' }} />
               <Box>
                 <Typography sx={{ fontWeight: 'bold' }}>
-                  {listing.author ? `${listing.author.firstName} ${listing.author.lastName}` : 'Anonymous'}
+                  {listing.author?.firstName + ' ' + listing.author?.lastName}
                 </Typography>
                 <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                   Lister Information
@@ -237,7 +238,7 @@ const ListingDetailsDialog = ({
             >
               <PhoneIcon sx={{ color: 'white' }} />
               <Typography sx={{ color: 'white', fontWeight: copied ? 'bold' : 'normal' }}>
-                {copied ? 'Number Copied!' : `Call Lister (${listing.author?.phoneNumber || 'N/A'})`}
+                {copied ? 'Number Copied!' : `Call Lister (${listing.author?.phoneNumber})`}
               </Typography>
             </Box>
 
@@ -263,7 +264,7 @@ const ListingDetailsDialog = ({
                       },
                       padding: 0,
                     }}
-                    onClick={onBoost}
+                    onClick={onBoostToggle}
                   >
                     <FontAwesomeIcon size="xs" icon={faPaw} />
                   </IconButton>
@@ -273,15 +274,15 @@ const ListingDetailsDialog = ({
               </Box>
             </Box>
 
-            {(listing.comments || []).map((comment) => (
+            {listing.comments.map((comment) => (
               <Box key={comment._id} sx={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
-                <Avatar src={comment.author?.imageUrl} sx={{ width: '2.2rem', height: '2.2rem' }} />
+                <Avatar src={`${SERVER_BASE_URL}${comment.author?.imageUrl}`} sx={{ width: '2.2rem', height: '2.2rem' }} />
                 <Box>
                   <Box
                     sx={{ backgroundColor: 'grey.100', borderRadius: '0.6rem', padding: '0.5rem' }}
                   >
                     <Typography sx={{ fontWeight: 'bold' }}>
-                      {comment.author ? `${comment.author.firstName} ${comment.author.lastName}` : 'Anonymous'}
+                      {comment.author?.firstName + ' ' + comment.author?.lastName}
                     </Typography>
                     <Typography>{comment.commentText}</Typography>
                   </Box>
@@ -323,12 +324,7 @@ const ListingDetailsDialog = ({
       <UserDetailDialog
         open={userDetailDialogOpen}
         onClose={() => setUserDetailDialogOpen(false)}
-        user={{
-          name: listing.author ? `${listing.author.firstName} ${listing.author.lastName}` : 'Anonymous',
-          avatar: listing.author?.imageUrl || '',
-          email: listing.author?.email || '',
-          phone: listing.author?.phoneNumber || '',
-        }}
+        user={listing.author}
       />
     </>
   );

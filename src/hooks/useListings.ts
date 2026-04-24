@@ -1,10 +1,32 @@
-import { useQuery } from '@tanstack/react-query';
-import { fetchAllListings } from '../services/listingService';
-import type { Listing } from '../components/MainFeedListingCard';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toggleBoostListing, createListing, fetchAllListings } from '../services/listingService';
+import type { NewListing } from '../types/Listing';
 
 export const useListings = () => {
-  return useQuery<Listing[]>({
+  return useQuery<NewListing[]>({
     queryKey: ['listings'],
     queryFn: fetchAllListings,
+  });
+};
+
+export const useCreateListing = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createListing,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+    },
+  });
+};
+
+export const useToggleBoostListing = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: toggleBoostListing,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+    },
   });
 };

@@ -158,7 +158,7 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
               <Box sx={{ ...inputSx, width: '10rem' }}>
                 <InputBase
                   value={editForm.firstName}
-                  onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })}
+                  onChange={(event) => setEditForm({ ...editForm, firstName: event.target.value })}
                   placeholder="First Name"
                   sx={{ fontSize: '1.5rem', fontWeight: 700, color: 'text.primary', width: '100%' }}
                 />
@@ -166,7 +166,7 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
               <Box sx={{ ...inputSx, width: '10rem' }}>
                 <InputBase
                   value={editForm.lastName}
-                  onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })}
+                  onChange={(event) => setEditForm({ ...editForm, lastName: event.target.value })}
                   placeholder="Last Name"
                   sx={{ fontSize: '1.5rem', fontWeight: 700, color: 'text.primary', width: '100%' }}
                 />

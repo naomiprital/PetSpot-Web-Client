@@ -396,7 +396,7 @@ export const ListingsProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useListings = (): Listing[] => {
+export const useListingsOld = (): Listing[] => {
   const context = useContext(ListingsContext);
   if (!context) throw new Error('useListings must be used inside <ListingsProvider>');
   return context.listings;

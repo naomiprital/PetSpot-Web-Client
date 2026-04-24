@@ -3,8 +3,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
 import ListingForm, { type FormValues } from './ListingForm';
 import type { Listing } from './MainFeedListingCard';
-import type { ListingTypeEnum } from '../../utils/consts';
 import { getLocalDateTimeString } from '../../utils/utilsFunctions';
+import type { ListingType } from '../types/Listing';
 
 interface EditListingDialogProps {
   open: boolean;
@@ -16,11 +16,11 @@ const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) =
   if (!listing) return null;
 
   const currentValues: FormValues = {
-    status: listing.animalType as (typeof ListingTypeEnum)[keyof typeof ListingTypeEnum],
+    listingType: listing.listingType as ListingType,
     animalType: listing.animalType,
-    contactNumber: listing.author.phoneNumber,
-    lastSeenLocation: listing.location,
-    dateTime: getLocalDateTimeString(listing.lastSeen),
+    contactNumber: listing.author.phone,
+    location: listing.location,
+    lastSeen: getLocalDateTimeString(listing.lastSeen),
     image: listing.imageUrl,
     description: listing.description,
   };

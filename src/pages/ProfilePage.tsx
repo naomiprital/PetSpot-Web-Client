@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
 import { Box, Typography, Chip } from '@mui/material';
 import { useUser } from '../context/UserContext';
-import { useListings } from '../context/ListingsContext';
+import { useListingsOld } from '../context/ListingsContext';
 import UserListingCard from '../components/UserListingCard';
 import ProfileHeaderCard from '../components/ProfileHeaderCard';
 import type { Listing } from '../components/MainFeedListingCard';
 
 const ProfilePage = () => {
   const { user } = useUser();
-  const listings = useListings();
+  const listings = useListingsOld();
 
   if (!user) {
     return (
