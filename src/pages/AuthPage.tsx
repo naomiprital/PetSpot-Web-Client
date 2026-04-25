@@ -4,14 +4,12 @@ import PetSpotIcon from '../components/PetSpotIcon';
 import { useTheme } from '@mui/material/styles';
 import Login from '../components/Login';
 import SignUp from '../components/SignUp';
-import ForgotPassword from '../components/ForgotPassword';
 import { useUser } from '../hooks/useUsers';
 import { useNavigate } from 'react-router-dom';
 
 const AuthPage = () => {
   const theme = useTheme();
-  const [authMode, setAuthMode] = useState<'login' | 'signup' | 'forgotPassword'>('login');
-  const [resetEmail, setResetEmail] = useState('');
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
 
   const { data: user, isLoading } = useUser();
   const navigate = useNavigate();
@@ -87,7 +85,6 @@ const AuthPage = () => {
           border: '0.0625rem solid rgba(0,0,0,0.02)',
         }}
       >
-        {authMode !== 'forgotPassword' && (
           <Box
             sx={{
               display: 'flex',
@@ -146,19 +143,8 @@ const AuthPage = () => {
               Sign Up
             </Button>
           </Box>
-        )}
-        {authMode === 'login' && (
-          <Login
-            onForgotPassword={(email) => {
-              setResetEmail(email);
-              setAuthMode('forgotPassword');
-            }}
-          />
-        )}
+        {authMode === 'login' && <Login />}
         {authMode === 'signup' && <SignUp />}
-        {authMode === 'forgotPassword' && (
-          <ForgotPassword initialEmail={resetEmail} onBackToLogin={() => setAuthMode('login')} />
-        )}
       </Card>
     </Box>
   );
