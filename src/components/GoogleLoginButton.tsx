@@ -4,7 +4,7 @@ import theme, { GOOGLE_AUTH_COLORS } from '../theme/theme';
 import { Box, Button, Divider, Typography, Dialog, InputBase } from '@mui/material';
 import { useGoogleAuth } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
-import { formatPhoneNumber } from '../../utils/utilsFunctions';
+import { cleanPhoneNumber, formatPhoneNumber } from '../../utils/utilsFunctions';
 
 const GoogleLogo = () => (
   <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
@@ -35,7 +35,7 @@ const GoogleLoginButton = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [tempGoogleResponse, setTempGoogleResponse] = useState<CredentialResponse | null>(null);
 
-  const { mutateAsync: googleLoginMutation } = useGoogleAuth();
+  const googleLoginMutation = useGoogleAuth();
 
   const handleGoogleSuccess = (response: CredentialResponse) => {
     setTempGoogleResponse(response);
@@ -53,14 +53,16 @@ const GoogleLoginButton = () => {
       setIsPhoneDialogOpen(false);
 
       if (tempGoogleResponse) {
-        await googleLoginMutation({
+        await googleLoginMutation.mutateAsync({
           credentials: tempGoogleResponse,
-          phoneNumber
+          phoneNumber: phoneNumber,
         });
+
         toast.success('Login successful!');
       }
-    } catch {
+    } catch (error) {
       toast.error('Login failed. Please try again.');
+      setIsPhoneDialogOpen(true);
     } finally {
       setIsGoogleLoading(false);
     }
@@ -152,66 +154,76 @@ const GoogleLoginButton = () => {
             padding: '2.5rem 2rem',
             width: '100%',
             maxWidth: 'min(90vw, 24rem)',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)'
-          }
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+          },
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Box sx={{
-            width: 56,
-            height: 56,
-            borderRadius: '1.125rem',
-            backgroundColor: GOOGLE_AUTH_COLORS.lightOrange,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            mb: 2.5
-          }}>
+          <Box
+            sx={{
+              width: 56,
+              height: 56,
+              borderRadius: '1.125rem',
+              backgroundColor: GOOGLE_AUTH_COLORS.lightOrange,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              mb: 2.5,
+            }}
+          >
             <GoogleLogo />
           </Box>
 
-          <Typography sx={{
-            fontSize: '1.35rem',
-            fontWeight: 700,
-            color: GOOGLE_AUTH_COLORS.darkText,
-            mb: 0.75,
-            textAlign: 'center'
-          }}>
+          <Typography
+            sx={{
+              fontSize: '1.35rem',
+              fontWeight: 700,
+              color: GOOGLE_AUTH_COLORS.darkText,
+              mb: 0.75,
+              textAlign: 'center',
+            }}
+          >
             Verify your phone
           </Typography>
 
-          <Typography sx={{
-            fontSize: '0.85rem',
-            color: GOOGLE_AUTH_COLORS.grayText,
-            textAlign: 'center',
-            mb: 3.5,
-            fontWeight: 500
-          }}>
+          <Typography
+            sx={{
+              fontSize: '0.85rem',
+              color: GOOGLE_AUTH_COLORS.grayText,
+              textAlign: 'center',
+              mb: 3.5,
+              fontWeight: 500,
+            }}
+          >
             To continue, we need your phone number.
           </Typography>
 
           <Box sx={{ width: '100%', mb: 4 }}>
-            <Typography sx={{
-              fontSize: '0.7rem',
-              fontWeight: 800,
-              color: GOOGLE_AUTH_COLORS.lightGrayText,
-              mb: 1,
-              letterSpacing: '0.05em'
-            }}>
+            <Typography
+              sx={{
+                fontSize: '0.7rem',
+                fontWeight: 800,
+                color: GOOGLE_AUTH_COLORS.lightGrayText,
+                mb: 1,
+                letterSpacing: '0.05em',
+              }}
+            >
               PHONE NUMBER
             </Typography>
-            <Box sx={{
-              backgroundColor: 'background.default',
-              borderRadius: '1rem',
-              padding: '1rem 1.25rem',
-              display: 'flex',
-              alignItems: 'center'
-            }}>
+            <Box
+              sx={{
+                backgroundColor: 'background.default',
+                borderRadius: '1rem',
+                padding: '1rem 1.25rem',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
               <InputBase
                 fullWidth
                 placeholder="050-1234567"
                 value={formatPhoneNumber(phoneNumber)}
-                onChange={(event) => setPhoneNumber(formatPhoneNumber(event.target.value))}
+                onChange={(event) => setPhoneNumber(cleanPhoneNumber(event.target.value))}
                 sx={{
                   fontSize: '1rem',
                   fontWeight: 600,
@@ -235,7 +247,7 @@ const GoogleLoginButton = () => {
                 textTransform: 'none',
                 '&:hover': {
                   backgroundColor: theme.palette.grey[400],
-                }
+                },
               }}
             >
               Cancel
@@ -260,8 +272,8 @@ const GoogleLoginButton = () => {
                 },
                 '&.Mui-disabled': {
                   backgroundColor: GOOGLE_AUTH_COLORS.orangeDisabled,
-                  color: 'white'
-                }
+                  color: 'white',
+                },
               }}
             >
               {isGoogleLoading ? 'Connecting...' : 'Complete Setup'}

@@ -22,7 +22,16 @@ export const refreshToken = async (refreshToken: string) => {
   return data;
 };
 
-export const googleLogin = async (credentials: CredentialResponse, phoneNumber: string) => {
-  const { data } = await api.post<User>(`${AUTH_ROUTE}/google`, { credentials, phoneNumber });
+export const googleLogin = async ({
+  credentials,
+  phoneNumber,
+}: {
+  credentials: CredentialResponse;
+  phoneNumber: string;
+}) => {
+  const { data } = await api.post(`${AUTH_ROUTE}/google`, {
+    credentials,
+    phoneNumber,
+  });
   return data;
 };
