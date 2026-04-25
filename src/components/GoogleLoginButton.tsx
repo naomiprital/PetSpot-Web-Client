@@ -98,6 +98,7 @@ const GoogleLoginButton = () => {
             className="visual-button"
             disabled={isGoogleLoading}
             fullWidth
+            type="button"
             variant="outlined"
             startIcon={<GoogleLogo />}
             sx={{
@@ -235,6 +236,7 @@ const GoogleLoginButton = () => {
 
           <Box sx={{ display: 'flex', gap: 1.5, width: '100%' }}>
             <Button
+              type="button"
               onClick={() => setIsPhoneDialogOpen(false)}
               sx={{
                 flex: 1,
@@ -253,6 +255,7 @@ const GoogleLoginButton = () => {
               Cancel
             </Button>
             <Button
+              type="button"
               onClick={handleCompleteLogin}
               variant="contained"
               disabled={isGoogleLoading}

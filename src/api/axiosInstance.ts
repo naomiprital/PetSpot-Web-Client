@@ -15,6 +15,10 @@ api.interceptors.response.use(
     const status = error.response?.status;
 
     if ((status === 401 || status === 403) && !originalRequest._retry) {
+      if (originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/register') || originalRequest.url?.includes('/auth/google')) {
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
 
       try {
@@ -28,8 +32,11 @@ api.interceptors.response.use(
 
         return api(originalRequest);
       } catch (refreshError: any) {
-        localStorage.clear();
-        window.location.href = '/auth';
+        if (!window.location.pathname.startsWith('/auth')) {
+          localStorage.clear();
+          window.location.href = '/auth';
+        }
+        
         return Promise.reject(refreshError);
       }
     }
