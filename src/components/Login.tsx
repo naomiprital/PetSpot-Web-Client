@@ -63,12 +63,13 @@ const Login = ({ onForgotPassword }: LoginProps) => {
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      noValidate
-      sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}
-    >
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+      <Box
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}
+      >
       <Box sx={{ position: 'relative' }}>
         <InputLabel>Email Address</InputLabel>
         <Box sx={errors.email ? errorInputSx : inputSx}>
@@ -168,9 +169,10 @@ const Login = ({ onForgotPassword }: LoginProps) => {
       >
         {isPendingLogin ? 'Logging in...' : 'Welcome Back!'}
       </Button>
-      <GoogleLoginButton />
     </Box>
-  );
+    <GoogleLoginButton />
+  </Box>
+);
 };
 
 export default Login;
