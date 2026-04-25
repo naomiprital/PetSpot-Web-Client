@@ -13,17 +13,19 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
-import { StatusEnum } from '../../utils/consts';
+import { ListingTypeEnum, SERVER_BASE_URL } from '../../utils/consts';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import moment from 'moment';
 import AreYouSureDialog from './AreYouSureDialog';
-import type { Listing } from './MainFeedListingCard';
 import ListingDetailsDialog from './ListingDetailsDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import { onBoost, isUserBoostedListing } from '../../utils/utilsFunctions';
+import { isUserBoostedListing } from '../../utils/utilsFunctions';
 import EditListingDialog from './EditListingDialog';
+import type { Listing } from '../types/Listing';
+import { useDeleteListing, useResolveListing, useToggleBoostListing } from '../hooks/useListings';
+import { useUser } from '../hooks/useUsers';
 
 interface UserListingCardProps {
   listing: Listing;
@@ -34,11 +36,13 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
   const [resolveDialogOpen, setResolveDialogOpen] = useState(false);
   const [listingDetailsDialogOpen, setListingDetailsDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const { mutateAsync: toggleBoostListing } = useToggleBoostListing();
+  const { mutateAsync: deleteListing } = useDeleteListing();
+  const { mutateAsync: resolveListing } = useResolveListing();
+  const { data: user } = useUser();
 
   const onResolveListing = (listing: Listing) => {
-    // TODO: API call
-    // make sure a reunion is updated in the top profile section
-
+    resolveListing(listing._id);
     setResolveDialogOpen(false);
   };
 
@@ -62,7 +66,7 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
           <Box sx={{ position: 'relative', height: '14rem' }}>
             <CardMedia
               component="img"
-              image={listing.imageUrl}
+              image={`${SERVER_BASE_URL}${listing.imageUrl}`}
               alt="Listing image"
               sx={{
                 height: '14rem',
@@ -80,17 +84,17 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
               }}
             >
               <Chip
-                label={listing.status.toUpperCase()}
+                label={listing.listingType.toUpperCase()}
                 sx={{
                   backgroundColor:
-                    listing.status === StatusEnum.LOST ? 'error.main' : 'success.main',
+                    listing.listingType === ListingTypeEnum.LOST ? 'error.main' : 'success.main',
                   color: 'white',
                   fontWeight: 'bold',
                   fontSize: '0.8rem',
                 }}
               />
               <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
-                {moment(listing.date).format('DD/MM/YYYY')}
+                {moment(listing.lastSeen).format('DD/MM/YYYY')}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -138,13 +142,18 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
                 >
                   <IconButton
                     sx={{
-                      color: isUserBoostedListing(listing) ? 'primary.main' : 'text.secondary',
+                      color: isUserBoostedListing(listing, user?._id)
+                        ? 'primary.main'
+                        : 'text.secondary',
                       '&:hover': {
                         backgroundColor: 'transparent',
                       },
                       padding: 0,
                     }}
-                    onClick={onBoost}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      toggleBoostListing(listing._id);
+                    }}
                   >
                     <FontAwesomeIcon size="xs" icon={faPaw} />
                   </IconButton>
@@ -242,7 +251,7 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         onConfirm={() => {
-          // TODO: handle delete listing
+          deleteListing(listing._id);
           setDeleteDialogOpen(false);
         }}
         action="delete"
@@ -251,7 +260,6 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
         open={resolveDialogOpen}
         onClose={() => setResolveDialogOpen(false)}
         onConfirm={() => {
-          // TODO: handle resolve listing
           onResolveListing(listing);
           setResolveDialogOpen(false);
         }}
@@ -261,7 +269,6 @@ const UserListingCard = ({ listing }: UserListingCardProps) => {
         open={listingDetailsDialogOpen}
         onClose={() => setListingDetailsDialogOpen(false)}
         listing={listing}
-        onBoost={onBoost}
         isUserBoostedListing={isUserBoostedListing}
       />
       {listing && (

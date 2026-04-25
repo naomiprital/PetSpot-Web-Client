@@ -1,23 +1,34 @@
 import { useMemo } from 'react';
-import { Box, Typography, Chip } from '@mui/material';
-import { useUser } from '../context/UserContext';
-import { useListings } from '../context/ListingsContext';
-import { StatusEnum } from '../../utils/consts';
+import { Box, Chip, Typography } from '@mui/material';
+import { useUser } from '../hooks/useUsers';
 import UserListingCard from '../components/UserListingCard';
 import ProfileHeaderCard from '../components/ProfileHeaderCard';
+import { useListings } from '../hooks/useListings';
+import type { Listing } from '../types/Listing';
 
 const ProfilePage = () => {
-  const { user } = useUser();
-  const listings = useListings();
+  const { data: listings } = useListings();
+  const { data: user } = useUser();
+
+  if (!user) {
+    return (
+      <Box sx={{ p: 4, textAlign: 'center' }}>
+        <Typography>Please log in to view your profile.</Typography>
+      </Box>
+    );
+  }
 
   const userListings = useMemo(
-    () => listings.filter((listing) => listing.userId === user.id),
-    [listings, user.id]
+    () => listings?.filter((listing: Listing) => listing.author?._id === user._id),
+    [listings, user._id]
   );
 
-  const reportsCount = userListings.length;
+  const reportsCount = userListings?.length;
+
   const reunionsCount = useMemo(
-    () => userListings.filter((listing) => listing.status === StatusEnum.FOUND).length,
+    () =>
+      userListings?.filter((listing) => listing.listingType === 'found' && listing.isResolved)
+        .length,
     [userListings]
   );
 
@@ -41,7 +52,7 @@ const ProfilePage = () => {
             Your Listings
           </Typography>
           <Chip
-            label={userListings.length}
+            label={userListings?.length}
             size="small"
             sx={(theme) => ({
               backgroundColor: theme.palette.primary.main,
@@ -52,7 +63,7 @@ const ProfilePage = () => {
           />
         </Box>
 
-        {userListings.length === 0 ? (
+        {userListings?.length === 0 ? (
           <Typography sx={{ color: 'text.secondary', fontSize: '0.95rem' }}>
             You haven't posted any listings yet.
           </Typography>
@@ -64,8 +75,8 @@ const ProfilePage = () => {
               gap: '1.5rem',
             }}
           >
-            {userListings.map((listing) => (
-              <UserListingCard key={listing.id} listing={listing} />
+            {userListings?.map((listing) => (
+              <UserListingCard key={listing._id} listing={listing} />
             ))}
           </Box>
         )}

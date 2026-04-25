@@ -11,8 +11,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import type { Listing } from './MainFeedListingCard';
-import { StatusEnum } from '../../utils/consts';
 import moment from 'moment';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
@@ -24,6 +22,13 @@ import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import UserDetailDialog from './UserDetailDialog';
+import { ListingTypeEnum, type Listing } from '../types/Listing';
+import { SERVER_BASE_URL } from '../../utils/consts';
+import useCreateComment from '../hooks/useComments';
+import type { Comment } from '../types/Comment';
+import { useToggleBoostListing } from '../hooks/useListings';
+import { useUser } from '../hooks/useUsers';
+import { formatPhoneNumber } from '../../utils/utilsFunctions';
 
 interface DetailRowProps {
   icon: React.ReactNode;
@@ -60,28 +65,38 @@ interface ListingDetailsDialogProps {
   open: boolean;
   onClose: () => void;
   listing: Listing;
-  onBoost: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  isUserBoostedListing: (listing: Listing) => boolean;
+  isUserBoostedListing: (listing: Listing, user: string) => boolean;
 }
 
 const ListingDetailsDialog = ({
   open,
   onClose,
   listing,
-  onBoost,
   isUserBoostedListing,
 }: ListingDetailsDialogProps) => {
   const [copied, setCopied] = useState(false);
   const [userDetailDialogOpen, setUserDetailDialogOpen] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const { mutateAsync: addComment } = useCreateComment();
+  const { mutateAsync: toggleBoostListing } = useToggleBoostListing();
+  const { data: user } = useUser();
 
   const handlePhoneClick = async () => {
     try {
-      await navigator.clipboard.writeText(listing.user.phone);
+      await navigator.clipboard.writeText(listing.author.phoneNumber);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       toast.error('Failed to copy text');
     }
+  };
+
+  const handleAddComment = async () => {
+    await addComment({
+      listingId: listing._id,
+      commentText: newComment,
+    });
+    setNewComment('');
   };
 
   return (
@@ -129,7 +144,7 @@ const ListingDetailsDialog = ({
           </IconButton>
           <CardMedia
             component="img"
-            image={listing.imageUrl}
+            image={`${SERVER_BASE_URL}${listing.imageUrl}`}
             alt="Listing image"
             sx={{
               height: '100%',
@@ -152,22 +167,23 @@ const ListingDetailsDialog = ({
           >
             <Box sx={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <Chip
-                label={listing.status
+                label={listing.listingType
                   .toUpperCase()
                   .concat(' ')
-                  .concat(listing.animal.toUpperCase())}
+                  .concat(listing.animalType.toUpperCase())}
                 sx={(theme) => ({
                   backgroundColor:
-                    listing.status === StatusEnum.LOST
+                    listing.listingType === ListingTypeEnum.LOST
                       ? alpha(theme.palette.error.main, 0.2)
                       : alpha(theme.palette.success.main, 0.2),
-                  color: listing.status === StatusEnum.LOST ? 'error.main' : 'success.main',
+                  color:
+                    listing.listingType === ListingTypeEnum.LOST ? 'error.main' : 'success.main',
                   fontWeight: 'bold',
                   borderRadius: '1rem',
                 })}
               />
               <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
-                Posted {moment(listing.date).format('DD/MM/YYYY HH:mm')}
+                Posted {moment(listing.createdAt).format('DD/MM/YYYY HH:mm')}
               </Typography>
             </Box>
 
@@ -185,9 +201,14 @@ const ListingDetailsDialog = ({
               }}
               onClick={() => setUserDetailDialogOpen(true)}
             >
-              <Avatar src={listing.user.avatar} sx={{ width: '3rem', height: '3rem' }} />
+              <Avatar
+                src={`${SERVER_BASE_URL}${listing.author?.imageUrl}`}
+                sx={{ width: '3rem', height: '3rem' }}
+              />
               <Box>
-                <Typography sx={{ fontWeight: 'bold' }}>{listing.user.name}</Typography>
+                <Typography sx={{ fontWeight: 'bold' }}>
+                  {listing.author?.firstName + ' ' + listing.author?.lastName}
+                </Typography>
                 <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                   Lister Information
                 </Typography>
@@ -203,7 +224,7 @@ const ListingDetailsDialog = ({
             <DetailRow
               icon={<CalendarTodayIcon color="primary" />}
               title="SEEN ON"
-              value={moment(listing.date).format('DD/MM/YYYY HH:mm')}
+              value={moment(listing.lastSeen).format('DD/MM/YYYY HH:mm')}
             />
 
             <Box sx={{ backgroundColor: 'grey.100', borderRadius: '0.6rem', padding: '0.5rem' }}>
@@ -215,7 +236,7 @@ const ListingDetailsDialog = ({
 
             <Box
               component="a"
-              href={`tel:${listing.user.phone}`}
+              href={`tel:${listing.author?.phoneNumber}`}
               onClick={handlePhoneClick}
               sx={(theme) => ({
                 backgroundColor: alpha(theme.palette.primary.main, 0.8),
@@ -235,7 +256,9 @@ const ListingDetailsDialog = ({
             >
               <PhoneIcon sx={{ color: 'white' }} />
               <Typography sx={{ color: 'white', fontWeight: copied ? 'bold' : 'normal' }}>
-                {copied ? 'Number Copied!' : `Call Lister (${listing.user.phone})`}
+                {copied
+                  ? 'Number Copied!'
+                  : `Call Lister (${formatPhoneNumber(listing.author?.phoneNumber)})`}
               </Typography>
             </Box>
 
@@ -248,20 +271,24 @@ const ListingDetailsDialog = ({
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <Tooltip
                   title={
-                    isUserBoostedListing(listing) ? 'You boosted this listing' : 'Click to boost!'
+                    isUserBoostedListing(listing, user?._id)
+                      ? 'You boosted this listing'
+                      : 'Click to boost!'
                   }
                   placement="left"
                   arrow
                 >
                   <IconButton
                     sx={{
-                      color: isUserBoostedListing(listing) ? 'primary.main' : 'text.secondary',
+                      color: isUserBoostedListing(listing, user?._id)
+                        ? 'primary.main'
+                        : 'text.secondary',
                       '&:hover': {
                         backgroundColor: 'transparent',
                       },
                       padding: 0,
                     }}
-                    onClick={onBoost}
+                    onClick={() => toggleBoostListing(listing._id)}
                   >
                     <FontAwesomeIcon size="xs" icon={faPaw} />
                   </IconButton>
@@ -271,15 +298,20 @@ const ListingDetailsDialog = ({
               </Box>
             </Box>
 
-            {listing.comments.map((comment) => (
-              <Box key={comment.id} sx={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
-                <Avatar src={comment.user.avatar} sx={{ width: '2.2rem', height: '2.2rem' }} />
+            {listing.comments.map((comment: Comment) => (
+              <Box key={comment._id} sx={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+                <Avatar
+                  src={`${SERVER_BASE_URL}${comment.author?.imageUrl}`}
+                  sx={{ width: '2.2rem', height: '2.2rem' }}
+                />
                 <Box>
                   <Box
                     sx={{ backgroundColor: 'grey.100', borderRadius: '0.6rem', padding: '0.5rem' }}
                   >
-                    <Typography sx={{ fontWeight: 'bold' }}>{comment.user.name}</Typography>
-                    <Typography>{comment.text}</Typography>
+                    <Typography sx={{ fontWeight: 'bold' }}>
+                      {comment.author?.firstName + ' ' + comment.author?.lastName}
+                    </Typography>
+                    <Typography>{comment.commentText}</Typography>
                   </Box>
                   <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
                     {moment(comment.createdAt).format('HH:mm')}
@@ -302,6 +334,10 @@ const ListingDetailsDialog = ({
               }}
             >
               <InputBase
+                value={newComment}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  setNewComment(event.target.value)
+                }
                 placeholder="Write a helpful comment..."
                 sx={{
                   flex: 1,
@@ -309,7 +345,7 @@ const ListingDetailsDialog = ({
                   fontSize: '0.95rem',
                 }}
               />
-              <IconButton color="primary">
+              <IconButton color="primary" onClick={handleAddComment}>
                 <SendIcon />
               </IconButton>
             </Box>
@@ -319,12 +355,7 @@ const ListingDetailsDialog = ({
       <UserDetailDialog
         open={userDetailDialogOpen}
         onClose={() => setUserDetailDialogOpen(false)}
-        user={{
-          name: listing.user.name,
-          avatar: listing.user.avatar,
-          email: listing.user.email,
-          phone: listing.user.phone,
-        }}
+        user={listing.author}
       />
     </>
   );

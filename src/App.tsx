@@ -1,48 +1,30 @@
-import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import './App.css';
-import Header from './components/Header/Header';
-import HomePage from './pages/HomePage';
-import { UserProvider } from './context/UserContext';
-import { ListingsProvider } from './context/ListingsContext';
-import { ToastContainer } from 'react-toastify';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import AuthPage from './pages/AuthPage';
+import ProtectedRoute from './api/routes/ProtectedRoute';
+import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ToastContainer } from 'react-toastify';
+import Header from './components/Header/Header';
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const isAuthPage = location.pathname === '/auth';
-
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-    navigate('/');
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    navigate('/auth');
-  };
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string;
+  const appLocation = useLocation();
+  const isAuthPage = appLocation.pathname === '/auth';
 
   return (
-    <UserProvider>
-      <ListingsProvider>
-        {!isAuthPage && <Header onLogout={handleLogout} />}
-        <Routes>
-          <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to="/auth" />} />
-          <Route
-            path="/auth"
-            element={!isAuthenticated ? <AuthPage onLogin={handleLogin} /> : <Navigate to="/" />}
-          />
-          <Route
-            path="/profile"
-            element={isAuthenticated ? <ProfilePage /> : <Navigate to="/auth" />}
-          />
-        </Routes>
-        <ToastContainer position="bottom-left" />
-      </ListingsProvider>
-    </UserProvider>
+    <GoogleOAuthProvider clientId={googleClientId}>
+      {!isAuthPage && <Header />}
+      <Routes>
+        <Route path="/auth" element={<AuthPage />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
+      </Routes>
+      <ToastContainer position="bottom-left" />
+    </GoogleOAuthProvider>
   );
 };
 

@@ -1,9 +1,13 @@
 import { Box, Dialog, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
-import { StatusEnum } from '../../utils/consts';
 import ListingForm, { type FormValues } from './ListingForm';
 import { getLocalDateTimeString } from '../../utils/utilsFunctions';
+import { ListingTypeEnum } from '../types/Listing';
+import { useCreateListing } from '../hooks/useListings';
+import moment from 'moment';
+import { useMemo } from 'react';
+import { useUser } from '../hooks/useUsers';
 
 interface PublishReportDialogProps {
   isOpen: boolean;
@@ -11,19 +15,37 @@ interface PublishReportDialogProps {
 }
 
 const PublishReportDialog = ({ isOpen, onClose }: PublishReportDialogProps) => {
-  const emptyValues: FormValues = {
-    status: StatusEnum.LOST,
-    animalType: '',
-    contactNumber: '',
-    lastSeenLocation: '',
-    dateTime: getLocalDateTimeString(),
-    image: null,
-    description: '',
-  };
+  const { mutateAsync: createListing, isPending: isCreateListingPending } = useCreateListing();
+  const { data: user } = useUser();
+
+  const emptyValues = useMemo(() => {
+    return {
+      listingType: ListingTypeEnum.LOST,
+      animalType: '',
+      contactNumber: user?.phoneNumber,
+      location: '',
+      lastSeen: getLocalDateTimeString(),
+      image: null,
+      description: '',
+    } as unknown as FormValues;
+  }, [isOpen, user?.phoneNumber]);
 
   const onSubmit = async (data: FormValues) => {
     try {
-      // TODO: replace with API call
+      const formData = new FormData();
+
+      formData.append('listingType', data.listingType);
+      formData.append('animalType', data.animalType);
+      formData.append('location', data.location);
+      formData.append('description', data.description);
+      formData.append('lastSeen', moment(data.lastSeen).valueOf().toString());
+
+      if (data.image instanceof FileList && data.image.length > 0) {
+        formData.append('image', data.image[0]);
+      }
+
+      await createListing(formData);
+
       toast.success('Report published successfully!');
       onClose();
     } catch (error) {
@@ -67,6 +89,7 @@ const PublishReportDialog = ({ isOpen, onClose }: PublishReportDialogProps) => {
         defaultValues={emptyValues}
         submitButtonText="Publish Report"
         onSubmit={onSubmit}
+        isPending={isCreateListingPending}
       />
     </Dialog>
   );

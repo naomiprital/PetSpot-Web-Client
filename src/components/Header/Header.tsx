@@ -19,20 +19,33 @@ import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../../context/UserContext';
+import { useLogout } from '../../hooks/useAuth';
+import { useUser } from '../../hooks/useUsers';
+import { SERVER_BASE_URL } from '../../../utils/consts';
+import { toast } from 'react-toastify';
 
 interface MenuCardProps {
   anchorEl: HTMLElement | null;
   handleClose: () => void;
-  onLogout?: () => void;
 }
 
-const MenuCard = ({ anchorEl, handleClose, onLogout }: MenuCardProps) => {
+const MenuCard = ({ anchorEl, handleClose }: MenuCardProps) => {
   const menuCardOpen = Boolean(anchorEl);
   const id = menuCardOpen ? 'simple-popper' : undefined;
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { data: user } = useUser();
+  const logoutMutation = useLogout();
 
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+    } catch (error) {
+      toast.error('Failed to logout');
+    }
+
+    navigate('/auth');
+    handleClose();
+  };
   return (
     <Popper
       id={id}
@@ -51,8 +64,12 @@ const MenuCard = ({ anchorEl, handleClose, onLogout }: MenuCardProps) => {
         }}
       >
         <Box sx={{ margin: '1rem' }}>
-          <Typography sx={{ fontSize: '1.1rem' }}>{user.firstName} {user.lastName}</Typography>
-          <Typography sx={{ fontSize: '0.9rem', color: 'text.secondary' }}>{user.email}</Typography>
+          <Typography sx={{ fontSize: '1.1rem', fontWeight: 600 }}>
+            {user?.firstName || 'User'} {user?.lastName || ''}
+          </Typography>
+          <Typography sx={{ fontSize: '0.9rem', color: 'text.secondary' }}>
+            {user?.email || 'No email provided'}
+          </Typography>
         </Box>
         <Divider />
         <MenuList>
@@ -82,7 +99,7 @@ const MenuCard = ({ anchorEl, handleClose, onLogout }: MenuCardProps) => {
           <Divider />
           <MenuItem
             onClick={() => {
-              if (onLogout) onLogout();
+              handleLogout();
               handleClose();
             }}
           >
@@ -97,14 +114,10 @@ const MenuCard = ({ anchorEl, handleClose, onLogout }: MenuCardProps) => {
   );
 };
 
-interface HeaderProps {
-  onLogout?: () => void;
-}
-
-const Header = ({ onLogout }: HeaderProps) => {
+const Header = () => {
   const navigate = useNavigate();
-  const { user } = useUser();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { data: user } = useUser();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
@@ -118,8 +131,14 @@ const Header = ({ onLogout }: HeaderProps) => {
     <>
       <AppBar
         position="sticky"
-        color="transparent"
-        sx={{ bgcolor: 'background.paper', top: 0, zIndex: 100 }}
+        elevation={1}
+        sx={{
+          bgcolor: 'background.paper',
+          top: 0,
+          zIndex: 100,
+          borderBottom: '1px solid',
+          borderColor: 'grey.200',
+        }}
       >
         <Toolbar
           sx={{
@@ -151,7 +170,7 @@ const Header = ({ onLogout }: HeaderProps) => {
             }}
           >
             <img
-              src={user.avatarUrl}
+              src={`${SERVER_BASE_URL}${user?.imageUrl}`}
               style={{ width: '2.2rem', height: '2.2rem', borderRadius: '50%', objectFit: 'cover' }}
               alt="Profile"
             />
@@ -164,7 +183,7 @@ const Header = ({ onLogout }: HeaderProps) => {
           </div>
         </Toolbar>
       </AppBar>
-      <MenuCard anchorEl={anchorEl} handleClose={handleClose} onLogout={onLogout} />
+      <MenuCard anchorEl={anchorEl} handleClose={handleClose} />
     </>
   );
 };

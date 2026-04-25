@@ -1,19 +1,24 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Card, Typography, Button } from '@mui/material';
 import PetSpotIcon from '../components/PetSpotIcon';
 import { useTheme } from '@mui/material/styles';
 import Login from '../components/Login';
 import SignUp from '../components/SignUp';
-import ForgotPassword from '../components/ForgotPassword';
+import { useUser } from '../hooks/useUsers';
+import { useNavigate } from 'react-router-dom';
 
-interface AuthPageProps {
-  onLogin?: () => void;
-}
-
-const AuthPage = ({ onLogin }: AuthPageProps) => {
+const AuthPage = () => {
   const theme = useTheme();
-  const [authMode, setAuthMode] = useState<'login' | 'signup' | 'forgotPassword'>('login');
-  const [resetEmail, setResetEmail] = useState('');
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+
+  const { data: user, isLoading } = useUser();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && !isLoading) {
+      navigate('/', { replace: true });
+    }
+  }, [user, isLoading, navigate]);
 
   return (
     <Box
@@ -80,7 +85,6 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
           border: '0.0625rem solid rgba(0,0,0,0.02)',
         }}
       >
-        {authMode !== 'forgotPassword' && (
           <Box
             sx={{
               display: 'flex',
@@ -101,11 +105,14 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
                 textTransform: 'none',
                 fontWeight: 700,
                 fontSize: '0.95rem',
-                color: authMode === 'login' ? theme.palette.primary.main : theme.palette.text.secondary,
-                backgroundColor: authMode === 'login' ? theme.palette.background.paper : 'transparent',
+                color:
+                  authMode === 'login' ? theme.palette.primary.main : theme.palette.text.secondary,
+                backgroundColor:
+                  authMode === 'login' ? theme.palette.background.paper : 'transparent',
                 boxShadow: authMode === 'login' ? '0 0.125rem 0.5rem rgba(0,0,0,0.05)' : 'none',
                 '&:hover': {
-                  backgroundColor: authMode === 'login' ? theme.palette.background.paper : 'transparent',
+                  backgroundColor:
+                    authMode === 'login' ? theme.palette.background.paper : 'transparent',
                 },
               }}
             >
@@ -122,21 +129,22 @@ const AuthPage = ({ onLogin }: AuthPageProps) => {
                 textTransform: 'none',
                 fontWeight: 700,
                 fontSize: '0.95rem',
-                color: authMode === 'signup' ? theme.palette.primary.main : theme.palette.text.secondary,
-                backgroundColor: authMode === 'signup' ? theme.palette.background.paper : 'transparent',
+                color:
+                  authMode === 'signup' ? theme.palette.primary.main : theme.palette.text.secondary,
+                backgroundColor:
+                  authMode === 'signup' ? theme.palette.background.paper : 'transparent',
                 boxShadow: authMode === 'signup' ? '0 0.125rem 0.5rem rgba(0,0,0,0.05)' : 'none',
                 '&:hover': {
-                  backgroundColor: authMode === 'signup' ? theme.palette.background.paper : 'transparent',
+                  backgroundColor:
+                    authMode === 'signup' ? theme.palette.background.paper : 'transparent',
                 },
               }}
             >
               Sign Up
             </Button>
           </Box>
-        )}
-        {authMode === 'login' && <Login onLogin={onLogin} onForgotPassword={(email) => { setResetEmail(email); setAuthMode('forgotPassword'); }} />}
-        {authMode === 'signup' && <SignUp onLogin={onLogin} />}
-        {authMode === 'forgotPassword' && <ForgotPassword initialEmail={resetEmail} onBackToLogin={() => setAuthMode('login')} />}
+        {authMode === 'login' && <Login />}
+        {authMode === 'signup' && <SignUp />}
       </Card>
     </Box>
   );

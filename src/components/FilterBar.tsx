@@ -10,14 +10,21 @@ import {
   IconButton,
   Tooltip,
   Divider,
+  type Theme,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CloseIcon from '@mui/icons-material/Close';
-import { StatusEnum, AnimalsEnum } from '../../utils/consts';
+import {
+  type ListingType,
+  type AnimalType,
+  ListingTypeEnum,
+  AnimalTypeEnum,
+} from '../types/Listing';
+import { capitalizeFirstLetter } from '../../utils/utilsFunctions';
 
-export type StatusFilter = (typeof StatusEnum)[keyof typeof StatusEnum] | 'all';
-export type AnimalFilter = (typeof AnimalsEnum)[keyof typeof AnimalsEnum] | 'all';
+export type StatusFilter = ListingType | 'all';
+export type AnimalFilter = AnimalType | 'all';
 export type SortOrderFilter = 'newest' | 'oldest' | 'highest-boosted' | 'lowest-boosted';
 
 export interface FilterBarProps {
@@ -29,12 +36,21 @@ export interface FilterBarProps {
   setAnimal: (val: AnimalFilter) => void;
   sortOrder: SortOrderFilter;
   setSortOrder: (val: SortOrderFilter) => void;
-  setAiQuery: (val: string) => void;
   isAiSearching: boolean;
-  aiRankedIds: string[] | null;
+  isAiActive: boolean;
   onAiSearch: () => void;
   onAiClear: () => void;
 }
+
+const selectSx = (isActive: boolean) => (theme: Theme) => ({
+  backgroundColor: isActive
+    ? alpha(theme.palette.primary.main, 0.1)
+    : theme.palette.background.default,
+  borderRadius: '0.75rem',
+  '& .MuiOutlinedInput-notchedOutline': {
+    border: `1px solid ${isActive ? theme.palette.primary.main : theme.palette.grey[300]}`,
+  },
+});
 
 const FilterBar = ({
   searchQuery,
@@ -45,19 +61,11 @@ const FilterBar = ({
   setAnimal,
   sortOrder,
   setSortOrder,
-  setAiQuery,
   isAiSearching,
-  aiRankedIds,
+  isAiActive,
   onAiSearch,
   onAiClear,
 }: FilterBarProps) => {
-  const isAiActive = aiRankedIds !== null;
-
-  const handleInputChange = (value: string) => {
-    setSearchQuery(value);
-    setAiQuery(value);
-  };
-
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && searchQuery.trim()) onAiSearch();
   };
@@ -120,7 +128,7 @@ const FilterBar = ({
                 : 'Search or describe an animal…'
             }
             value={searchQuery}
-            onChange={(e) => handleInputChange(e.target.value)}
+            onChange={(event) => setSearchQuery(event.target.value)}
             onKeyDown={handleKeyDown}
             disabled={isAiSearching}
             sx={{ flex: 1, fontSize: '0.95rem', color: 'text.primary' }}
@@ -167,65 +175,54 @@ const FilterBar = ({
             {isAiSearching ? 'Searching…' : 'AI Search'}
           </Button>
         </Box>
+
         <Select
           value={type}
           onChange={(event) => setType(event.target.value as StatusFilter)}
           displayEmpty
-          sx={(theme) => ({
-            backgroundColor:
-              type !== 'all'
-                ? alpha(theme.palette.primary.main, 0.1)
-                : theme.palette.background.default,
-            borderRadius: '0.75rem',
-            '& .MuiOutlinedInput-notchedOutline': {
-              border:
-                type !== 'all'
-                  ? `1px solid ${theme.palette.primary.main}`
-                  : `1px solid ${theme.palette.grey[300]}`,
-            },
-          })}
+          sx={selectSx(type !== 'all')}
         >
           <MenuItem value="all">All Types</MenuItem>
-          <MenuItem value={StatusEnum.LOST}>{StatusEnum.LOST}</MenuItem>
-          <MenuItem value={StatusEnum.FOUND}>{StatusEnum.FOUND}</MenuItem>
+          <MenuItem value={ListingTypeEnum.LOST}>
+            {capitalizeFirstLetter(ListingTypeEnum.LOST)}
+          </MenuItem>
+          <MenuItem value={ListingTypeEnum.FOUND}>
+            {capitalizeFirstLetter(ListingTypeEnum.FOUND)}
+          </MenuItem>
         </Select>
+
         <Select
           value={animal}
           onChange={(event) => setAnimal(event.target.value as AnimalFilter)}
           displayEmpty
-          sx={(theme) => ({
-            backgroundColor:
-              animal !== 'all'
-                ? alpha(theme.palette.primary.main, 0.1)
-                : theme.palette.background.default,
-            borderRadius: '0.75rem',
-            '& .MuiOutlinedInput-notchedOutline': {
-              border:
-                animal !== 'all'
-                  ? `1px solid ${theme.palette.primary.main}`
-                  : `1px solid ${theme.palette.grey[300]}`,
-            },
-          })}
+          sx={selectSx(animal !== 'all')}
         >
           <MenuItem value="all">All Animals</MenuItem>
-          <MenuItem value={AnimalsEnum.DOG}>{AnimalsEnum.DOG}</MenuItem>
-          <MenuItem value={AnimalsEnum.CAT}>{AnimalsEnum.CAT}</MenuItem>
-          <MenuItem value={AnimalsEnum.BIRD}>{AnimalsEnum.BIRD}</MenuItem>
-          <MenuItem value={AnimalsEnum.RABBIT}>{AnimalsEnum.RABBIT}</MenuItem>
-          <MenuItem value={AnimalsEnum.OTHER}>{AnimalsEnum.OTHER}</MenuItem>
+          <MenuItem value={AnimalTypeEnum.DOG}>
+            {capitalizeFirstLetter(AnimalTypeEnum.DOG)}
+          </MenuItem>
+          <MenuItem value={AnimalTypeEnum.CAT}>
+            {capitalizeFirstLetter(AnimalTypeEnum.CAT)}
+          </MenuItem>
+          <MenuItem value={AnimalTypeEnum.BIRD}>
+            {capitalizeFirstLetter(AnimalTypeEnum.BIRD)}
+          </MenuItem>
+          <MenuItem value={AnimalTypeEnum.RABBIT}>
+            {capitalizeFirstLetter(AnimalTypeEnum.RABBIT)}
+          </MenuItem>
+          <MenuItem value={AnimalTypeEnum.OTHER}>
+            {capitalizeFirstLetter(AnimalTypeEnum.OTHER)}
+          </MenuItem>
         </Select>
+
         <Select
           value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value as SortOrderFilter)}
+          onChange={(event) => setSortOrder(event.target.value as SortOrderFilter)}
           displayEmpty
           disabled={isAiActive}
           sx={(theme) => ({
-            backgroundColor: theme.palette.background.default,
-            borderRadius: '0.75rem',
+            ...selectSx(sortOrder !== 'newest')(theme),
             opacity: isAiActive ? 0.5 : 1,
-            '& .MuiOutlinedInput-notchedOutline': {
-              border: `1px solid ${theme.palette.grey[300]}`,
-            },
           })}
         >
           <MenuItem value="newest">Newest First</MenuItem>
