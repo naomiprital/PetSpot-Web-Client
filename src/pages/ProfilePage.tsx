@@ -19,7 +19,7 @@ const ProfilePage = () => {
   }
 
   const userListings = useMemo(
-    () => listings?.filter((listing: Listing) => listing.author._id === user._id),
+    () => listings?.filter((listing: Listing) => listing.author?._id === user._id),
     [listings, user._id]
   );
 

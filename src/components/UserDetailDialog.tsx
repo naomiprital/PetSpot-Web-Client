@@ -19,7 +19,7 @@ const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
   const { data: listings } = useListings();
 
   const { reportsCount, reunionsCount } = useMemo(() => {
-    const userListings = listings.filter((listing) => listing.author.email === user?.email);
+    const userListings = listings.filter((listing) => listing.author?.email === user?.email);
     return {
       reportsCount: userListings.length,
       reunionsCount: userListings.filter((listing) => listing.isResolved).length,

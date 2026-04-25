@@ -1,3 +1,4 @@
+import type { CredentialResponse } from '@react-oauth/google';
 import api from '../api/axiosInstance';
 import type { User } from '../types/User';
 
@@ -14,4 +15,23 @@ export const register = async (userData: FormData) => {
 };
 export const logout = async () => {
   await api.post(`${AUTH_ROUTE}/logout`);
+};
+
+export const refreshToken = async (refreshToken: string) => {
+  const { data } = await api.post(`${AUTH_ROUTE}/refresh`, { refreshToken });
+  return data;
+};
+
+export const googleLogin = async ({
+  credentials,
+  phoneNumber,
+}: {
+  credentials: CredentialResponse;
+  phoneNumber: string;
+}) => {
+  const { data } = await api.post(`${AUTH_ROUTE}/google`, {
+    credentials,
+    phoneNumber,
+  });
+  return data;
 };

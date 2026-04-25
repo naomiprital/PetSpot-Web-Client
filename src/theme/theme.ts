@@ -4,11 +4,20 @@ import '@fontsource/heebo/600.css';
 import '@fontsource/heebo/700.css';
 import '@fontsource/heebo/800.css';
 
-export const GOOGLE_COLORS = {
+export const GOOGLE_AUTH_COLORS = {
   blue: '#4285F4',
   green: '#34A853',
   yellow: '#FBBC05',
   red: '#EA4335',
+  orange: '#FF7A1F',
+  orangeHover: '#E66A10',
+  orangeDisabled: '#FFB885',
+  lightOrange: '#FFF8F1',
+  darkText: '#1A202C',
+  grayText: '#718096',
+  lightGrayText: '#A0AEC0',
+  cancelBg: '#EDF2F7',
+  cancelText: '#4A5568',
 } as const;
 
 const theme = createTheme({
