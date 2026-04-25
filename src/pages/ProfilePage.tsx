@@ -23,12 +23,12 @@ const ProfilePage = () => {
     [listings, user._id]
   );
 
-  const reportsCount = userListings?.length;
+  const reportsCount = userListings?.length || 0;
 
   const reunionsCount = useMemo(
     () =>
       userListings?.filter((listing) => listing.listingType === 'found' && listing.isResolved)
-        .length,
+        .length || 0,
     [userListings]
   );
 
