@@ -172,7 +172,7 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
                 >
                   <Tooltip
                     title={
-                      isUserBoostedListing(listing, user?._id)
+                      user?._id && isUserBoostedListing(listing, user?._id)
                         ? 'You boosted this listing'
                         : 'Click to boost!'
                     }
@@ -181,9 +181,10 @@ const MainFeedListingCard = ({ listing }: MainFeedListingCardProps) => {
                   >
                     <IconButton
                       sx={{
-                        color: isUserBoostedListing(listing, user?._id)
-                          ? 'primary.main'
-                          : 'text.secondary',
+                        color:
+                          user?._id && isUserBoostedListing(listing, user?._id)
+                            ? 'primary.main'
+                            : 'text.secondary',
                         '&:hover': { backgroundColor: 'transparent' },
                         padding: 0,
                       }}

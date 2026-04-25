@@ -271,7 +271,7 @@ const ListingDetailsDialog = ({
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <Tooltip
                   title={
-                    isUserBoostedListing(listing, user?._id)
+                    user?._id && isUserBoostedListing(listing, user?._id)
                       ? 'You boosted this listing'
                       : 'Click to boost!'
                   }
@@ -280,9 +280,10 @@ const ListingDetailsDialog = ({
                 >
                   <IconButton
                     sx={{
-                      color: isUserBoostedListing(listing, user?._id)
-                        ? 'primary.main'
-                        : 'text.secondary',
+                      color:
+                        user?._id && isUserBoostedListing(listing, user?._id)
+                          ? 'primary.main'
+                          : 'text.secondary',
                       '&:hover': {
                         backgroundColor: 'transparent',
                       },

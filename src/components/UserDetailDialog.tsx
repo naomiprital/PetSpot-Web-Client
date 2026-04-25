@@ -8,7 +8,6 @@ import { SERVER_BASE_URL } from '../../utils/consts';
 import { useListings } from '../hooks/useListings';
 import { formatPhoneNumber } from '../../utils/utilsFunctions';
 
-
 interface UserDetailDialogProps {
   open: boolean;
   onClose: () => void;
@@ -19,10 +18,10 @@ const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
   const { data: listings } = useListings();
 
   const { reportsCount, reunionsCount } = useMemo(() => {
-    const userListings = listings.filter((listing) => listing.author?.email === user?.email);
+    const userListings = listings?.filter((listing) => listing.author?.email === user?.email);
     return {
-      reportsCount: userListings.length,
-      reunionsCount: userListings.filter((listing) => listing.isResolved).length,
+      reportsCount: userListings?.length,
+      reunionsCount: userListings?.filter((listing) => listing.isResolved).length,
     };
   }, [listings, user?.email]);
 
@@ -156,7 +155,6 @@ const UserDetailDialog = ({ open, onClose, user }: UserDetailDialogProps) => {
               <Typography sx={{ fontSize: '0.95rem', color: 'text.primary' }}>
                 {formatPhoneNumber(user?.phoneNumber)}
               </Typography>
-
             </Box>
           </Box>
         </Box>

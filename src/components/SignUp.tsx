@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { useForm } from 'react-hook-form';
-import { useRegister, useLogin } from '../hooks/useAuth';
+import { useRegister } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
 import { formatPhoneNumber, cleanPhoneNumber } from '../../utils/utilsFunctions';
 
@@ -57,7 +57,6 @@ const SignUp = () => {
   });
 
   const registerMutation = useRegister();
-  const loginMutation = useLogin();
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const profileImageFiles = watch('profileImage');
 

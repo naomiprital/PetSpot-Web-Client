@@ -1,4 +1,4 @@
-import { Box, Button, Link, InputBase, Typography, styled } from '@mui/material';
+import { Box, Button, InputBase, Typography, styled } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useForm } from 'react-hook-form';
 import { useLogin } from '../hooks/useAuth';
@@ -30,7 +30,6 @@ const InputLabel = styled(Typography)(({ theme }) => ({
   marginBottom: '0.25rem',
   letterSpacing: '0.03125rem',
 }));
-
 
 const Login = () => {
   const theme = useTheme();

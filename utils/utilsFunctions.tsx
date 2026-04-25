@@ -22,7 +22,7 @@ export const capitalizeFirstLetter = (word: string): string => {
   return word.charAt(0).toUpperCase() + word.slice(1);
 };
 
-export const formatPhoneNumber = (phoneNumber: string): string => {
+export const formatPhoneNumber = (phoneNumber?: string): string => {
   if (!phoneNumber) return '';
   const cleaned = phoneNumber.replace(/\D/g, '');
 
@@ -31,8 +31,6 @@ export const formatPhoneNumber = (phoneNumber: string): string => {
   return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`;
 };
 
-
 export const cleanPhoneNumber = (phoneNumber: string): string => {
   return phoneNumber.replace(/\D/g, '');
 };
-
