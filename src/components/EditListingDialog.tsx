@@ -24,7 +24,7 @@ const EditListingDialog = ({ open, onClose, listing }: EditListingDialogProps) =
     contactNumber: listing.author.phoneNumber,
     location: listing.location,
     lastSeen: getLocalDateTimeString(listing.lastSeen),
-    image: listing.imageUrl,
+    image: listing.imageUrl as string | FileList | null,
     description: listing.description,
   };
 

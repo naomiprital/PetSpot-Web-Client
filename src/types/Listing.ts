@@ -21,7 +21,7 @@ export const AnimalTypeEnum = {
 } as const;
 
 export interface Listing {
-  _id?: string;
+  _id: string;
   listingType: ListingType;
   animalType: AnimalType;
   imageUrl?: string;

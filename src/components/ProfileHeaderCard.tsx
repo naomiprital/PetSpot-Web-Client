@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 import { SERVER_BASE_URL } from '../../utils/consts';
 import { formatPhoneNumber, cleanPhoneNumber } from '../../utils/utilsFunctions';
 
-
 const inputSx = {
   backgroundColor: 'background.default',
   borderRadius: '0.6rem',
@@ -286,7 +285,7 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
                 EMAIL ADDRESS
               </Typography>
             </Box>
-            <Typography sx={{ fontSize: '1rem', color: 'text.primary' }}>{user.email}</Typography>
+            <Typography sx={{ fontSize: '1rem', color: 'text.primary' }}>{user?.email}</Typography>
           </Box>
           <Box>
             <Box sx={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
@@ -308,10 +307,9 @@ const ProfileHeaderCard = ({ reportsCount, reunionsCount }: ProfileHeaderCardPro
               </Box>
             ) : (
               <Typography sx={{ fontSize: '1rem', color: 'text.primary' }}>
-                {formatPhoneNumber(user.phoneNumber)}
+                {formatPhoneNumber(user?.phoneNumber)}
               </Typography>
             )}
-
           </Box>
         </Box>
         <Box sx={{ display: 'flex', gap: { xs: '2.5rem', sm: '5rem' }, alignItems: 'center' }}>
